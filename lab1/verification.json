@@ -58,6 +58,24 @@
       "passed": true
     },
     {
+      "name": "versicolor",
+      "path": "/predict",
+      "request": {
+        "features": [
+          7.0,
+          3.2,
+          4.7,
+          1.4
+        ]
+      },
+      "http_status": 200,
+      "response": {
+        "class_id": 1,
+        "model_version": "iris-v1"
+      },
+      "passed": true
+    },
+    {
       "name": "virginica",
       "path": "/predict",
       "request": {
@@ -75,5 +93,9 @@
       },
       "passed": true
     }
-  ]
+  ],
+  "checked_at": "2026-11-22T13:20:25.982787+03:00",
+  "evidence": "evidence/commands.json",
+  "namespace_note": "Персональный доступ itmo-student-13 заменяет mlops-students из общей методички; создание deployments в mlops-students запрещено RBAC.",
+  "local_image_id": "sha256:3576c5eb3ed11a7c0a2d2451775c1bfb7cb58d43ffbfa4c095400b9196d311ae"
 }

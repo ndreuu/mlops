@@ -1,0 +1,431 @@
+[2026-11-22T10:17:53.323112+00:00] python
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ .venv/bin/python --version
+Python 3.12.16
+[exit_code=0]
+
+[2026-11-22T10:20:25.715900+00:00] dependency-versions
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ .venv/bin/python -c 'from importlib.metadata import version; [print(f"{p}=={version(p)}") for p in ("fastapi","uvicorn","scikit-learn","joblib")]'
+fastapi==0.116.1
+uvicorn==0.35.0
+scikit-learn==1.7.1
+joblib==1.5.1
+[exit_code=0]
+
+[2026-11-22T10:17:54.444636+00:00] train
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ .venv/bin/python train.py
+[exit_code=0]
+
+[2026-11-22T10:17:54.449854+00:00] model-file
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ ls -lh model.joblib
+-rw-r--r--@ 1 andrew  staff    93K Nov 22 13:17 model.joblib
+[exit_code=0]
+
+[2026-11-22T10:17:55.571473+00:00] uvicorn
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+INFO:     Started server process [52699]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:50206 - "GET /live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50207 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50208 - "POST /predict HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50209 - "POST /predict HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50210 - "POST /predict HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [52699]
+[exit_code=0]
+
+[2026-11-22T10:17:55.303259+00:00] local-live
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' http://127.0.0.1:8000/live
+{"status":"alive"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:17:55.310636+00:00] local-health
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' http://127.0.0.1:8000/health
+{"status":"ready","model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:17:55.318952+00:00] local-setosa
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{"features":[5.1,3.5,1.4,0.2]}'
+{"class_id":0,"model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:17:55.326258+00:00] local-versicolor
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{"features":[7.0,3.2,4.7,1.4]}'
+{"class_id":1,"model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:17:55.333516+00:00] local-virginica
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{"features":[6.3,3.3,6.0,2.5]}'
+{"class_id":2,"model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:17:55.677880+00:00] kubectl-version
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl version --client=true
+Client Version: v1.37.2
+Kustomize Version: v5.8.1
+[exit_code=0]
+
+[2026-11-22T10:18:38.014769+00:00] kubecm-version
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubecm version
+[0;34mVersion[0m: [0;97m0.36.0[0m
+[0;34mGoOs[0m: [0;97mdarwin[0m
+[0;34mGoArch[0m: [0;97marm64[0m
+[exit_code=0]
+
+[2026-11-22T10:18:38.394597+00:00] kubecm-list
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubecm list
+┌────────────┬────────────────────┬─────────────────┬────────────────────┬───────────────────────────────┬────────────────────┐
+│   CURRENT  │        NAME        │     CLUSTER     │        USER        │             SERVER            │      Namespace     │
+╞════════════╪════════════════════╪═════════════════╪════════════════════╪═══════════════════════════════╪════════════════════╡
+│      *     │   itmo-student-13  │   stud-cluster  │   itmo-student-13  │   https://37.18.117.109:6443  │   itmo-student-13  │
+└────────────┴────────────────────┴─────────────────┴────────────────────┴───────────────────────────────┴────────────────────┘
+
+Cluster check succeeded!
+Kubernetes version v1.36.4
+Kubernetes master is running at https://37.18.117.109:6443
+(Error reporting can be ignored and does not affect usage.)
+[exit_code=0]
+
+[2026-11-22T10:18:38.400825+00:00] kube-permissions
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ stat -f '%Sp %N' /Users/andrew/.kube /Users/andrew/.kube/config /Users/andrew/.kube/itmo-student-13.kubeconfig
+drwx------ /Users/andrew/.kube
+-rw------- /Users/andrew/.kube/config
+-rw------- /Users/andrew/.kube/itmo-student-13.kubeconfig
+[exit_code=0]
+
+[2026-11-22T10:18:38.448840+00:00] context
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl config current-context
+itmo-student-13
+[exit_code=0]
+
+[2026-11-22T10:18:38.471953+00:00] context-namespace
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl config view --minify -o 'jsonpath={.contexts[0].context.namespace}{"\n"}'
+itmo-student-13
+[exit_code=0]
+
+[2026-11-22T10:18:39.011140+00:00] rbac-deployments
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create deployments
+yes
+[exit_code=0]
+
+[2026-11-22T10:18:39.624934+00:00] rbac-services
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create services
+yes
+[exit_code=0]
+
+[2026-11-22T10:18:40.090544+00:00] rbac-configmaps
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create configmaps
+yes
+[exit_code=0]
+
+[2026-11-22T10:18:40.524499+00:00] rbac-original-namespace
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n mlops-students auth can-i create deployments
+no
+[exit_code=1]
+
+[2026-11-22T10:18:40.530935+00:00] manifest
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ cat k8s/app.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oleinikov-iris-config
+  namespace: itmo-student-13
+  labels:
+    app.kubernetes.io/name: iris-api
+    app.kubernetes.io/instance: oleinikov-iris
+data:
+  MODEL_VERSION: iris-v1
+  MODEL_PATH: /app/model.joblib
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oleinikov-iris
+  namespace: itmo-student-13
+  labels:
+    app.kubernetes.io/name: iris-api
+    app.kubernetes.io/instance: oleinikov-iris
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iris-api
+      app.kubernetes.io/instance: oleinikov-iris
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iris-api
+        app.kubernetes.io/instance: oleinikov-iris
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: docker.io/ndreuu/oleinikov-iris:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: oleinikov-iris-config
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oleinikov-iris
+  namespace: itmo-student-13
+  labels:
+    app.kubernetes.io/name: iris-api
+    app.kubernetes.io/instance: oleinikov-iris
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: iris-api
+    app.kubernetes.io/instance: oleinikov-iris
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+[exit_code=0]
+
+[2026-11-22T10:18:50.252167+00:00] dry-run-client
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 apply --dry-run=client -f k8s/app.yaml
+configmap/oleinikov-iris-config unchanged (dry run)
+deployment.apps/oleinikov-iris unchanged (dry run)
+service/oleinikov-iris unchanged (dry run)
+[exit_code=0]
+
+[2026-11-22T10:18:51.681907+00:00] dry-run-server
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 apply --dry-run=server -f k8s/app.yaml
+configmap/oleinikov-iris-config unchanged (server dry run)
+deployment.apps/oleinikov-iris unchanged (server dry run)
+service/oleinikov-iris unchanged (server dry run)
+[exit_code=0]
+
+[2026-11-22T10:18:52.873224+00:00] apply
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 apply -f k8s/app.yaml
+configmap/oleinikov-iris-config unchanged
+deployment.apps/oleinikov-iris unchanged
+service/oleinikov-iris unchanged
+[exit_code=0]
+
+[2026-11-22T10:18:53.163597+00:00] rollout
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 rollout status deploy/oleinikov-iris --timeout=60s
+deployment "oleinikov-iris" successfully rolled out
+[exit_code=0]
+
+[2026-11-22T10:18:53.764881+00:00] resources
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get cm,deploy,pods,svc -l app.kubernetes.io/instance=oleinikov-iris
+NAME                              DATA   AGE
+configmap/oleinikov-iris-config   2      33m
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/oleinikov-iris   1/1     1            1           33m
+
+NAME                                 READY   STATUS    RESTARTS   AGE
+pod/oleinikov-iris-f5658d7b8-t84vc   1/1     Running   0          33m
+
+NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/oleinikov-iris   ClusterIP   10.101.103.123   <none>        80/TCP    33m
+[exit_code=0]
+
+[2026-11-22T10:18:54.141890+00:00] configmap
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get cm oleinikov-iris-config -o 'jsonpath={.data}{"\n"}'
+{"MODEL_PATH":"/app/model.joblib","MODEL_VERSION":"iris-v1"}
+[exit_code=0]
+
+[2026-11-22T10:18:54.421193+00:00] pod-image
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get pods -l app.kubernetes.io/instance=oleinikov-iris -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{.spec.containers[0].image}{"\n"}{.status.containerStatuses[0].imageID}{"\n"}{end}'
+oleinikov-iris-f5658d7b8-t84vc
+docker.io/ndreuu/oleinikov-iris:v1
+docker.io/ndreuu/oleinikov-iris@sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b
+[exit_code=0]
+
+[2026-11-22T10:18:54.623291+00:00] endpoints
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get endpointslices -l kubernetes.io/service-name=oleinikov-iris
+NAME                   ADDRESSTYPE   PORTS   ENDPOINTS   AGE
+oleinikov-iris-42szt   IPv4          8000    10.1.0.58   33m
+[exit_code=0]
+
+[2026-11-22T10:18:56.452078+00:00] port-forward
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ kubectl --context=itmo-student-13 -n itmo-student-13 port-forward svc/oleinikov-iris --address=127.0.0.1 8000:80
+Forwarding from 127.0.0.1:8000 -> 8000
+Handling connection for 8000
+Handling connection for 8000
+Handling connection for 8000
+Handling connection for 8000
+Handling connection for 8000
+Handling connection for 8000
+[exit_code=0]
+
+[2026-11-22T10:18:55.684885+00:00] k8s-live
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' http://127.0.0.1:8000/live
+{"status":"alive"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:18:55.872927+00:00] k8s-health
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' http://127.0.0.1:8000/health
+{"status":"ready","model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:18:56.061760+00:00] k8s-setosa
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{"features":[5.1,3.5,1.4,0.2]}'
+{"class_id":0,"model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:18:56.252265+00:00] k8s-versicolor
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{"features":[7.0,3.2,4.7,1.4]}'
+{"class_id":1,"model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:18:56.446181+00:00] k8s-virginica
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{"features":[6.3,3.3,6.0,2.5]}'
+{"class_id":2,"model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:20:25.982787+00:00] registry-public
+Host: MacBook (macOS), локально
+CWD: /Users/andrew/Projects/mlops/lab1/ml-service
+$ .venv/bin/python -c 'import json,urllib.request; d=json.load(urllib.request.urlopen("https://hub.docker.com/v2/repositories/ndreuu/oleinikov-iris/", timeout=20)); print(json.dumps({k:d[k] for k in ("namespace","name","is_private")}, indent=2))'
+{
+  "namespace": "ndreuu",
+  "name": "oleinikov-iris",
+  "is_private": false
+}
+[exit_code=0]

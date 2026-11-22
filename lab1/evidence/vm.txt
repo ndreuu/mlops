@@ -1,0 +1,364 @@
+[2026-11-22T10:17:55.838854+00:00] docker-version
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker version --format 'Client={{.Client.Version}} Server={{.Server.Version}}'
+Client=29.9.3 Server=29.9.3
+[exit_code=0]
+
+[2026-11-22T10:17:56.165574+00:00] helper
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ which docker-credential-pass
+/usr/local/bin/docker-credential-pass
+[exit_code=0]
+
+[2026-11-22T10:17:56.544312+00:00] creds-store
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ python3 -c 'import json,pathlib; c=json.loads((pathlib.Path.home()/".docker/config.json").read_text()); print(json.dumps({"credsStore":c.get("credsStore")}))'
+{"credsStore": "pass"}
+[exit_code=0]
+
+[2026-11-22T10:17:56.877707+00:00] pass-gpg-id
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ cat /home/oleinikov/.password-store/.gpg-id
+F2DA2108503EB840B93109E2DC0D45A1EF6B420D
+[exit_code=0]
+
+[2026-11-22T10:17:57.290132+00:00] pass-init
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ pass init F2DA2108503EB840B93109E2DC0D45A1EF6B420D
+Password store initialized for F2DA2108503EB840B93109E2DC0D45A1EF6B420D
+[exit_code=0]
+
+[2026-11-22T10:17:57.634015+00:00] pass-list
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ pass ls
+Password Store
+└── docker-credential-helpers
+    ├── aHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEv
+    │   └── ndreuu
+    ├── aHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEvYWNjZXNzLXRva2Vu
+    │   └── ndreuu
+    └── aHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEvcmVmcmVzaC10b2tlbg==
+        └── ndreuu
+[exit_code=0]
+
+[2026-11-22T10:17:57.967803+00:00] credential-list
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker-credential-pass list
+{"https://index.docker.io/v1/":"ndreuu","https://index.docker.io/v1/access-token":"ndreuu","https://index.docker.io/v1/refresh-token":"ndreuu"}
+[exit_code=0]
+
+[2026-11-22T10:18:44.188238+00:00] docker-login
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker login
+Authenticating with existing credentials... [Username: ndreuu]
+
+ Info -> To login with a different account, run 'docker logout' followed by 'docker login'
+
+
+Login Succeeded
+[exit_code=0]
+
+[2026-11-22T10:18:46.833065+00:00] docker-build
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker build --pull=false --progress=plain -t oleinikov-iris:proof-v1 .
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 696B done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 ...
+
+#3 [auth] library/python:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 1.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.1s
+
+#5 [builder 1/4] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 531B done
+#6 DONE 0.1s
+
+#7 [stage-1 4/9] COPY --from=builder /wheels /wheels
+#7 CACHED
+
+#8 [stage-1 6/9] RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt     && rm -rf /wheels
+#8 CACHED
+
+#9 [stage-1 5/9] COPY requirements.txt .
+#9 CACHED
+
+#10 [stage-1 8/9] COPY --chown=app:app train.py .
+#10 CACHED
+
+#11 [builder 2/4] WORKDIR /build
+#11 CACHED
+
+#12 [stage-1 7/9] COPY --chown=app:app app ./app
+#12 CACHED
+
+#13 [stage-1 2/9] RUN addgroup --system app && adduser --system --ingroup app --uid 10001 app
+#13 CACHED
+
+#14 [stage-1 3/9] WORKDIR /app
+#14 CACHED
+
+#15 [builder 3/4] COPY requirements.txt .
+#15 CACHED
+
+#16 [builder 4/4] RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+#16 CACHED
+
+#17 [stage-1 9/9] RUN python train.py
+#17 CACHED
+
+#18 exporting to image
+#18 exporting layers done
+#18 writing image sha256:3576c5eb3ed11a7c0a2d2451775c1bfb7cb58d43ffbfa4c095400b9196d311ae 0.0s done
+#18 naming to docker.io/library/oleinikov-iris:proof-v1 0.1s done
+#18 DONE 0.1s
+[exit_code=0]
+
+[2026-11-22T10:19:35.990460+00:00] image-tags
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker image inspect docker.io/ndreuu/oleinikov-iris:v1 --format 'Tags={{json .RepoTags}}
+ID={{.Id}}
+Platform={{.Os}}/{{.Architecture}}
+User={{.Config.User}}'
+Tags=["oleinikov-iris:proof-v1","oleinikov-iris:v1","ndreuu/oleinikov-iris:v1"]
+ID=sha256:3576c5eb3ed11a7c0a2d2451775c1bfb7cb58d43ffbfa4c095400b9196d311ae
+Platform=linux/amd64
+User=10001
+[exit_code=0]
+
+[2026-11-22T10:20:25.625933+00:00] tag-published-image
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker tag oleinikov-iris:proof-v1 docker.io/ndreuu/oleinikov-iris:v1
+[exit_code=0]
+
+[2026-11-22T10:18:50.391689+00:00] docker-push
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker push docker.io/ndreuu/oleinikov-iris:v1
+The push refers to repository [docker.io/ndreuu/oleinikov-iris]
+0aa1e843fb2b: Preparing
+93ac36d5a89b: Preparing
+4df771ead53d: Preparing
+d1982e544bd1: Preparing
+e81b40755204: Preparing
+8db54932ffaa: Preparing
+5f6f6c2f50ed: Preparing
+6a9352455443: Preparing
+340931a1d986: Preparing
+96a69f98ae07: Preparing
+3dc3efdf0110: Preparing
+dd57f90311a2: Preparing
+8db54932ffaa: Waiting
+5f6f6c2f50ed: Waiting
+6a9352455443: Waiting
+340931a1d986: Waiting
+96a69f98ae07: Waiting
+3dc3efdf0110: Waiting
+dd57f90311a2: Waiting
+e81b40755204: Layer already exists
+d1982e544bd1: Layer already exists
+0aa1e843fb2b: Layer already exists
+93ac36d5a89b: Layer already exists
+4df771ead53d: Layer already exists
+8db54932ffaa: Layer already exists
+5f6f6c2f50ed: Layer already exists
+6a9352455443: Layer already exists
+340931a1d986: Layer already exists
+96a69f98ae07: Layer already exists
+3dc3efdf0110: Layer already exists
+dd57f90311a2: Layer already exists
+v1: digest: sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b size: 2828
+[exit_code=0]
+
+[2026-11-22T10:18:52.382662+00:00] registry-manifest
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker manifest inspect --verbose docker.io/ndreuu/oleinikov-iris:v1
+{
+	"Ref": "docker.io/ndreuu/oleinikov-iris:v1",
+	"Descriptor": {
+		"mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+		"digest": "sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b",
+		"size": 2828,
+		"platform": {
+			"architecture": "amd64",
+			"os": "linux"
+		}
+	},
+	"Raw": "ewogICAic2NoZW1hVmVyc2lvbiI6IDIsCiAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5kaXN0cmlidXRpb24ubWFuaWZlc3QudjIranNvbiIsCiAgICJjb25maWciOiB7CiAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5jb250YWluZXIuaW1hZ2UudjEranNvbiIsCiAgICAgICJzaXplIjogODMyOCwKICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6MzU3NmM1ZWIzZWQxMWE3YzBhMmQyNDUxNzc1YzFiZmI3Y2I1OGQ0M2ZmYmZhNGMwOTU0MDBiOTE5NmQzMTFhZSIKICAgfSwKICAgImxheWVycyI6IFsKICAgICAgewogICAgICAgICAibWVkaWFUeXBlIjogImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLAogICAgICAgICAic2l6ZSI6IDI5ODU2MTMyLAogICAgICAgICAiZGlnZXN0IjogInNoYTI1NjozN2ZiODZjMmE3NjdiODhkNTAwYzY4NzIxOTVmODgwNzhmNjQ3NjVmZTBkMmY5Y2MzNzVjYzJlZmJkNGMwYTQxIgogICAgICB9LAogICAgICB7CiAgICAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsCiAgICAgICAgICJzaXplIjogMTI4OTc5MiwKICAgICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6NjhiY2VkOWUwYWZhNDQ3OWRmMTdjMzY0NmUyN2M3YzdlOWNlOWJhNzBjMGU2YzczYjY4MjY0ODdiODkwMzdkOSIKICAgICAgfSwKICAgICAgewogICAgICAgICAibWVkaWFUeXBlIjogImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLAogICAgICAgICAic2l6ZSI6IDEyMTIyNTUwLAogICAgICAgICAiZGlnZXN0IjogInNoYTI1NjoyZGM5OWQyZDBhMzlmY2UzMWUzNzYxNWViNGM5MzJlMTZkY2M0YzJiMGNlOTk5MzcxNDI4MDA4MWI1ZGJlMDg1IgogICAgICB9LAogICAgICB7CiAgICAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsCiAgICAgICAgICJzaXplIjogMjQ4LAogICAgICAgICAiZGlnZXN0IjogInNoYTI1NjowNWUwZWVlNTU3MmU5YzlmNTA0MDhhMjEzMjU5MDEzM2I4MzBhNjY4YTFjZjJmZjJiMTUwZjE5YzU3NzA3ZTJiIgogICAgICB9LAogICAgICB7CiAgICAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsCiAgICAgICAgICJzaXplIjogMTE1NiwKICAgICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6NTY2MDE5Yjk1MjUyZmY0NDRmOWE5YzUxOTRkMTAwZWM4ZDI5NmExZjRmMWQwMWIyMmYwYWI5YzRhNjUzNDhiMCIKICAgICAgfSwKICAgICAgewogICAgICAgICAibWVkaWFUeXBlIjogImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLAogICAgICAgICAic2l6ZSI6IDkzLAogICAgICAgICAiZGlnZXN0IjogInNoYTI1NjpjYTlkMmVkYWQyYWY1MzE1YzEwMDg2ZWNjNzI0YzhkYTc5NWY2ZDRjZWVmM2RhOWUyOWEwMzY1NTgyMThiZTljIgogICAgICB9LAogICAgICB7CiAgICAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsCiAgICAgICAgICJzaXplIjogNjM1MTc1MDcsCiAgICAgICAgICJkaWdlc3QiOiAic2hhMjU2OmM0M2Y5ZWMzZTZiYzU5ZWRkODg4OGI1NWUwODRjNDc3OWFkNDBkMGQwNTgxNWY0MDE0ODU3M2QzNmNhNmZmN2QiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAgIm1lZGlhVHlwZSI6ICJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwKICAgICAgICAgInNpemUiOiAyMDAsCiAgICAgICAgICJkaWdlc3QiOiAic2hhMjU2OmUwMjlhOGM4NzhiZjliMmU0M2M0MTBmZmE3MTgzNjdmODM2N2QyYzBjM2MxMGU5MGVmZGM2ZTg3NTg1OGNkOTAiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAgIm1lZGlhVHlwZSI6ICJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwKICAgICAgICAgInNpemUiOiA4NDM5NTM3MiwKICAgICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6ZWZmNDBlYmEwZWZjMDNiNzI2OTJkMTU4OTVkYTEzODYyYjE5NTcxYzI0ZmYwNTgxNzM3NTJiZDVhMGU1MzczZCIKICAgICAgfSwKICAgICAgewogICAgICAgICAibWVkaWFUeXBlIjogImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLAogICAgICAgICAic2l6ZSI6IDI1NjQsCiAgICAgICAgICJkaWdlc3QiOiAic2hhMjU2OmQ1NzhkNDNmNjVlNTY1ZWU3MDkyYjI3ZjYzODJmNDJjNGQ1NThiOWRmNzAyZTUwMGQxMTEzY2ZiMDQ5MzlhOTEiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAgIm1lZGlhVHlwZSI6ICJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwKICAgICAgICAgInNpemUiOiAzNzEsCiAgICAgICAgICJkaWdlc3QiOiAic2hhMjU2OjRjMjJhZWJhNjBmN2EwYWE3MTYyNmZjMjcwMGQ4NDJiZGVjNzJkYWU3OTRiZGY2Y2NjYmMyMDBlNzAyMTQ5ZjEiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAgIm1lZGlhVHlwZSI6ICJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwKICAgICAgICAgInNpemUiOiAxMzcxNywKICAgICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6MTQ5ZjhmN2QyYjM4YmM0MmFiYjFmMGY1MmRkZTNhM2U0YzQ0MjAwY2NmOGVhNjY4YjdiYjZkMTUxYTllMDM3OSIKICAgICAgfQogICBdCn0=",
+	"SchemaV2Manifest": {
+		"schemaVersion": 2,
+		"mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+		"config": {
+			"mediaType": "application/vnd.docker.container.image.v1+json",
+			"size": 8328,
+			"digest": "sha256:3576c5eb3ed11a7c0a2d2451775c1bfb7cb58d43ffbfa4c095400b9196d311ae"
+		},
+		"layers": [
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 29856132,
+				"digest": "sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 1289792,
+				"digest": "sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 12122550,
+				"digest": "sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 248,
+				"digest": "sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 1156,
+				"digest": "sha256:566019b95252ff444f9a9c5194d100ec8d296a1f4f1d01b22f0ab9c4a65348b0"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 93,
+				"digest": "sha256:ca9d2edad2af5315c10086ecc724c8da795f6d4ceef3da9e29a036558218be9c"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 63517507,
+				"digest": "sha256:c43f9ec3e6bc59edd8888b55e084c4779ad40d0d05815f40148573d36ca6ff7d"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 200,
+				"digest": "sha256:e029a8c878bf9b2e43c410ffa718367f8367d2c0c3c10e90efdc6e875858cd90"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 84395372,
+				"digest": "sha256:eff40eba0efc03b72692d15895da13862b19571c24ff058173752bd5a0e5373d"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 2564,
+				"digest": "sha256:d578d43f65e565ee7092b27f6382f42c4d558b9df702e500d1113cfb04939a91"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 371,
+				"digest": "sha256:4c22aeba60f7a0aa71626fc2700d842bdec72dae794bdf6cccbc200e702149f1"
+			},
+			{
+				"mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+				"size": 13717,
+				"digest": "sha256:149f8f7d2b38bc42abb1f0f52dde3a3e4c44200ccf8ea668b7bb6d151a9e0379"
+			}
+		]
+	}
+}
+[exit_code=0]
+
+[2026-11-22T10:18:52.750632+00:00] image-digest
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker image inspect docker.io/ndreuu/oleinikov-iris:v1 --format '{{json .RepoDigests}}'
+["ndreuu/oleinikov-iris@sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b"]
+[exit_code=0]
+
+[2026-11-22T10:19:37.817563+00:00] container-run-ready
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker run --detach --rm --name oleinikov-iris-proof -p 127.0.0.1:18000:8000 docker.io/ndreuu/oleinikov-iris:v1
+7319b05916fcd01aca5446743ca7a55815153cdfb2295b8c8f4fbb97d46166d4
+[exit_code=0]
+
+[2026-11-22T10:19:42.405135+00:00] container-live
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ curl -fsS --retry 10 --retry-all-errors --retry-delay 1 --max-time 15 -w '
+HTTP %{http_code}
+' http://127.0.0.1:18000/live
+curl: (56) Recv failure: Connection reset by peer
+curl: (56) Recv failure: Connection reset by peer
+curl: (56) Recv failure: Connection reset by peer
+curl: (56) Recv failure: Connection reset by peer
+{"status":"alive"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:19:42.760694+00:00] container-health
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ curl -fsS --retry 10 --retry-all-errors --retry-delay 1 --max-time 15 -w '
+HTTP %{http_code}
+' http://127.0.0.1:18000/health
+{"status":"ready","model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:19:43.123658+00:00] container-setosa
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' -X POST http://127.0.0.1:18000/predict -H 'content-type: application/json' -d '{"features":[5.1,3.5,1.4,0.2]}'
+{"class_id":0,"model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:19:43.486934+00:00] container-virginica
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ curl -fsS --max-time 15 -w '
+HTTP %{http_code}
+' -X POST http://127.0.0.1:18000/predict -H 'content-type: application/json' -d '{"features":[6.3,3.3,6.0,2.5]}'
+{"class_id":2,"model_version":"iris-v1"}
+HTTP 200
+[exit_code=0]
+
+[2026-11-22T10:19:43.866331+00:00] container-logs
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker logs oleinikov-iris-proof
+INFO:     172.17.0.1:42574 - "GET /live HTTP/1.1" 200 OK
+INFO:     172.17.0.1:42584 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.17.0.1:42588 - "POST /predict HTTP/1.1" 200 OK
+INFO:     172.17.0.1:42602 - "POST /predict HTTP/1.1" 200 OK
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+[exit_code=0]
+
+[2026-11-22T10:19:45.806447+00:00] container-stop-ready
+Host: Учебная ВМ (Debian), ssh mlops, пользователь oleinikov
+CWD: /home/oleinikov/projects/mlops/lab1/ml-service
+$ docker stop oleinikov-iris-proof
+oleinikov-iris-proof
+[exit_code=0]

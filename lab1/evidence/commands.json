@@ -1,0 +1,518 @@
+[
+  {
+    "id": "python",
+    "time": "2026-11-22T10:17:53.323112+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": ".venv/bin/python --version",
+    "output": "Python 3.12.16\n",
+    "exit_code": 0
+  },
+  {
+    "id": "dependency-versions",
+    "time": "2026-11-22T10:20:25.715900+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": ".venv/bin/python -c 'from importlib.metadata import version; [print(f\"{p}=={version(p)}\") for p in (\"fastapi\",\"uvicorn\",\"scikit-learn\",\"joblib\")]'",
+    "output": "fastapi==0.116.1\nuvicorn==0.35.0\nscikit-learn==1.7.1\njoblib==1.5.1\n",
+    "exit_code": 0
+  },
+  {
+    "id": "train",
+    "time": "2026-11-22T10:17:54.444636+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": ".venv/bin/python train.py",
+    "output": "",
+    "exit_code": 0
+  },
+  {
+    "id": "model-file",
+    "time": "2026-11-22T10:17:54.449854+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "ls -lh model.joblib",
+    "output": "-rw-r--r--@ 1 andrew  staff    93K Nov 22 13:17 model.joblib\n",
+    "exit_code": 0
+  },
+  {
+    "id": "uvicorn",
+    "time": "2026-11-22T10:17:55.571473+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": ".venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000",
+    "output": "INFO:     Started server process [52699]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)\nINFO:     127.0.0.1:50206 - \"GET /live HTTP/1.1\" 200 OK\nINFO:     127.0.0.1:50207 - \"GET /health HTTP/1.1\" 200 OK\nINFO:     127.0.0.1:50208 - \"POST /predict HTTP/1.1\" 200 OK\nINFO:     127.0.0.1:50209 - \"POST /predict HTTP/1.1\" 200 OK\nINFO:     127.0.0.1:50210 - \"POST /predict HTTP/1.1\" 200 OK\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [52699]\n",
+    "exit_code": 0,
+    "background": true
+  },
+  {
+    "id": "local-live",
+    "time": "2026-11-22T10:17:55.303259+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' http://127.0.0.1:8000/live",
+    "output": "{\"status\":\"alive\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "local-health",
+    "time": "2026-11-22T10:17:55.310636+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' http://127.0.0.1:8000/health",
+    "output": "{\"status\":\"ready\",\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "local-setosa",
+    "time": "2026-11-22T10:17:55.318952+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{\"features\":[5.1,3.5,1.4,0.2]}'",
+    "output": "{\"class_id\":0,\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "local-versicolor",
+    "time": "2026-11-22T10:17:55.326258+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{\"features\":[7.0,3.2,4.7,1.4]}'",
+    "output": "{\"class_id\":1,\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "local-virginica",
+    "time": "2026-11-22T10:17:55.333516+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{\"features\":[6.3,3.3,6.0,2.5]}'",
+    "output": "{\"class_id\":2,\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "kubectl-version",
+    "time": "2026-11-22T10:17:55.677880+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl version --client=true",
+    "output": "Client Version: v1.37.2\nKustomize Version: v5.8.1\n",
+    "exit_code": 0
+  },
+  {
+    "id": "kubecm-version",
+    "time": "2026-11-22T10:18:38.014769+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubecm version",
+    "output": "\u001b[0;34mVersion\u001b[0m: \u001b[0;97m0.36.0\u001b[0m\n\u001b[0;34mGoOs\u001b[0m: \u001b[0;97mdarwin\u001b[0m\n\u001b[0;34mGoArch\u001b[0m: \u001b[0;97marm64\u001b[0m\n",
+    "exit_code": 0
+  },
+  {
+    "id": "kubecm-list",
+    "time": "2026-11-22T10:18:38.394597+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubecm list",
+    "output": "┌────────────┬────────────────────┬─────────────────┬────────────────────┬───────────────────────────────┬────────────────────┐\n│   CURRENT  │        NAME        │     CLUSTER     │        USER        │             SERVER            │      Namespace     │\n╞════════════╪════════════════════╪═════════════════╪════════════════════╪═══════════════════════════════╪════════════════════╡\n│      *     │   itmo-student-13  │   stud-cluster  │   itmo-student-13  │   https://37.18.117.109:6443  │   itmo-student-13  │\n└────────────┴────────────────────┴─────────────────┴────────────────────┴───────────────────────────────┴────────────────────┘\n\nCluster check succeeded!\nKubernetes version v1.36.4\nKubernetes master is running at https://37.18.117.109:6443\n(Error reporting can be ignored and does not affect usage.)\n",
+    "exit_code": 0
+  },
+  {
+    "id": "kube-permissions",
+    "time": "2026-11-22T10:18:38.400825+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "stat -f '%Sp %N' /Users/andrew/.kube /Users/andrew/.kube/config /Users/andrew/.kube/itmo-student-13.kubeconfig",
+    "output": "drwx------ /Users/andrew/.kube\n-rw------- /Users/andrew/.kube/config\n-rw------- /Users/andrew/.kube/itmo-student-13.kubeconfig\n",
+    "exit_code": 0
+  },
+  {
+    "id": "context",
+    "time": "2026-11-22T10:18:38.448840+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl config current-context",
+    "output": "itmo-student-13\n",
+    "exit_code": 0
+  },
+  {
+    "id": "context-namespace",
+    "time": "2026-11-22T10:18:38.471953+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl config view --minify -o 'jsonpath={.contexts[0].context.namespace}{\"\\n\"}'",
+    "output": "itmo-student-13\n",
+    "exit_code": 0
+  },
+  {
+    "id": "rbac-deployments",
+    "time": "2026-11-22T10:18:39.011140+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create deployments",
+    "output": "yes\n",
+    "exit_code": 0
+  },
+  {
+    "id": "rbac-services",
+    "time": "2026-11-22T10:18:39.624934+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create services",
+    "output": "yes\n",
+    "exit_code": 0
+  },
+  {
+    "id": "rbac-configmaps",
+    "time": "2026-11-22T10:18:40.090544+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create configmaps",
+    "output": "yes\n",
+    "exit_code": 0
+  },
+  {
+    "id": "rbac-original-namespace",
+    "time": "2026-11-22T10:18:40.524499+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n mlops-students auth can-i create deployments",
+    "output": "no\n",
+    "exit_code": 1
+  },
+  {
+    "id": "manifest",
+    "time": "2026-11-22T10:18:40.530935+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "cat k8s/app.yaml",
+    "output": "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: oleinikov-iris-config\n  namespace: itmo-student-13\n  labels:\n    app.kubernetes.io/name: iris-api\n    app.kubernetes.io/instance: oleinikov-iris\ndata:\n  MODEL_VERSION: iris-v1\n  MODEL_PATH: /app/model.joblib\n---\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: oleinikov-iris\n  namespace: itmo-student-13\n  labels:\n    app.kubernetes.io/name: iris-api\n    app.kubernetes.io/instance: oleinikov-iris\nspec:\n  replicas: 1\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxUnavailable: 0\n      maxSurge: 1\n  selector:\n    matchLabels:\n      app.kubernetes.io/name: iris-api\n      app.kubernetes.io/instance: oleinikov-iris\n  template:\n    metadata:\n      labels:\n        app.kubernetes.io/name: iris-api\n        app.kubernetes.io/instance: oleinikov-iris\n    spec:\n      securityContext:\n        runAsNonRoot: true\n        runAsUser: 10001\n        seccompProfile:\n          type: RuntimeDefault\n      containers:\n        - name: api\n          image: docker.io/ndreuu/oleinikov-iris:v1\n          imagePullPolicy: IfNotPresent\n          envFrom:\n            - configMapRef:\n                name: oleinikov-iris-config\n          ports:\n            - name: http\n              containerPort: 8000\n          readinessProbe:\n            httpGet:\n              path: /health\n              port: http\n            initialDelaySeconds: 5\n            periodSeconds: 5\n          livenessProbe:\n            httpGet:\n              path: /live\n              port: http\n            initialDelaySeconds: 15\n            periodSeconds: 10\n          resources:\n            requests:\n              cpu: 100m\n              memory: 128Mi\n            limits:\n              cpu: 500m\n              memory: 512Mi\n          securityContext:\n            allowPrivilegeEscalation: false\n            capabilities:\n              drop: [\"ALL\"]\n            readOnlyRootFilesystem: true\n---\napiVersion: v1\nkind: Service\nmetadata:\n  name: oleinikov-iris\n  namespace: itmo-student-13\n  labels:\n    app.kubernetes.io/name: iris-api\n    app.kubernetes.io/instance: oleinikov-iris\nspec:\n  type: ClusterIP\n  selector:\n    app.kubernetes.io/name: iris-api\n    app.kubernetes.io/instance: oleinikov-iris\n  ports:\n    - name: http\n      port: 80\n      targetPort: http\n",
+    "exit_code": 0
+  },
+  {
+    "id": "dry-run-client",
+    "time": "2026-11-22T10:18:50.252167+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 apply --dry-run=client -f k8s/app.yaml",
+    "output": "configmap/oleinikov-iris-config unchanged (dry run)\ndeployment.apps/oleinikov-iris unchanged (dry run)\nservice/oleinikov-iris unchanged (dry run)\n",
+    "exit_code": 0
+  },
+  {
+    "id": "dry-run-server",
+    "time": "2026-11-22T10:18:51.681907+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 apply --dry-run=server -f k8s/app.yaml",
+    "output": "configmap/oleinikov-iris-config unchanged (server dry run)\ndeployment.apps/oleinikov-iris unchanged (server dry run)\nservice/oleinikov-iris unchanged (server dry run)\n",
+    "exit_code": 0
+  },
+  {
+    "id": "apply",
+    "time": "2026-11-22T10:18:52.873224+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 apply -f k8s/app.yaml",
+    "output": "configmap/oleinikov-iris-config unchanged\ndeployment.apps/oleinikov-iris unchanged\nservice/oleinikov-iris unchanged\n",
+    "exit_code": 0
+  },
+  {
+    "id": "rollout",
+    "time": "2026-11-22T10:18:53.163597+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 rollout status deploy/oleinikov-iris --timeout=60s",
+    "output": "deployment \"oleinikov-iris\" successfully rolled out\n",
+    "exit_code": 0
+  },
+  {
+    "id": "resources",
+    "time": "2026-11-22T10:18:53.764881+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 get cm,deploy,pods,svc -l app.kubernetes.io/instance=oleinikov-iris",
+    "output": "NAME                              DATA   AGE\nconfigmap/oleinikov-iris-config   2      33m\n\nNAME                             READY   UP-TO-DATE   AVAILABLE   AGE\ndeployment.apps/oleinikov-iris   1/1     1            1           33m\n\nNAME                                 READY   STATUS    RESTARTS   AGE\npod/oleinikov-iris-f5658d7b8-t84vc   1/1     Running   0          33m\n\nNAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE\nservice/oleinikov-iris   ClusterIP   10.101.103.123   <none>        80/TCP    33m\n",
+    "exit_code": 0
+  },
+  {
+    "id": "configmap",
+    "time": "2026-11-22T10:18:54.141890+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 get cm oleinikov-iris-config -o 'jsonpath={.data}{\"\\n\"}'",
+    "output": "{\"MODEL_PATH\":\"/app/model.joblib\",\"MODEL_VERSION\":\"iris-v1\"}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "pod-image",
+    "time": "2026-11-22T10:18:54.421193+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 get pods -l app.kubernetes.io/instance=oleinikov-iris -o 'jsonpath={range .items[*]}{.metadata.name}{\"\\n\"}{.spec.containers[0].image}{\"\\n\"}{.status.containerStatuses[0].imageID}{\"\\n\"}{end}'",
+    "output": "oleinikov-iris-f5658d7b8-t84vc\ndocker.io/ndreuu/oleinikov-iris:v1\ndocker.io/ndreuu/oleinikov-iris@sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b\n",
+    "exit_code": 0
+  },
+  {
+    "id": "endpoints",
+    "time": "2026-11-22T10:18:54.623291+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 get endpointslices -l kubernetes.io/service-name=oleinikov-iris",
+    "output": "NAME                   ADDRESSTYPE   PORTS   ENDPOINTS   AGE\noleinikov-iris-42szt   IPv4          8000    10.1.0.58   33m\n",
+    "exit_code": 0
+  },
+  {
+    "id": "port-forward",
+    "time": "2026-11-22T10:18:56.452078+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 port-forward svc/oleinikov-iris --address=127.0.0.1 8000:80",
+    "output": "Forwarding from 127.0.0.1:8000 -> 8000\nHandling connection for 8000\nHandling connection for 8000\nHandling connection for 8000\nHandling connection for 8000\nHandling connection for 8000\nHandling connection for 8000\n",
+    "exit_code": 0,
+    "background": true,
+    "stopped_by": "SIGINT после curl"
+  },
+  {
+    "id": "k8s-live",
+    "time": "2026-11-22T10:18:55.684885+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' http://127.0.0.1:8000/live",
+    "output": "{\"status\":\"alive\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "k8s-health",
+    "time": "2026-11-22T10:18:55.872927+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' http://127.0.0.1:8000/health",
+    "output": "{\"status\":\"ready\",\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "k8s-setosa",
+    "time": "2026-11-22T10:18:56.061760+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{\"features\":[5.1,3.5,1.4,0.2]}'",
+    "output": "{\"class_id\":0,\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "k8s-versicolor",
+    "time": "2026-11-22T10:18:56.252265+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{\"features\":[7.0,3.2,4.7,1.4]}'",
+    "output": "{\"class_id\":1,\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "k8s-virginica",
+    "time": "2026-11-22T10:18:56.446181+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' -X POST http://127.0.0.1:8000/predict -H 'content-type: application/json' -d '{\"features\":[6.3,3.3,6.0,2.5]}'",
+    "output": "{\"class_id\":2,\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "registry-public",
+    "time": "2026-11-22T10:20:25.982787+00:00",
+    "host": "MacBook (macOS), локально",
+    "cwd": "/Users/andrew/Projects/mlops/lab1/ml-service",
+    "command": ".venv/bin/python -c 'import json,urllib.request; d=json.load(urllib.request.urlopen(\"https://hub.docker.com/v2/repositories/ndreuu/oleinikov-iris/\", timeout=20)); print(json.dumps({k:d[k] for k in (\"namespace\",\"name\",\"is_private\")}, indent=2))'",
+    "output": "{\n  \"namespace\": \"ndreuu\",\n  \"name\": \"oleinikov-iris\",\n  \"is_private\": false\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "docker-version",
+    "time": "2026-11-22T10:17:55.838854+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker version --format 'Client={{.Client.Version}} Server={{.Server.Version}}'",
+    "output": "Client=29.9.3 Server=29.9.3\n",
+    "exit_code": 0
+  },
+  {
+    "id": "helper",
+    "time": "2026-11-22T10:17:56.165574+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "which docker-credential-pass",
+    "output": "/usr/local/bin/docker-credential-pass\n",
+    "exit_code": 0
+  },
+  {
+    "id": "creds-store",
+    "time": "2026-11-22T10:17:56.544312+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "python3 -c 'import json,pathlib; c=json.loads((pathlib.Path.home()/\".docker/config.json\").read_text()); print(json.dumps({\"credsStore\":c.get(\"credsStore\")}))'",
+    "output": "{\"credsStore\": \"pass\"}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "pass-gpg-id",
+    "time": "2026-11-22T10:17:56.877707+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "cat /home/oleinikov/.password-store/.gpg-id",
+    "output": "F2DA2108503EB840B93109E2DC0D45A1EF6B420D\n",
+    "exit_code": 0
+  },
+  {
+    "id": "pass-init",
+    "time": "2026-11-22T10:17:57.290132+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "pass init F2DA2108503EB840B93109E2DC0D45A1EF6B420D",
+    "output": "Password store initialized for F2DA2108503EB840B93109E2DC0D45A1EF6B420D\n",
+    "exit_code": 0
+  },
+  {
+    "id": "pass-list",
+    "time": "2026-11-22T10:17:57.634015+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "pass ls",
+    "output": "Password Store\n└── docker-credential-helpers\n    ├── aHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEv\n    │   └── ndreuu\n    ├── aHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEvYWNjZXNzLXRva2Vu\n    │   └── ndreuu\n    └── aHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEvcmVmcmVzaC10b2tlbg==\n        └── ndreuu\n",
+    "exit_code": 0
+  },
+  {
+    "id": "credential-list",
+    "time": "2026-11-22T10:17:57.967803+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker-credential-pass list",
+    "output": "{\"https://index.docker.io/v1/\":\"ndreuu\",\"https://index.docker.io/v1/access-token\":\"ndreuu\",\"https://index.docker.io/v1/refresh-token\":\"ndreuu\"}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "docker-login",
+    "time": "2026-11-22T10:18:44.188238+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker login",
+    "output": "Authenticating with existing credentials... [Username: ndreuu]\n\n Info -> To login with a different account, run 'docker logout' followed by 'docker login'\n\n\nLogin Succeeded\n",
+    "exit_code": 0
+  },
+  {
+    "id": "docker-build",
+    "time": "2026-11-22T10:18:46.833065+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker build --pull=false --progress=plain -t oleinikov-iris:proof-v1 .",
+    "output": "#0 building with \"default\" instance using docker driver\n\n#1 [internal] load build definition from Dockerfile\n#1 transferring dockerfile: 696B done\n#1 DONE 0.1s\n\n#2 [internal] load metadata for docker.io/library/python:3.12-slim\n#2 ...\n\n#3 [auth] library/python:pull token for registry-1.docker.io\n#3 DONE 0.0s\n\n#2 [internal] load metadata for docker.io/library/python:3.12-slim\n#2 DONE 1.1s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 2B done\n#4 DONE 0.1s\n\n#5 [builder 1/4] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 531B done\n#6 DONE 0.1s\n\n#7 [stage-1 4/9] COPY --from=builder /wheels /wheels\n#7 CACHED\n\n#8 [stage-1 6/9] RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt     && rm -rf /wheels\n#8 CACHED\n\n#9 [stage-1 5/9] COPY requirements.txt .\n#9 CACHED\n\n#10 [stage-1 8/9] COPY --chown=app:app train.py .\n#10 CACHED\n\n#11 [builder 2/4] WORKDIR /build\n#11 CACHED\n\n#12 [stage-1 7/9] COPY --chown=app:app app ./app\n#12 CACHED\n\n#13 [stage-1 2/9] RUN addgroup --system app && adduser --system --ingroup app --uid 10001 app\n#13 CACHED\n\n#14 [stage-1 3/9] WORKDIR /app\n#14 CACHED\n\n#15 [builder 3/4] COPY requirements.txt .\n#15 CACHED\n\n#16 [builder 4/4] RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt\n#16 CACHED\n\n#17 [stage-1 9/9] RUN python train.py\n#17 CACHED\n\n#18 exporting to image\n#18 exporting layers done\n#18 writing image sha256:3576c5eb3ed11a7c0a2d2451775c1bfb7cb58d43ffbfa4c095400b9196d311ae 0.0s done\n#18 naming to docker.io/library/oleinikov-iris:proof-v1 0.1s done\n#18 DONE 0.1s\n",
+    "exit_code": 0
+  },
+  {
+    "id": "image-tags",
+    "time": "2026-11-22T10:19:35.990460+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker image inspect docker.io/ndreuu/oleinikov-iris:v1 --format 'Tags={{json .RepoTags}}\nID={{.Id}}\nPlatform={{.Os}}/{{.Architecture}}\nUser={{.Config.User}}'",
+    "output": "Tags=[\"oleinikov-iris:proof-v1\",\"oleinikov-iris:v1\",\"ndreuu/oleinikov-iris:v1\"]\nID=sha256:3576c5eb3ed11a7c0a2d2451775c1bfb7cb58d43ffbfa4c095400b9196d311ae\nPlatform=linux/amd64\nUser=10001\n",
+    "exit_code": 0
+  },
+  {
+    "id": "tag-published-image",
+    "time": "2026-11-22T10:20:25.625933+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker tag oleinikov-iris:proof-v1 docker.io/ndreuu/oleinikov-iris:v1",
+    "output": "",
+    "exit_code": 0
+  },
+  {
+    "id": "docker-push",
+    "time": "2026-11-22T10:18:50.391689+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker push docker.io/ndreuu/oleinikov-iris:v1",
+    "output": "The push refers to repository [docker.io/ndreuu/oleinikov-iris]\n0aa1e843fb2b: Preparing\n93ac36d5a89b: Preparing\n4df771ead53d: Preparing\nd1982e544bd1: Preparing\ne81b40755204: Preparing\n8db54932ffaa: Preparing\n5f6f6c2f50ed: Preparing\n6a9352455443: Preparing\n340931a1d986: Preparing\n96a69f98ae07: Preparing\n3dc3efdf0110: Preparing\ndd57f90311a2: Preparing\n8db54932ffaa: Waiting\n5f6f6c2f50ed: Waiting\n6a9352455443: Waiting\n340931a1d986: Waiting\n96a69f98ae07: Waiting\n3dc3efdf0110: Waiting\ndd57f90311a2: Waiting\ne81b40755204: Layer already exists\nd1982e544bd1: Layer already exists\n0aa1e843fb2b: Layer already exists\n93ac36d5a89b: Layer already exists\n4df771ead53d: Layer already exists\n8db54932ffaa: Layer already exists\n5f6f6c2f50ed: Layer already exists\n6a9352455443: Layer already exists\n340931a1d986: Layer already exists\n96a69f98ae07: Layer already exists\n3dc3efdf0110: Layer already exists\ndd57f90311a2: Layer already exists\nv1: digest: sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b size: 2828\n",
+    "exit_code": 0
+  },
+  {
+    "id": "registry-manifest",
+    "time": "2026-11-22T10:18:52.382662+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker manifest inspect --verbose docker.io/ndreuu/oleinikov-iris:v1",
+    "output": "{\n\t\"Ref\": \"docker.io/ndreuu/oleinikov-iris:v1\",\n\t\"Descriptor\": {\n\t\t\"mediaType\": \"application/vnd.docker.distribution.manifest.v2+json\",\n\t\t\"digest\": \"sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b\",\n\t\t\"size\": 2828,\n\t\t\"platform\": {\n\t\t\t\"architecture\": \"amd64\",\n\t\t\t\"os\": \"linux\"\n\t\t}\n\t},\n\t\"Raw\": \"ewogICAic2NoZW1hVmVyc2lvbiI6IDIsCiAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5kaXN0cmlidXRpb24ubWFuaWZlc3QudjIranNvbiIsCiAgICJjb25maWciOiB7CiAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5jb250YWluZXIuaW1hZ2UudjEranNvbiIsCiAgICAgICJzaXplIjogODMyOCwKICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6MzU3NmM1ZWIzZWQxMWE3YzBhMmQyNDUxNzc1YzFiZmI3Y2I1OGQ0M2ZmYmZhNGMwOTU0MDBiOTE5NmQzMTFhZSIKICAgfSwKICAgImxheWVycyI6IFsKICAgICAgewogICAgICAgICAibWVkaWFUeXBlIjogImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLAogICAgICAgICAic2l6ZSI6IDI5ODU2MTMyLAogICAgICAgICAiZGlnZXN0IjogInNoYTI1NjozN2ZiODZjMmE3NjdiODhkNTAwYzY4NzIxOTVmODgwNzhmNjQ3NjVmZTBkMmY5Y2MzNzVjYzJlZmJkNGMwYTQxIgogICAgICB9LAogICAgICB7CiAgICAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsCiAgICAgICAgICJzaXplIjogMTI4OTc5MiwKICAgICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6NjhiY2VkOWUwYWZhNDQ3OWRmMTdjMzY0NmUyN2M3YzdlOWNlOWJhNzBjMGU2YzczYjY4MjY0ODdiODkwMzdkOSIKICAgICAgfSwKICAgICAgewogICAgICAgICAibWVkaWFUeXBlIjogImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLAogICAgICAgICAic2l6ZSI6IDEyMTIyNTUwLAogICAgICAgICAiZGlnZXN0IjogInNoYTI1NjoyZGM5OWQyZDBhMzlmY2UzMWUzNzYxNWViNGM5MzJlMTZkY2M0YzJiMGNlOTk5MzcxNDI4MDA4MWI1ZGJlMDg1IgogICAgICB9LAogICAgICB7CiAgICAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsCiAgICAgICAgICJzaXplIjogMjQ4LAogICAgICAgICAiZGlnZXN0IjogInNoYTI1NjowNWUwZWVlNTU3MmU5YzlmNTA0MDhhMjEzMjU5MDEzM2I4MzBhNjY4YTFjZjJmZjJiMTUwZjE5YzU3NzA3ZTJiIgogICAgICB9LAogICAgICB7CiAgICAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsCiAgICAgICAgICJzaXplIjogMTE1NiwKICAgICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6NTY2MDE5Yjk1MjUyZmY0NDRmOWE5YzUxOTRkMTAwZWM4ZDI5NmExZjRmMWQwMWIyMmYwYWI5YzRhNjUzNDhiMCIKICAgICAgfSwKICAgICAgewogICAgICAgICAibWVkaWFUeXBlIjogImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLAogICAgICAgICAic2l6ZSI6IDkzLAogICAgICAgICAiZGlnZXN0IjogInNoYTI1NjpjYTlkMmVkYWQyYWY1MzE1YzEwMDg2ZWNjNzI0YzhkYTc5NWY2ZDRjZWVmM2RhOWUyOWEwMzY1NTgyMThiZTljIgogICAgICB9LAogICAgICB7CiAgICAgICAgICJtZWRpYVR5cGUiOiAiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsCiAgICAgICAgICJzaXplIjogNjM1MTc1MDcsCiAgICAgICAgICJkaWdlc3QiOiAic2hhMjU2OmM0M2Y5ZWMzZTZiYzU5ZWRkODg4OGI1NWUwODRjNDc3OWFkNDBkMGQwNTgxNWY0MDE0ODU3M2QzNmNhNmZmN2QiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAgIm1lZGlhVHlwZSI6ICJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwKICAgICAgICAgInNpemUiOiAyMDAsCiAgICAgICAgICJkaWdlc3QiOiAic2hhMjU2OmUwMjlhOGM4NzhiZjliMmU0M2M0MTBmZmE3MTgzNjdmODM2N2QyYzBjM2MxMGU5MGVmZGM2ZTg3NTg1OGNkOTAiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAgIm1lZGlhVHlwZSI6ICJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwKICAgICAgICAgInNpemUiOiA4NDM5NTM3MiwKICAgICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6ZWZmNDBlYmEwZWZjMDNiNzI2OTJkMTU4OTVkYTEzODYyYjE5NTcxYzI0ZmYwNTgxNzM3NTJiZDVhMGU1MzczZCIKICAgICAgfSwKICAgICAgewogICAgICAgICAibWVkaWFUeXBlIjogImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuaW1hZ2Uucm9vdGZzLmRpZmYudGFyLmd6aXAiLAogICAgICAgICAic2l6ZSI6IDI1NjQsCiAgICAgICAgICJkaWdlc3QiOiAic2hhMjU2OmQ1NzhkNDNmNjVlNTY1ZWU3MDkyYjI3ZjYzODJmNDJjNGQ1NThiOWRmNzAyZTUwMGQxMTEzY2ZiMDQ5MzlhOTEiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAgIm1lZGlhVHlwZSI6ICJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwKICAgICAgICAgInNpemUiOiAzNzEsCiAgICAgICAgICJkaWdlc3QiOiAic2hhMjU2OjRjMjJhZWJhNjBmN2EwYWE3MTYyNmZjMjcwMGQ4NDJiZGVjNzJkYWU3OTRiZGY2Y2NjYmMyMDBlNzAyMTQ5ZjEiCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAgIm1lZGlhVHlwZSI6ICJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmltYWdlLnJvb3Rmcy5kaWZmLnRhci5nemlwIiwKICAgICAgICAgInNpemUiOiAxMzcxNywKICAgICAgICAgImRpZ2VzdCI6ICJzaGEyNTY6MTQ5ZjhmN2QyYjM4YmM0MmFiYjFmMGY1MmRkZTNhM2U0YzQ0MjAwY2NmOGVhNjY4YjdiYjZkMTUxYTllMDM3OSIKICAgICAgfQogICBdCn0=\",\n\t\"SchemaV2Manifest\": {\n\t\t\"schemaVersion\": 2,\n\t\t\"mediaType\": \"application/vnd.docker.distribution.manifest.v2+json\",\n\t\t\"config\": {\n\t\t\t\"mediaType\": \"application/vnd.docker.container.image.v1+json\",\n\t\t\t\"size\": 8328,\n\t\t\t\"digest\": \"sha256:3576c5eb3ed11a7c0a2d2451775c1bfb7cb58d43ffbfa4c095400b9196d311ae\"\n\t\t},\n\t\t\"layers\": [\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 29856132,\n\t\t\t\t\"digest\": \"sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 1289792,\n\t\t\t\t\"digest\": \"sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 12122550,\n\t\t\t\t\"digest\": \"sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 248,\n\t\t\t\t\"digest\": \"sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 1156,\n\t\t\t\t\"digest\": \"sha256:566019b95252ff444f9a9c5194d100ec8d296a1f4f1d01b22f0ab9c4a65348b0\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 93,\n\t\t\t\t\"digest\": \"sha256:ca9d2edad2af5315c10086ecc724c8da795f6d4ceef3da9e29a036558218be9c\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 63517507,\n\t\t\t\t\"digest\": \"sha256:c43f9ec3e6bc59edd8888b55e084c4779ad40d0d05815f40148573d36ca6ff7d\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 200,\n\t\t\t\t\"digest\": \"sha256:e029a8c878bf9b2e43c410ffa718367f8367d2c0c3c10e90efdc6e875858cd90\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 84395372,\n\t\t\t\t\"digest\": \"sha256:eff40eba0efc03b72692d15895da13862b19571c24ff058173752bd5a0e5373d\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 2564,\n\t\t\t\t\"digest\": \"sha256:d578d43f65e565ee7092b27f6382f42c4d558b9df702e500d1113cfb04939a91\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 371,\n\t\t\t\t\"digest\": \"sha256:4c22aeba60f7a0aa71626fc2700d842bdec72dae794bdf6cccbc200e702149f1\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"mediaType\": \"application/vnd.docker.image.rootfs.diff.tar.gzip\",\n\t\t\t\t\"size\": 13717,\n\t\t\t\t\"digest\": \"sha256:149f8f7d2b38bc42abb1f0f52dde3a3e4c44200ccf8ea668b7bb6d151a9e0379\"\n\t\t\t}\n\t\t]\n\t}\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "image-digest",
+    "time": "2026-11-22T10:18:52.750632+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker image inspect docker.io/ndreuu/oleinikov-iris:v1 --format '{{json .RepoDigests}}'",
+    "output": "[\"ndreuu/oleinikov-iris@sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b\"]\n",
+    "exit_code": 0
+  },
+  {
+    "id": "container-run-ready",
+    "time": "2026-11-22T10:19:37.817563+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker run --detach --rm --name oleinikov-iris-proof -p 127.0.0.1:18000:8000 docker.io/ndreuu/oleinikov-iris:v1",
+    "output": "7319b05916fcd01aca5446743ca7a55815153cdfb2295b8c8f4fbb97d46166d4\n",
+    "exit_code": 0
+  },
+  {
+    "id": "container-live",
+    "time": "2026-11-22T10:19:42.405135+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --retry 10 --retry-all-errors --retry-delay 1 --max-time 15 -w '\nHTTP %{http_code}\n' http://127.0.0.1:18000/live",
+    "output": "curl: (56) Recv failure: Connection reset by peer\ncurl: (56) Recv failure: Connection reset by peer\ncurl: (56) Recv failure: Connection reset by peer\ncurl: (56) Recv failure: Connection reset by peer\n{\"status\":\"alive\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "container-health",
+    "time": "2026-11-22T10:19:42.760694+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --retry 10 --retry-all-errors --retry-delay 1 --max-time 15 -w '\nHTTP %{http_code}\n' http://127.0.0.1:18000/health",
+    "output": "{\"status\":\"ready\",\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "container-setosa",
+    "time": "2026-11-22T10:19:43.123658+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' -X POST http://127.0.0.1:18000/predict -H 'content-type: application/json' -d '{\"features\":[5.1,3.5,1.4,0.2]}'",
+    "output": "{\"class_id\":0,\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "container-virginica",
+    "time": "2026-11-22T10:19:43.486934+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "curl -fsS --max-time 15 -w '\nHTTP %{http_code}\n' -X POST http://127.0.0.1:18000/predict -H 'content-type: application/json' -d '{\"features\":[6.3,3.3,6.0,2.5]}'",
+    "output": "{\"class_id\":2,\"model_version\":\"iris-v1\"}\nHTTP 200\n",
+    "exit_code": 0
+  },
+  {
+    "id": "container-logs",
+    "time": "2026-11-22T10:19:43.866331+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker logs oleinikov-iris-proof",
+    "output": "INFO:     172.17.0.1:42574 - \"GET /live HTTP/1.1\" 200 OK\nINFO:     172.17.0.1:42584 - \"GET /health HTTP/1.1\" 200 OK\nINFO:     172.17.0.1:42588 - \"POST /predict HTTP/1.1\" 200 OK\nINFO:     172.17.0.1:42602 - \"POST /predict HTTP/1.1\" 200 OK\nINFO:     Started server process [1]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)\n",
+    "exit_code": 0
+  },
+  {
+    "id": "container-stop-ready",
+    "time": "2026-11-22T10:19:45.806447+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops, пользователь oleinikov",
+    "cwd": "/home/oleinikov/projects/mlops/lab1/ml-service",
+    "command": "docker stop oleinikov-iris-proof",
+    "output": "oleinikov-iris-proof\n",
+    "exit_code": 0
+  }
+]
