@@ -1,47 +1,86 @@
 # Состояние лабораторной №1
 
-Обновлено: 22 ноября 2026 года.
+Лабораторная выполнена и проверена 22 ноября 2026 года.
 
-## Выполнено
+## Чеклист сдачи
 
-- [x] Создан локальный git-репозиторий; исходники взяты из выданного `ml-service.zip`.
-- [x] На Mac установлены Python 3.12, `kubectl` и `kubecm`; создан каталог `~/.kube`.
-- [x] Установлены зависимости и обучена модель Iris.
-- [x] Проверено локальное API: `/health` возвращает `ready`, setosa → `0`, virginica → `2`.
-- [x] Исправлен Kubernetes-манифест: имена и labels, ссылки на ConfigMap, selectors, probes и порты.
-- [x] На учебной ВМ собран и проверен Docker-образ `oleinikov-iris:v1`.
-- [x] На ВМ инициализирован `pass`; в Docker задан `credsStore: pass` и установлен helper.
+- [x] Модель Iris обучена, локальные `train.py` и API работают.
+- [x] Образ собран на учебной ВМ и опубликован: `docker.io/ndreuu/oleinikov-iris:v1`.
+- [x] `pass` инициализирован; `docker login` на ВМ завершён успешно через браузер.
+- [x] В Docker задан `credsStore: pass`, установлен helper `docker-credential-pass`.
 - [x] Персональный kubeconfig импортирован через `kubecm` в `~/.kube/config` на Mac.
-- [x] Выбран контекст `itmo-student-13`; проверено TLS-подключение к API кластера.
-- [x] Назначенный namespace `itmo-student-13` указан во всех объектах манифеста.
-- [x] Проверены права: создание Deployment, Service и ConfigMap разрешено.
-- [x] Client и server dry-run прошли для ConfigMap, Deployment и Service в `itmo-student-13`.
+- [x] Проверены контекст, namespace `itmo-student-13` и права на ресурсы лабораторной.
+- [x] Манифест исправлен: уникальные имена, labels, selectors, ConfigMap, probes и порты.
+- [x] Client и server dry-run прошли; server dry-run повторён с окончательным образом.
+- [x] ConfigMap, Deployment и Service созданы в назначенном namespace.
+- [x] Deployment готов: `1/1`; под `Running`, на момент проверки — `0` перезапусков.
+- [x] Через `kubectl port-forward` проверены `/live`, `/health` и два предсказания.
+- [x] Digest образа в поде совпадает с digest опубликованного образа.
 
-Образ на ВМ: `linux/amd64`, пользователь контейнера `10001`.
+Namespace `itmo-student-13` указан в персональном kubeconfig и заменяет общий namespace из первоначальной методички.
+
+## Ресурсы
+
+| Ресурс | Имя |
+|---|---|
+| Контекст / namespace | `itmo-student-13` |
+| ConfigMap | `oleinikov-iris-config` |
+| Deployment | `oleinikov-iris` |
+| Service | `oleinikov-iris`, `ClusterIP`, `80 → 8000` |
+| Образ | `docker.io/ndreuu/oleinikov-iris:v1`, `linux/amd64` |
+| Версия модели | `iris-v1` |
+
+Публичный образ: [Docker Hub](https://hub.docker.com/r/ndreuu/oleinikov-iris).
+
+Digest в registry и в запущенном поде:
+
+```text
+sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b
+```
+
+Локальный image ID на учебной ВМ:
 
 ```text
 sha256:3576c5eb3ed11a7c0a2d2451775c1bfb7cb58d43ffbfa4c095400b9196d311ae
 ```
 
-При проверке контейнера получены ответы:
+Image ID обозначает конфигурацию образа, а registry digest — его manifest; это разные идентификаторы.
+
+## Проверка API в Kubernetes
+
+Через `kubectl port-forward svc/oleinikov-iris 8000:80` получены HTTP 200 и ответы:
 
 ```json
+{"status":"alive"}
 {"status":"ready","model_version":"iris-v1"}
 {"class_id":0,"model_version":"iris-v1"}
 {"class_id":2,"model_version":"iris-v1"}
 ```
 
-Тестовый контейнер удалён после проверки. Образ остался на ВМ. Для учебного `pass` создан отдельный GPG-ключ без passphrase, как разрешено методичкой.
+Полные результаты с запросами и именем проверенного пода: [verification.json](verification.json).
 
-## Осталось
+Временный port-forward остановлен после проверки. Сервис работает в Kubernetes. Для повторной проверки на Mac:
 
-- [ ] Указать свой Docker Hub login, выполнить `docker login` и `docker push`.
-- [ ] Подставить опубликованный образ в манифест; namespace уже подтверждён.
-- [ ] После подстановки опубликованного образа повторить server dry-run и применить манифест.
-- [ ] Дождаться готовности пода и проверить API через `port-forward`.
+```bash
+kubectl --context=itmo-student-13 -n itmo-student-13 port-forward svc/oleinikov-iris 8000:80
+```
 
-Kubeconfig установлен на Mac и хранится вне репозитория; на учебную ВМ он не копировался. Вход в registry не выполнен, образ в манифесте пока указан заглушкой. Dry-run не проверяет доступность образа в registry. В кластере ресурсы не создавались, сообщение о выполнении задания в чат курса не отправлено.
+В другом терминале:
 
-API кластера: `https://37.18.117.109:6443`, Kubernetes `v1.36.4`. Namespace `itmo-student-13` при подключении был пуст; доступная квота requests и limits — по `2600m` CPU и `4G` памяти. Примеры `hello.yaml` и `postgres.yaml` из архива доступа не применялись.
+```bash
+curl -fsS http://127.0.0.1:8000/health
+curl -fsS -X POST http://127.0.0.1:8000/predict \
+  -H 'content-type: application/json' \
+  -d '{"features":[5.1,3.5,1.4,0.2]}'
+curl -fsS -X POST http://127.0.0.1:8000/predict \
+  -H 'content-type: application/json' \
+  -d '{"features":[6.3,3.3,6.0,2.5]}'
+```
 
-Порядок продолжения: [README.md](README.md).
+## Хранение доступа
+
+Kubeconfig хранится на Mac вне репозитория; на ВМ он не копировался. Учётные данные Docker хранятся на ВМ через `pass`. Для учебного хранилища создан отдельный GPG-ключ без passphrase, как разрешено методичкой.
+
+Примеры `hello.yaml` и `postgres.yaml` из архива доступа не применялись. Сообщения в чат курса не отправлялись.
+
+Порядок воспроизведения: [README.md](README.md).

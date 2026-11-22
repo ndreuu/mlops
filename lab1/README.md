@@ -1,6 +1,6 @@
 # Лабораторная №1: Iris ML-сервис
 
-Текущее состояние записано в [STATUS.md](STATUS.md). Модель и API уже проверены локально, Docker-образ собран и проверен на учебной ВМ. Kubeconfig подключён, контекст и namespace — `itmo-student-13`. Следующие шаги: вход в registry, публикация и развёртывание.
+Лабораторная выполнена: образ `docker.io/ndreuu/oleinikov-iris:v1` опубликован, сервис работает в namespace `itmo-student-13`. Проверены `/live`, `/health`, предсказания setosa и virginica через port-forward. Итоговый чеклист и результаты: [STATUS.md](STATUS.md), [verification.json](verification.json). Ниже — команды для воспроизведения.
 
 ## Рабочие каталоги
 
@@ -96,12 +96,12 @@ curl -fsS -X POST http://127.0.0.1:8000/predict \
 
 ## 3. Публикация готового образа
 
-Выполняйте на учебной ВМ, где уже есть образ `oleinikov-iris:v1`. Docker использует helper `docker-credential-pass`; `pass` инициализирован отдельным GPG-ключом по методичке. Учётные данные registry ещё не добавлены.
+Выполняйте на учебной ВМ, где уже есть образ `oleinikov-iris:v1`. Docker использует helper `docker-credential-pass`; `pass` инициализирован отдельным GPG-ключом по методичке. Авторизация аккаунта `ndreuu` на ВМ выполнена через браузер; Docker сохраняет учётные данные через `pass`.
 
-Замените `YOUR_DOCKERHUB_USER` своим логином Docker Hub:
+Docker Hub аккаунт: `ndreuu`. Для публикации:
 
 ```bash
-export DOCKERHUB_USER=YOUR_DOCKERHUB_USER
+export DOCKERHUB_USER=ndreuu
 export IMAGE="docker.io/${DOCKERHUB_USER}/oleinikov-iris:v1"
 docker image inspect oleinikov-iris:v1 --format '{{.Id}} {{.Os}}/{{.Architecture}}'
 docker tag oleinikov-iris:v1 "$IMAGE"
@@ -109,20 +109,22 @@ docker login -u "$DOCKERHUB_USER"
 docker push "$IMAGE"
 ```
 
-Вводите access token в интерактивном запросе `docker login`. Для скачивания кластером используйте публичный репозиторий Docker Hub либо предоставленный курсом способ доступа к приватному registry.
+При повторном входе `docker login` без аргументов использует подтверждение через браузер. При `docker login -u "$DOCKERHUB_USER"` вводите access token в интерактивном запросе. Для скачивания кластером используйте публичный репозиторий Docker Hub либо предоставленный курсом способ доступа к приватному registry.
 
-Если исходники изменились, перед публикацией пересоберите образ в каталоге сервиса на ВМ:
+При изменениях кода сначала обновите его копию на ВМ. Для новой версии используйте новый тег, например `v2`, и укажите его в поле `image` манифеста:
 
 ```bash
 cd "$MLOPS_DIR/lab1/ml-service"
-docker build -t oleinikov-iris:v1 .
+export IMAGE="docker.io/ndreuu/oleinikov-iris:v2"
+docker build -t "$IMAGE" .
+docker push "$IMAGE"
 ```
 
-После пересборки повторите `docker tag` и `docker push`. При изменениях кода сначала обновите его копию на ВМ.
+Новый тег в манифесте запускает обновление Deployment и исключает использование прежнего образа из кеша под тем же тегом.
 
 ## 4. Развёртывание
 
-На Mac откройте `ml-service/k8s/app.yaml`, замените `REPLACE_WITH_DOCKERHUB_USER` на логин, использованный при публикации, и убедитесь, что namespace остался `itmo-student-13`. Перед применением убедитесь, что выбран учебный контекст.
+В `ml-service/k8s/app.yaml` уже указан образ `docker.io/ndreuu/oleinikov-iris:v1` и namespace `itmo-student-13`. Применяйте манифест после успешной публикации образа. Перед применением убедитесь, что выбран учебный контекст.
 
 ```bash
 cd "$MLOPS_DIR/lab1"
@@ -150,4 +152,4 @@ kubectl -n itmo-student-13 describe pod \
 kubectl -n itmo-student-13 logs deploy/oleinikov-iris --tail=100
 ```
 
-После успешной проверки отметьте оставшиеся пункты в [STATUS.md](STATUS.md).
+Результаты выполненной проверки сохранены в [STATUS.md](STATUS.md) и [verification.json](verification.json).

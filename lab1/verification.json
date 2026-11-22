@@ -1,0 +1,79 @@
+{
+  "checked_date": "2026-11-22",
+  "timezone": "Europe/Moscow",
+  "context": "itmo-student-13",
+  "namespace": "itmo-student-13",
+  "deployment": "oleinikov-iris",
+  "service": "oleinikov-iris",
+  "image": "docker.io/ndreuu/oleinikov-iris:v1",
+  "registry_digest": "sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b",
+  "verification_method": "kubectl port-forward svc/oleinikov-iris 8000:80",
+  "pods": [
+    {
+      "name": "oleinikov-iris-f5658d7b8-t84vc",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0,
+      "image_id": "docker.io/ndreuu/oleinikov-iris@sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b"
+    }
+  ],
+  "checks": [
+    {
+      "name": "live",
+      "path": "/live",
+      "request": null,
+      "http_status": 200,
+      "response": {
+        "status": "alive"
+      },
+      "passed": true
+    },
+    {
+      "name": "health",
+      "path": "/health",
+      "request": null,
+      "http_status": 200,
+      "response": {
+        "status": "ready",
+        "model_version": "iris-v1"
+      },
+      "passed": true
+    },
+    {
+      "name": "setosa",
+      "path": "/predict",
+      "request": {
+        "features": [
+          5.1,
+          3.5,
+          1.4,
+          0.2
+        ]
+      },
+      "http_status": 200,
+      "response": {
+        "class_id": 0,
+        "model_version": "iris-v1"
+      },
+      "passed": true
+    },
+    {
+      "name": "virginica",
+      "path": "/predict",
+      "request": {
+        "features": [
+          6.3,
+          3.3,
+          6.0,
+          2.5
+        ]
+      },
+      "http_status": 200,
+      "response": {
+        "class_id": 2,
+        "model_version": "iris-v1"
+      },
+      "passed": true
+    }
+  ]
+}

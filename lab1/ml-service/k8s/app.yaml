@@ -42,7 +42,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: api
-          image: docker.io/REPLACE_WITH_DOCKERHUB_USER/oleinikov-iris:v1
+          image: docker.io/ndreuu/oleinikov-iris:v1
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
