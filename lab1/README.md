@@ -1,38 +1,29 @@
 # Лабораторная работа №1. Iris: от модели до Kubernetes
 
-**Автор:** Олейников, префикс ресурсов `oleinikov-iris`, Docker Hub `ndreuu`.
-
-**Проверено:** 22.11.2026, 13:17–13:20 (Europe/Moscow).
-
-Ниже приведены выполненные команды и фактический stdout/stderr. Консольные цвета в README убраны; исходный вывод сохранён в `evidence/commands.json`. Это повторная проверка уже работающего сервиса: `CACHED`, `Layer already exists` и `unchanged` означают использование существующих образа и объектов. Успешные команды завершились с кодом `0`. Исключение — проверка отсутствия прав в `mlops-students`: ожидаемые `no` и код `1`.
-
 ## 0. Что получилось
 
-| Требование методички | Результат и пруф |
-|---|---|
-| Локально работают `/health`, `/predict` | HTTP 200, `ready`, классы `0` и `2`; [раздел 3](#local-api) |
-| Образ опубликован в registry | `docker.io/ndreuu/oleinikov-iris:v1`, успешный push, публичный репозиторий; [раздел 6](#registry) |
-| Свои ConfigMap, Deployment и Service с уникальным префиксом | `oleinikov-iris-config`, `oleinikov-iris`, namespace `itmo-student-13`; [раздел 9](#deployment) |
-| Проверка через `kubectl port-forward` и `curl` | HTTP 200, `ready`, setosa → `0`, virginica → `2`; [раздел 10](#port-forward) |
+1. Локально работает API (`/health`, `/predict`).
+  - [раздел 3](#local-api)
+2. Образ в Docker Hub (или другом registry): `docker.io/ndreuu/oleinikov-iris:v1`.
+  - [раздел 6](#registry)
+3. В namespace `itmo-student-13` созданы **свои** ConfigMap, Deployment и Service с уникальным префиксом.
+  - [раздел 9](#deployment)
+4. Проверка через `kubectl port-forward` и `curl`.
+  - [раздел 10](#port-forward)
 
-**Отличие от методички:** в ней указан `mlops-students`, а в выданном персональном архиве `itmo-student-13.zip` назначен `itmo-student-13`. Использован персональный namespace; в `mlops-students` этот доступ не разрешает создавать Deployment. Команды, подтверждающие это, — в [разделе 1](#access). Буквально пункт о размещении в `mlops-students` не выполнялся.
+### 0.1 Чеклист сдачи
 
-Формат отчёта взят за ориентир из [примера лабораторной](https://github.com/Ja1rman/mlops/tree/main/lab1). Исходники сервиса взяты из выданного `ml-service.zip`, имена ресурсов и доступ — свои.
-
-### Где запускались команды
-
-| Машина | Рабочий каталог | Этапы |
-|---|---|---|
-| Mac | `/Users/andrew/Projects/mlops/lab1/ml-service` | Python, Uvicorn, kubecm, kubectl, port-forward |
-| Учебная ВМ, `ssh mlops` | `/home/oleinikov/projects/mlops/lab1/ml-service` | pass, Docker login/build/run/push |
-
-Перед блоками команд нужно перейти в соответствующий рабочий каталог. Kubeconfig хранится на Mac вне репозитория. `curl -w` дописывает строку HTTP-статуса после JSON-ответа.
+- [x] `train.py` + локальный `uvicorn` работают — [команды, журнал и HTTP 200](#local-api).
+- [x] Образ собран и запушен: `docker.io/ndreuu/oleinikov-iris:v1` — [build](#docker-build), [push, digest и публичность](#registry).
+- [x] `pass` инициализирован, `docker login` успешен — [Password store initialized и Login Succeeded](#docker-auth).
+- [x] Манифест с уникальными именами, без ошибок шаблона — [манифест и согласование полей](#manifest), [dry-run](#dry-run).
+- [x] `kubectl apply --dry-run=server` без ошибок — [три объекта и код 0](#dry-run).
+- [x] Объекты созданы в назначенном `itmo-student-13` — [ConfigMap, Deployment, Pod, Service](#deployment). Отличие от `mlops-students` обосновано [персональным контекстом и RBAC](#access).
+- [x] Через `port-forward`: `/health` → `ready`, setosa → `0`, virginica → `2` — [команды curl и фактические ответы](#port-forward).
 
 <a id="access"></a>
 
 ## 1. Доступ к кластеру: `.kube`, kubectl, kubecm
-
-Выполнено на Mac.
 
 ```bash
 kubectl version --client=true
@@ -43,7 +34,6 @@ Client Version: v1.37.2
 Kustomize Version: v5.8.1
 ```
 
-Код завершения: `0`.
 
 ```bash
 kubecm version
@@ -54,8 +44,6 @@ Version: 0.36.0
 GoOs: darwin
 GoArch: arm64
 ```
-
-Код завершения: `0`.
 
 ```bash
 kubecm list
@@ -74,8 +62,6 @@ Kubernetes master is running at https://37.18.117.109:6443
 (Error reporting can be ignored and does not affect usage.)
 ```
 
-Код завершения: `0`.
-
 ```bash
 stat -f '%Sp %N' /Users/andrew/.kube /Users/andrew/.kube/config /Users/andrew/.kube/itmo-student-13.kubeconfig
 ```
@@ -86,8 +72,6 @@ drwx------ /Users/andrew/.kube
 -rw------- /Users/andrew/.kube/itmo-student-13.kubeconfig
 ```
 
-Код завершения: `0`.
-
 ```bash
 kubectl config current-context
 ```
@@ -95,8 +79,6 @@ kubectl config current-context
 ```text
 itmo-student-13
 ```
-
-Код завершения: `0`.
 
 ```bash
 kubectl config view --minify -o 'jsonpath={.contexts[0].context.namespace}{"\n"}'
@@ -106,10 +88,6 @@ kubectl config view --minify -o 'jsonpath={.contexts[0].context.namespace}{"\n"}
 itmo-student-13
 ```
 
-Код завершения: `0`.
-
-Права на создание трёх типов ресурсов в назначенном namespace:
-
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create deployments
 ```
@@ -118,7 +96,6 @@ kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create deploymen
 yes
 ```
 
-Код завершения: `0`.
 
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create services
@@ -128,7 +105,6 @@ kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create services
 yes
 ```
 
-Код завершения: `0`.
 
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create configmaps
@@ -137,8 +113,6 @@ kubectl --context=itmo-student-13 -n itmo-student-13 auth can-i create configmap
 ```text
 yes
 ```
-
-Код завершения: `0`.
 
 Проверка namespace из общей методички (ожидаемый отказ):
 
@@ -150,15 +124,9 @@ kubectl --context=itmo-student-13 -n mlops-students auth can-i create deployment
 no
 ```
 
-Код завершения: `1`.
-
-Вывод: рабочие контекст и namespace — `itmo-student-13`; прав для Deployment в `mlops-students` нет. Поэтому все объекты манифеста используют выданный namespace.
-
 <a id="python-env"></a>
 
 ## 2. Python-окружение
-
-На Mac используется `.venv`, созданное через стандартный `venv` — это разрешённая в разделе 3.2 методички альтернатива `uv`.
 
 ```bash
 .venv/bin/python --version
@@ -167,8 +135,6 @@ no
 ```text
 Python 3.12.16
 ```
-
-Код завершения: `0`.
 
 ```bash
 .venv/bin/python -c 'from importlib.metadata import version; [print(f"{p}=={version(p)}") for p in ("fastapi","uvicorn","scikit-learn","joblib")]'
@@ -181,23 +147,13 @@ scikit-learn==1.7.1
 joblib==1.5.1
 ```
 
-Код завершения: `0`.
-
-Версии совпадают с [requirements.txt](ml-service/requirements.txt).
-
 <a id="local-api"></a>
 
 ## 3. Обучение и локальный Uvicorn
 
-Выполнено на Mac. [train.py](ml-service/train.py) обучает Random Forest на Iris и сохраняет `model.joblib`. У скрипта нет собственного консольного вывода; успех подтверждают код завершения, файл модели и ответы запущенного API.
-
 ```bash
 .venv/bin/python train.py
 ```
-
-Вывода в stdout/stderr нет.
-
-Код завершения: `0`.
 
 ```bash
 ls -lh model.joblib
@@ -206,10 +162,6 @@ ls -lh model.joblib
 ```text
 -rw-r--r--@ 1 andrew  staff    93K Nov 22 13:17 model.joblib
 ```
-
-Код завершения: `0`.
-
-Сервер работал во время следующих `curl`. После проверки остановлен через Ctrl+C/SIGINT; ниже полный журнал запуска и остановки.
 
 ```bash
 .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
@@ -231,8 +183,6 @@ INFO:     Application shutdown complete.
 INFO:     Finished server process [52699]
 ```
 
-Код завершения: `0`.
-
 ```bash
 curl -fsS --max-time 15 -w '
 HTTP %{http_code}
@@ -243,8 +193,6 @@ HTTP %{http_code}
 {"status":"alive"}
 HTTP 200
 ```
-
-Код завершения: `0`.
 
 ```bash
 curl -fsS --max-time 15 -w '
@@ -257,8 +205,6 @@ HTTP %{http_code}
 HTTP 200
 ```
 
-Код завершения: `0`.
-
 ```bash
 curl -fsS --max-time 15 -w '
 HTTP %{http_code}
@@ -269,8 +215,6 @@ HTTP %{http_code}
 {"class_id":0,"model_version":"iris-v1"}
 HTTP 200
 ```
-
-Код завершения: `0`.
 
 ```bash
 curl -fsS --max-time 15 -w '
@@ -283,8 +227,6 @@ HTTP %{http_code}
 HTTP 200
 ```
 
-Код завершения: `0`.
-
 ```bash
 curl -fsS --max-time 15 -w '
 HTTP %{http_code}
@@ -296,15 +238,11 @@ HTTP %{http_code}
 HTTP 200
 ```
 
-Код завершения: `0`.
-
-Вывод: локальное обучение и API работают; `/health` → `ready`, `/predict` → `0`, `1`, `2` для setosa, versicolor и virginica.
+> Вывод: локальное обучение и API работают; `/health` => `ready`, `/predict` => `0`, `1`, `2` для setosa, versicolor и virginica.
 
 <a id="docker-auth"></a>
 
 ## 4. `pass`, credential helper и Docker login
-
-Выполнено на учебной ВМ через `ssh mlops`. Использован уже созданный учебный GPG-ключ; повторный `pass init` выполнен с тем же публичным fingerprint. Конфигурация Docker выведена только в части `credsStore`, без учётных данных.
 
 ```bash
 docker version --format 'Client={{.Client.Version}} Server={{.Server.Version}}'
@@ -314,8 +252,6 @@ docker version --format 'Client={{.Client.Version}} Server={{.Server.Version}}'
 Client=29.9.3 Server=29.9.3
 ```
 
-Код завершения: `0`.
-
 ```bash
 which docker-credential-pass
 ```
@@ -323,8 +259,6 @@ which docker-credential-pass
 ```text
 /usr/local/bin/docker-credential-pass
 ```
-
-Код завершения: `0`.
 
 ```bash
 python3 -c 'import json,pathlib; c=json.loads((pathlib.Path.home()/".docker/config.json").read_text()); print(json.dumps({"credsStore":c.get("credsStore")}))'
@@ -334,8 +268,6 @@ python3 -c 'import json,pathlib; c=json.loads((pathlib.Path.home()/".docker/conf
 {"credsStore": "pass"}
 ```
 
-Код завершения: `0`.
-
 ```bash
 cat /home/oleinikov/.password-store/.gpg-id
 ```
@@ -344,8 +276,6 @@ cat /home/oleinikov/.password-store/.gpg-id
 F2DA2108503EB840B93109E2DC0D45A1EF6B420D
 ```
 
-Код завершения: `0`.
-
 ```bash
 pass init F2DA2108503EB840B93109E2DC0D45A1EF6B420D
 ```
@@ -353,8 +283,6 @@ pass init F2DA2108503EB840B93109E2DC0D45A1EF6B420D
 ```text
 Password store initialized for F2DA2108503EB840B93109E2DC0D45A1EF6B420D
 ```
-
-Код завершения: `0`.
 
 ```bash
 pass ls
@@ -371,8 +299,6 @@ Password Store
         └── ndreuu
 ```
 
-Код завершения: `0`.
-
 ```bash
 docker-credential-pass list
 ```
@@ -380,8 +306,6 @@ docker-credential-pass list
 ```text
 {"https://index.docker.io/v1/":"ndreuu","https://index.docker.io/v1/access-token":"ndreuu","https://index.docker.io/v1/refresh-token":"ndreuu"}
 ```
-
-Код завершения: `0`.
 
 ```bash
 docker login
@@ -396,15 +320,9 @@ Authenticating with existing credentials... [Username: ndreuu]
 Login Succeeded
 ```
 
-Код завершения: `0`.
-
-Вход `docker login` повторно использует сохранённую авторизацию аккаунта `ndreuu`; получен `Login Succeeded`. Вывод helper `list` содержит адреса registry и имя пользователя.
-
 <a id="docker-build"></a>
 
 ## 5. Docker build и проверка контейнера
-
-На ВМ повторно собран [Dockerfile](ml-service/Dockerfile) с временным тегом `oleinikov-iris:proof-v1`. Сборка использовала кеш, включая обучение модели; полученный image ID совпадает с опубликованным `v1`.
 
 ```bash
 docker build --pull=false --progress=plain -t oleinikov-iris:proof-v1 .
@@ -477,8 +395,6 @@ docker build --pull=false --progress=plain -t oleinikov-iris:proof-v1 .
 #18 DONE 0.1s
 ```
 
-Код завершения: `0`.
-
 ```bash
 docker image inspect docker.io/ndreuu/oleinikov-iris:v1 --format 'Tags={{json .RepoTags}}
 ID={{.Id}}
@@ -493,15 +409,9 @@ Platform=linux/amd64
 User=10001
 ```
 
-Код завершения: `0`.
-
 ```bash
 docker tag oleinikov-iris:proof-v1 docker.io/ndreuu/oleinikov-iris:v1
 ```
-
-Вывода в stdout/stderr нет.
-
-Код завершения: `0`.
 
 Контейнер запущен на ВМ, порт доступен через loopback ВМ `127.0.0.1:18000`:
 
@@ -512,8 +422,6 @@ docker run --detach --rm --name oleinikov-iris-proof -p 127.0.0.1:18000:8000 doc
 ```text
 7319b05916fcd01aca5446743ca7a55815153cdfb2295b8c8f4fbb97d46166d4
 ```
-
-Код завершения: `0`.
 
 ```bash
 curl -fsS --retry 10 --retry-all-errors --retry-delay 1 --max-time 15 -w '
@@ -526,8 +434,6 @@ HTTP %{http_code}
 HTTP 200
 ```
 
-Код завершения: `0`.
-
 ```bash
 curl -fsS --max-time 15 -w '
 HTTP %{http_code}
@@ -539,8 +445,6 @@ HTTP %{http_code}
 HTTP 200
 ```
 
-Код завершения: `0`.
-
 ```bash
 curl -fsS --max-time 15 -w '
 HTTP %{http_code}
@@ -551,8 +455,6 @@ HTTP %{http_code}
 {"class_id":2,"model_version":"iris-v1"}
 HTTP 200
 ```
-
-Код завершения: `0`.
 
 ```bash
 docker logs oleinikov-iris-proof
@@ -569,8 +471,6 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 ```
 
-Код завершения: `0`.
-
 ```bash
 docker stop oleinikov-iris-proof
 ```
@@ -579,15 +479,11 @@ docker stop oleinikov-iris-proof
 oleinikov-iris-proof
 ```
 
-Код завершения: `0`.
-
 Контейнер ответил HTTP 200 с ожидаемыми классами; после проверки остановлен и автоматически удалён (`--rm`).
 
 <a id="registry"></a>
 
 ## 6. Docker Hub: образ опубликован
-
-Push выполнен на ВМ. Повторная отправка того же образа завершилась успешно:
 
 ```bash
 docker push docker.io/ndreuu/oleinikov-iris:v1
@@ -629,8 +525,6 @@ dd57f90311a2: Layer already exists
 v1: digest: sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b size: 2828
 ```
 
-Код завершения: `0`.
-
 ```bash
 docker image inspect docker.io/ndreuu/oleinikov-iris:v1 --format '{{json .RepoDigests}}'
 ```
@@ -639,9 +533,7 @@ docker image inspect docker.io/ndreuu/oleinikov-iris:v1 --format '{{json .RepoDi
 ["ndreuu/oleinikov-iris@sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b"]
 ```
 
-Код завершения: `0`.
-
-Публичная доступность проверена на Mac через API Docker Hub без авторизации:
+Публичная доступность проверена
 
 ```bash
 .venv/bin/python -c 'import json,urllib.request; d=json.load(urllib.request.urlopen("https://hub.docker.com/v2/repositories/ndreuu/oleinikov-iris/", timeout=20)); print(json.dumps({k:d[k] for k in ("namespace","name","is_private")}, indent=2))'
@@ -655,146 +547,19 @@ docker image inspect docker.io/ndreuu/oleinikov-iris:v1 --format '{{json .RepoDi
 }
 ```
 
-Код завершения: `0`.
-
 Репозиторий: [ndreuu/oleinikov-iris](https://hub.docker.com/r/ndreuu/oleinikov-iris), [тег v1](https://hub.docker.com/r/ndreuu/oleinikov-iris/tags?name=v1).
 
 ![Тег v1 в Docker Hub](evidence/dockerhub-image-v1.png)
 
 <a id="manifest"></a>
 
-## 7. Исправленный Kubernetes-манифест
+## 7. Kubernetes-манифест
 
 Итоговый файл: [ml-service/k8s/app.yaml](ml-service/k8s/app.yaml).
-
-| Проверяемое поле | Значение в манифесте |
-|---|---|
-| Уникальные имена | ConfigMap `oleinikov-iris-config`, Deployment и Service `oleinikov-iris` |
-| Namespace всех объектов | `itmo-student-13` |
-| Собственный образ | `docker.io/ndreuu/oleinikov-iris:v1` |
-| ConfigMap → Deployment | `envFrom.configMapRef.name: oleinikov-iris-config` |
-| Переменные модели | `MODEL_VERSION=iris-v1`, `MODEL_PATH=/app/model.joblib` |
-| Labels и selectors | `name=iris-api`, `instance=oleinikov-iris` у Deployment, пода и Service |
-| Порты | Service `80` → именованный порт `http` → контейнер `8000` |
-| Probes | readiness `/health`, liveness `/live`, порт `http` |
-| Ресурсы | requests `100m / 128Mi`, limits `500m / 512Mi` |
-| Тип Service | `ClusterIP` |
-
-Фактически прочитанный манифест:
-
-<details>
-<summary>Команда cat и полный вывод app.yaml</summary>
-
-```bash
-cat k8s/app.yaml
-```
-
-```text
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: oleinikov-iris-config
-  namespace: itmo-student-13
-  labels:
-    app.kubernetes.io/name: iris-api
-    app.kubernetes.io/instance: oleinikov-iris
-data:
-  MODEL_VERSION: iris-v1
-  MODEL_PATH: /app/model.joblib
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: oleinikov-iris
-  namespace: itmo-student-13
-  labels:
-    app.kubernetes.io/name: iris-api
-    app.kubernetes.io/instance: oleinikov-iris
-spec:
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: iris-api
-      app.kubernetes.io/instance: oleinikov-iris
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: iris-api
-        app.kubernetes.io/instance: oleinikov-iris
-    spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 10001
-        seccompProfile:
-          type: RuntimeDefault
-      containers:
-        - name: api
-          image: docker.io/ndreuu/oleinikov-iris:v1
-          imagePullPolicy: IfNotPresent
-          envFrom:
-            - configMapRef:
-                name: oleinikov-iris-config
-          ports:
-            - name: http
-              containerPort: 8000
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /live
-              port: http
-            initialDelaySeconds: 15
-            periodSeconds: 10
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-            readOnlyRootFilesystem: true
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: oleinikov-iris
-  namespace: itmo-student-13
-  labels:
-    app.kubernetes.io/name: iris-api
-    app.kubernetes.io/instance: oleinikov-iris
-spec:
-  type: ClusterIP
-  selector:
-    app.kubernetes.io/name: iris-api
-    app.kubernetes.io/instance: oleinikov-iris
-  ports:
-    - name: http
-      port: 80
-      targetPort: http
-```
-
-Код завершения: `0`.
-
-</details>
 
 <a id="dry-run"></a>
 
 ## 8. Client и server dry-run
-
-Выполнено на Mac в контексте `itmo-student-13`. Обе проверки прошли без ошибок:
 
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 apply --dry-run=client -f k8s/app.yaml
@@ -806,8 +571,6 @@ deployment.apps/oleinikov-iris unchanged (dry run)
 service/oleinikov-iris unchanged (dry run)
 ```
 
-Код завершения: `0`.
-
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 apply --dry-run=server -f k8s/app.yaml
 ```
@@ -818,13 +581,9 @@ deployment.apps/oleinikov-iris unchanged (server dry run)
 service/oleinikov-iris unchanged (server dry run)
 ```
 
-Код завершения: `0`.
-
 <a id="deployment"></a>
 
 ## 9. Apply и созданные объекты
-
-Повторный `apply` подтвердил, что работающие объекты соответствуют манифесту:
 
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 apply -f k8s/app.yaml
@@ -836,8 +595,6 @@ deployment.apps/oleinikov-iris unchanged
 service/oleinikov-iris unchanged
 ```
 
-Код завершения: `0`.
-
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 rollout status deploy/oleinikov-iris --timeout=60s
 ```
@@ -845,8 +602,6 @@ kubectl --context=itmo-student-13 -n itmo-student-13 rollout status deploy/olein
 ```text
 deployment "oleinikov-iris" successfully rolled out
 ```
-
-Код завершения: `0`.
 
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 get cm,deploy,pods,svc -l app.kubernetes.io/instance=oleinikov-iris
@@ -866,8 +621,6 @@ NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AG
 service/oleinikov-iris   ClusterIP   10.101.103.123   <none>        80/TCP    33m
 ```
 
-Код завершения: `0`.
-
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 get cm oleinikov-iris-config -o 'jsonpath={.data}{"\n"}'
 ```
@@ -875,8 +628,6 @@ kubectl --context=itmo-student-13 -n itmo-student-13 get cm oleinikov-iris-confi
 ```text
 {"MODEL_PATH":"/app/model.joblib","MODEL_VERSION":"iris-v1"}
 ```
-
-Код завершения: `0`.
 
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 get endpointslices -l kubernetes.io/service-name=oleinikov-iris
@@ -887,15 +638,9 @@ NAME                   ADDRESSTYPE   PORTS   ENDPOINTS   AGE
 oleinikov-iris-42szt   IPv4          8000    10.1.0.58   33m
 ```
 
-Код завершения: `0`.
-
-Вывод: все три объекта с личным префиксом существуют в `itmo-student-13`, Deployment доступен `1/1`, под `Running`, перезапусков `0`, Service имеет endpoint.
-
 <a id="port-forward"></a>
 
 ## 10. Port-forward, curl и совпадение digest
-
-Выполнено на Mac. Локальный Uvicorn к этому моменту остановлен; порт `8000` используется только для проброса Service. `port-forward` работал одновременно с приведёнными ниже `curl`; после них остановлен через Ctrl+C/SIGINT.
 
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 port-forward svc/oleinikov-iris --address=127.0.0.1 8000:80
@@ -911,8 +656,6 @@ Handling connection for 8000
 Handling connection for 8000
 ```
 
-Код завершения: `0`.
-
 ```bash
 curl -fsS --max-time 15 -w '
 HTTP %{http_code}
@@ -923,8 +666,6 @@ HTTP %{http_code}
 {"status":"alive"}
 HTTP 200
 ```
-
-Код завершения: `0`.
 
 ```bash
 curl -fsS --max-time 15 -w '
@@ -937,8 +678,6 @@ HTTP %{http_code}
 HTTP 200
 ```
 
-Код завершения: `0`.
-
 ```bash
 curl -fsS --max-time 15 -w '
 HTTP %{http_code}
@@ -950,7 +689,6 @@ HTTP %{http_code}
 HTTP 200
 ```
 
-Код завершения: `0`.
 
 ```bash
 curl -fsS --max-time 15 -w '
@@ -963,8 +701,6 @@ HTTP %{http_code}
 HTTP 200
 ```
 
-Код завершения: `0`.
-
 ```bash
 curl -fsS --max-time 15 -w '
 HTTP %{http_code}
@@ -975,8 +711,6 @@ HTTP %{http_code}
 {"class_id":2,"model_version":"iris-v1"}
 HTTP 200
 ```
-
-Код завершения: `0`.
 
 Образ, фактически запущенный в поде:
 
@@ -990,33 +724,8 @@ docker.io/ndreuu/oleinikov-iris:v1
 docker.io/ndreuu/oleinikov-iris@sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b
 ```
 
-Код завершения: `0`.
-
 Digest пода совпадает с digest из успешного `docker push` в [разделе 6](#registry):
 
 ```text
 sha256:0fc611434bda688cb9c68877e84f52b469add3a953e9b3546aaf6aeaae2cab7b
 ```
-
-Вывод: запросы прошли через Kubernetes Service, модель готова; setosa → `0`, virginica → `2`. Дополнительно проверены `/live` и versicolor → `1`.
-
-## 11. Чеклист сдачи с пруфами
-
-- [x] `train.py` + локальный `uvicorn` работают — [команды, журнал и HTTP 200](#local-api).
-- [x] Образ собран и запушен: `docker.io/ndreuu/oleinikov-iris:v1` — [build](#docker-build), [push, digest и публичность](#registry).
-- [x] `pass` инициализирован, `docker login` успешен — [Password store initialized и Login Succeeded](#docker-auth).
-- [x] Манифест с уникальными именами, без ошибок шаблона — [манифест и согласование полей](#manifest), [dry-run](#dry-run).
-- [x] `kubectl apply --dry-run=server` без ошибок — [три объекта и код 0](#dry-run).
-- [x] Объекты созданы в назначенном `itmo-student-13` — [ConfigMap, Deployment, Pod, Service](#deployment). Отличие от `mlops-students` обосновано [персональным контекстом и RBAC](#access).
-- [x] Через `port-forward`: `/health` → `ready`, setosa → `0`, virginica → `2` — [команды curl и фактические ответы](#port-forward).
-
-## 12. Файлы для проверки
-
-- [Исходники API](ml-service/app/main.py), [обучение](ml-service/train.py), [Dockerfile](ml-service/Dockerfile), [манифест](ml-service/k8s/app.yaml).
-- [macos.txt](evidence/macos.txt) — полные выводы итоговых команд на Mac.
-- [vm.txt](evidence/vm.txt) — полные выводы итоговых команд на ВМ, включая build, login, push и Docker manifest.
-- [commands.json](evidence/commands.json) — те же команды с временем UTC, рабочим каталогом и кодом завершения; журналы фоновых процессов включают остановку.
-- [verification.json](verification.json) — структурированные результаты API и digest.
-- [RUNBOOK.md](RUNBOOK.md) — инструкция по повторному запуску.
-
-Это пруфы состояния на время проверки. После неё локальный Uvicorn, временный Docker-контейнер и port-forward остановлены; Deployment остаётся в Kubernetes.
