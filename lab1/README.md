@@ -7,7 +7,7 @@
 В командах ниже `MLOPS_DIR` — корень этого репозитория. В новом терминале на Mac задайте:
 
 ```bash
-export MLOPS_DIR="/Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/projects/mlops"
+export MLOPS_DIR="/Users/andrew/Projects/mlops"
 ```
 
 Исходники также скопированы на учебную ВМ. Для Docker-команд подключитесь к ней и задайте путь там:
