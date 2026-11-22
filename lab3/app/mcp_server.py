@@ -52,8 +52,8 @@ class Authenticate:
     async def __call__(self, scope, receive, send):
         if scope['type'] == 'http' and scope['path'] != '/health':
             headers = dict(scope['headers'])
-            supplied = headers.get(b'authorization', b'').decode(errors='replace')
-            if not hmac.compare_digest(supplied, 'Bearer ' + token):
+            supplied = headers.get(b'authorization', b'')
+            if not hmac.compare_digest(supplied, ('Bearer ' + token).encode()):
                 await JSONResponse({'error':'MCP authentication required'}, status_code=401)(scope, receive, send)
                 return
             origin = headers.get(b'origin', b'').decode(errors='replace')

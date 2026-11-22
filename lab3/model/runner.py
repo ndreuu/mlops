@@ -1,18 +1,33 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import threading
-import tempfile
 import time
 import urllib.request
 
 # Ollama migrates catalog metadata on first start. The immutable blobs stay in
-# the image; only the small writable catalog and generated server key use tmpfs.
-catalog=Path(tempfile.mkdtemp(prefix='ollama-models-',dir='/tmp'))
-(catalog/'blobs').symlink_to('/models/blobs',target_is_directory=True)
+# the image in small layers; startup reconstructs them on an ephemeral disk volume.
+catalog=Path('/tmp/ollama-models')
+catalog.mkdir(exist_ok=True)
+shutil.copytree('/models/blobs',catalog/'blobs',dirs_exist_ok=True)
+weight_hash='c5396e06af294bd101b30dce59131a76d2b773e76950acc870eda801d3ab0515'
+weight_path=catalog/'blobs'/('sha256-'+weight_hash)
+if not weight_path.exists() or hashlib.file_digest(weight_path.open('rb'),'sha256').hexdigest()!=weight_hash:
+    weight_path.unlink(missing_ok=True)
+    checksum=hashlib.sha256()
+    with weight_path.open('wb') as output:
+        for part in sorted(Path('/model-parts').glob('part*')):
+            with part.open('rb') as source:
+                while block:=source.read(1024*1024):
+                    checksum.update(block)
+                    output.write(block)
+    if checksum.hexdigest()!=weight_hash:
+        raise ValueError('Packaged weights checksum mismatch')
+    weight_path.chmod(0o444)
 shutil.copytree('/models/manifests',catalog/'manifests',dirs_exist_ok=True)
 os.environ['OLLAMA_MODELS']=str(catalog)
 process=subprocess.Popen(['/usr/bin/ollama','serve'])
@@ -21,8 +36,8 @@ ready=False
 
 def warmup():
     global ready
-    payload=json.dumps({'model':'deepseek-r1:1.5b','prompt':'','stream':False,'keep_alive':-1,
-                       'options':{'num_gpu':0,'num_ctx':2048,'num_thread':2}}).encode()
+    payload=json.dumps({'model':'qwen2.5:0.5b','prompt':'','stream':False,'keep_alive':-1,
+                       'options':{'num_gpu':0,'num_ctx':2048,'num_thread':1}}).encode()
     while process.poll() is None:
         try:
             request=urllib.request.Request('http://127.0.0.1:11434/api/generate',data=payload,headers={'Content-Type':'application/json'})
@@ -41,7 +56,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
             return
         healthy=process.poll() is None and (ready or self.path=='/livez')
-        body=json.dumps({'status':'ready' if healthy else 'loading','model':'deepseek-r1:1.5b','compute':'cpu'}).encode()
+        body=json.dumps({'status':'ready' if healthy else 'loading','model':'qwen2.5:0.5b','compute':'cpu'}).encode()
         self.send_response(200 if healthy else 503)
         self.send_header('Content-Type','application/json')
         self.send_header('Content-Length',str(len(body)))

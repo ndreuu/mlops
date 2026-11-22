@@ -2,10 +2,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: oleinikov-lab3-config
+  labels: {lab: oleinikov-lab3}
 data:
   MCP_URL: http://oleinikov-lab3-kb-mcp:8000/mcp
   LOCAL_BASE_URL: http://oleinikov-lab3-ollama:11434
-  LOCAL_MODEL: deepseek-r1:1.5b
+  LOCAL_MODEL: qwen2.5:0.5b
   CLOUD_BASE_URL: https://api.llm7.io/v1
   CLOUD_MODEL: default
   MOCK_BASE_URL: http://oleinikov-lab3-cloud-mock:8000/v1
@@ -20,6 +21,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oleinikov-lab3-ollama
+  labels: {lab: oleinikov-lab3}
 spec:
   replicas: 1
   strategy: {type: Recreate}
@@ -41,11 +43,11 @@ spec:
           livenessProbe: {httpGet: {path: /livez, port: health}, periodSeconds: 15}
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           volumeMounts: [{name: temporary, mountPath: /tmp}]
-      volumes: [{name: temporary, emptyDir: {sizeLimit: 64Mi}}]
+      volumes: [{name: temporary, emptyDir: {sizeLimit: 512Mi}}]
 ---
 apiVersion: v1
 kind: Service
-metadata: {name: oleinikov-lab3-ollama}
+metadata: {name: oleinikov-lab3-ollama, labels: {lab: oleinikov-lab3}}
 spec:
   type: ClusterIP
   selector: {app: oleinikov-lab3-ollama}
@@ -53,7 +55,7 @@ spec:
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: {name: oleinikov-lab3-kb-mcp}
+metadata: {name: oleinikov-lab3-kb-mcp, labels: {lab: oleinikov-lab3}}
 spec:
   replicas: 1
   strategy: {type: Recreate}
@@ -90,7 +92,7 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-metadata: {name: oleinikov-lab3-kb-mcp}
+metadata: {name: oleinikov-lab3-kb-mcp, labels: {lab: oleinikov-lab3}}
 spec:
   type: ClusterIP
   selector: {app: oleinikov-lab3-kb-mcp}
@@ -98,7 +100,7 @@ spec:
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: {name: oleinikov-lab3-portal}
+metadata: {name: oleinikov-lab3-portal, labels: {lab: oleinikov-lab3}}
 spec:
   replicas: 1
   strategy: {type: Recreate}
@@ -130,7 +132,7 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-metadata: {name: oleinikov-lab3-portal}
+metadata: {name: oleinikov-lab3-portal, labels: {lab: oleinikov-lab3}}
 spec:
   type: ClusterIP
   selector: {app: oleinikov-lab3-portal}
@@ -138,7 +140,7 @@ spec:
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: {name: oleinikov-lab3-cloud-mock}
+metadata: {name: oleinikov-lab3-cloud-mock, labels: {lab: oleinikov-lab3}}
 spec:
   replicas: 1
   strategy: {type: Recreate}
@@ -161,7 +163,7 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-metadata: {name: oleinikov-lab3-cloud-mock}
+metadata: {name: oleinikov-lab3-cloud-mock, labels: {lab: oleinikov-lab3}}
 spec:
   type: ClusterIP
   selector: {app: oleinikov-lab3-cloud-mock}

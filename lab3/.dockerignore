@@ -12,3 +12,7 @@ tokenizer.json
 *.gguf
 *.tar*
 model/weights
+
+model/weights-qwen/
+
+model/packed/

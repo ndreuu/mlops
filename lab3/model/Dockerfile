@@ -10,7 +10,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && cp /opt/ollama/bin/ollama /usr/bin/ollama \
     && cp -a /opt/ollama/lib/ollama /usr/lib/ollama \
     && rm -rf /opt/ollama /tmp/ollama.tar.zst
-COPY model/weights /models
+COPY model/packed/metadata /models
+COPY model/packed/parts/part00 /model-parts/part00
+COPY model/packed/parts/part01 /model-parts/part01
+COPY model/packed/parts/part02 /model-parts/part02
+COPY model/packed/parts/part03 /model-parts/part03
+COPY model/packed/parts/part04 /model-parts/part04
+COPY model/packed/parts/part05 /model-parts/part05
+COPY model/packed/parts/part06 /model-parts/part06
+COPY model/packed/parts/part07 /model-parts/part07
+COPY model/packed/parts/part08 /model-parts/part08
+COPY model/packed/parts/part09 /model-parts/part09
+COPY model/packed/parts/part10 /model-parts/part10
+COPY model/packed/parts/part11 /model-parts/part11
 RUN useradd --uid 10001 --no-create-home app
 COPY model/runner.py /opt/runner.py
 ENV OLLAMA_HOST=0.0.0.0:11434 OLLAMA_MODELS=/models OLLAMA_NUM_PARALLEL=1 OLLAMA_MAX_LOADED_MODELS=1 \

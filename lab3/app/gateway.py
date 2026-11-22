@@ -138,7 +138,7 @@ class Gateway:
         self.circuits={'real':Circuit(),'mock':Circuit()}
         self.slots=LocalSlots()
         self.http=httpx.AsyncClient(transport=httpx.AsyncHTTPTransport(retries=0),follow_redirects=False)
-        self.model=os.getenv('LOCAL_MODEL','deepseek-r1:1.5b')
+        self.model=os.getenv('LOCAL_MODEL','qwen2.5:0.5b')
 
     def tokens(self,text):
         return len(self.tokenizer.encode(text,add_special_tokens=False).ids)
@@ -218,21 +218,23 @@ class Gateway:
 
     async def local(self,messages,unavailable=False):
         entered=False
+        attempted=False
         try:
             async with asyncio.timeout(float(os.getenv('LOCAL_TIMEOUT','75'))):
                 entered=await self.slots.enter()
                 if not entered:
-                    return None,'local_queue_full',{}
+                    return None,'local_queue_full',{},False
                 base='http://127.0.0.1:1' if unavailable else os.getenv('LOCAL_BASE_URL','http://oleinikov-lab3-ollama:11434')
+                attempted=True
                 response=await self.http.post(base+'/api/chat',
-                    json={'model':self.model,'messages':messages,'stream':False,'think':False,'keep_alive':'10m',
-                          'options':{'num_ctx':2048,'num_predict':180,'num_gpu':0,'num_thread':2,'temperature':0,'seed':42}},timeout=75)
+                    json={'model':self.model,'messages':messages,'stream':False,'keep_alive':'10m',
+                          'options':{'num_ctx':2048,'num_predict':180,'num_gpu':0,'num_thread':1,'temperature':0,'seed':42}},timeout=75)
                 response.raise_for_status()
                 value=response.json()
                 return response_text(value.get('message',{}).get('content')),'local',{
-                    k:value[k] for k in ('prompt_eval_count','eval_count','total_duration') if k in value}
+                    k:value[k] for k in ('prompt_eval_count','eval_count','total_duration') if k in value},True
         except (TimeoutError,httpx.HTTPError,ValueError,KeyError,TypeError):
-            return None,'local_unavailable_or_timeout',{}
+            return None,'local_unavailable_or_timeout',{},attempted
         finally:
             if entered:
                 await self.slots.leave()
@@ -259,13 +261,13 @@ class Gateway:
             if candidate and valid_answer(candidate,sources):
                 await self.circuits['mock' if fault!='live' else 'real'].success()
                 report.update(route='cloud',reason=reason,provider='cloud-mock' if fault!='live' else 'llm7.io',answer=candidate)
-                return self.finish(report,started)
+                return self.finish(report,started,'mock' if fault!='live' else 'real')
             if candidate is not None:
                 reason='cloud_invalid_answer'
                 await self.circuits['mock' if fault!='live' else 'real'].fail(reason,1 if fault!='live' else 30)
         local_started=time.monotonic()
-        report['calls']['local']=1
-        candidate,local_reason,metrics=await self.local(messages,unavailable=fault=='both_down')
+        candidate,local_reason,metrics,attempted=await self.local(messages,unavailable=fault=='both_down')
+        report['calls']['local']=int(attempted)
         report['timings_ms']['local']=round((time.monotonic()-local_started)*1000,2)
         report['model_metrics']=metrics
         if candidate and valid_answer(candidate,sources):
@@ -273,12 +275,12 @@ class Gateway:
         else:
             report.update(reason=reason+';'+(local_reason if candidate is None else 'local_invalid_answer'))
             report['answer']='Не удалось получить подтверждённый ответ. Найденные выдержки:\n'+'\n'.join(f'{s["text"]} [{s["number"]}]' for s in sources[:3])
-        return self.finish(report,started)
+        return self.finish(report,started,'mock' if fault!='live' else 'real')
 
-    def finish(self,report,started):
+    def finish(self,report,started,circuit_key):
         historical=[f'[{s["number"]}] — {s["status"]}' for s in report['sources'] if s['status']!='Действует']
         if historical:
             report['answer']='Источники: '+', '.join(historical)+'.\n'+report['answer']
         report['timings_ms']['total']=round((time.monotonic()-started)*1000,2)
-        report['circuit']=self.circuits['mock' if report.get('provider')=='cloud-mock' or report['reason'].startswith(('cloud_429','cloud_quota','cloud_503')) else 'real'].snapshot()
+        report['circuit']=self.circuits[circuit_key].snapshot()
         return report
