@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: oleinikov-iris-config
-  namespace: mlops-students
+  namespace: itmo-student-13
   labels:
     app.kubernetes.io/name: iris-api
     app.kubernetes.io/instance: oleinikov-iris
@@ -14,7 +14,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oleinikov-iris
-  namespace: mlops-students
+  namespace: itmo-student-13
   labels:
     app.kubernetes.io/name: iris-api
     app.kubernetes.io/instance: oleinikov-iris
@@ -79,7 +79,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: oleinikov-iris
-  namespace: mlops-students
+  namespace: itmo-student-13
   labels:
     app.kubernetes.io/name: iris-api
     app.kubernetes.io/instance: oleinikov-iris

@@ -1,6 +1,6 @@
 # Лабораторная №1: Iris ML-сервис
 
-Текущее состояние записано в [STATUS.md](STATUS.md). Модель и API уже проверены локально, Docker-образ собран и проверен на учебной ВМ. Следующие шаги: подключение kubeconfig, вход в registry, публикация и развёртывание.
+Текущее состояние записано в [STATUS.md](STATUS.md). Модель и API уже проверены локально, Docker-образ собран и проверен на учебной ВМ. Kubeconfig подключён, контекст и namespace — `itmo-student-13`. Следующие шаги: вход в registry, публикация и развёртывание.
 
 ## Рабочие каталоги
 
@@ -20,35 +20,45 @@ cd "$MLOPS_DIR/lab1/ml-service"
 
 На Mac Docker не установлен; сборка образа выполнена на ВМ. Git-репозиторий и окончательный Kubernetes-манифест находятся на Mac. Команды `kubectl` ниже выполняются на Mac.
 
-## 1. Подключение Kubernetes, когда выдадут kubeconfig
+## 1. Подключение Kubernetes
 
-На Mac установлены `kubectl` и `kubecm`. Сохраните выданный преподавателем конфиг вне репозитория. Укажите фактический путь к файлу:
+Kubeconfig из выданного архива `itmo-student-13.zip` импортирован через `kubecm` в `~/.kube/config` на Mac. Исходный конфиг хранится в `~/.kube/itmo-student-13.kubeconfig`. Права каталога — `700`, файлов — `600`.
+
+Проверить контекст и namespace:
 
 ```bash
-export COURSE_KUBECONFIG="$HOME/Downloads/ВАШ_ФАЙЛ_KUBECONFIG"
-mkdir -p "$HOME/.kube"
-chmod 700 "$HOME/.kube"
-chmod 600 "$COURSE_KUBECONFIG"
-kubecm --create add -f "$COURSE_KUBECONFIG"
-chmod 600 "$HOME/.kube/config"
 kubecm list
-kubecm switch
+kubecm switch itmo-student-13
 kubectl config current-context
 kubectl config view --minify -o jsonpath='{.contexts[0].context.namespace}{"\n"}'
+kubectl -n itmo-student-13 get pods
 ```
 
-В `kubecm switch` выберите контекст учебного кластера. Если namespace пуст, уточните назначенный namespace у преподавателя; методичка указывает `mlops-students`. Если выдан другой namespace, исправьте все три поля `metadata.namespace` в `ml-service/k8s/app.yaml` и namespace в дальнейших командах.
+API учебного кластера: `https://37.18.117.109:6443`. Контекст и назначенный namespace: `itmo-student-13`. Проверка TLS включена, сертификат CA находится в kubeconfig. Namespace взят из персонального доступа; он заменяет общий namespace из первоначальной методички.
 
-Проверьте доступ к назначенному namespace:
+При повторной настройке на другой машине сохраните файл вне репозитория. Для первого подключения, когда `~/.kube/config` ещё отсутствует:
 
 ```bash
-kubectl -n mlops-students get pods
-kubectl auth can-i create deployments -n mlops-students
-kubectl auth can-i create services -n mlops-students
-kubectl auth can-i create configmaps -n mlops-students
+export COURSE_KUBECONFIG="$HOME/Downloads/itmo-student-13.kubeconfig"
+mkdir -p "$HOME/.kube"
+chmod 700 "$HOME/.kube"
+install -m 600 "$COURSE_KUBECONFIG" "$HOME/.kube/config"
+kubecm switch itmo-student-13
 ```
 
-Kubeconfig может содержать сертификаты и токены доступа. Храните его вне git.
+Если на другой машине уже есть конфигурация с другими контекстами, сначала сохраните её резервную копию, затем объедините конфиги через `kubecm add --cover -f "$COURSE_KUBECONFIG"`. В установленной версии `kubecm add` требует существования `~/.kube/config`; одного флага `--create` оказалось недостаточно.
+
+Права на нужные ресурсы уже проверены:
+
+```bash
+kubectl auth can-i create deployments -n itmo-student-13
+kubectl auth can-i create services -n itmo-student-13
+kubectl auth can-i create configmaps -n itmo-student-13
+```
+
+Для всех трёх команд получено `yes`. Квота namespace: requests и limits по `2600m` CPU и `4G` памяти. Service использует разрешённый тип `ClusterIP`.
+
+Kubeconfig содержит индивидуальный ServiceAccount token. Храните его вне git.
 
 ## 2. Локальное обучение и API
 
@@ -112,20 +122,20 @@ docker build -t oleinikov-iris:v1 .
 
 ## 4. Развёртывание
 
-На Mac откройте `ml-service/k8s/app.yaml`, замените `REPLACE_WITH_DOCKERHUB_USER` на логин, использованный при публикации, и сверьте namespace. Перед применением убедитесь, что выбран учебный контекст.
+На Mac откройте `ml-service/k8s/app.yaml`, замените `REPLACE_WITH_DOCKERHUB_USER` на логин, использованный при публикации, и убедитесь, что namespace остался `itmo-student-13`. Перед применением убедитесь, что выбран учебный контекст.
 
 ```bash
 cd "$MLOPS_DIR/lab1"
 kubectl config current-context
-kubectl -n mlops-students get deploy,svc,cm \
+kubectl -n itmo-student-13 get deploy,svc,cm \
   -l app.kubernetes.io/instance=oleinikov-iris
 kubectl apply --dry-run=client -f ml-service/k8s/app.yaml
 kubectl apply --dry-run=server -f ml-service/k8s/app.yaml
 kubectl apply -f ml-service/k8s/app.yaml
-kubectl -n mlops-students rollout status deploy/oleinikov-iris --timeout=180s
-kubectl -n mlops-students get deploy,svc,pods \
+kubectl -n itmo-student-13 rollout status deploy/oleinikov-iris --timeout=180s
+kubectl -n itmo-student-13 get deploy,svc,pods \
   -l app.kubernetes.io/instance=oleinikov-iris
-kubectl -n mlops-students port-forward svc/oleinikov-iris 8000:80
+kubectl -n itmo-student-13 port-forward svc/oleinikov-iris 8000:80
 ```
 
 Обе проверки `kubectl apply --dry-run` выполняйте после подключения kubeconfig. Если ресурсы с этим именем уже существуют, сначала выясните их принадлежность.
@@ -135,9 +145,9 @@ kubectl -n mlops-students port-forward svc/oleinikov-iris 8000:80
 Если под не готов:
 
 ```bash
-kubectl -n mlops-students describe pod \
+kubectl -n itmo-student-13 describe pod \
   -l app.kubernetes.io/instance=oleinikov-iris
-kubectl -n mlops-students logs deploy/oleinikov-iris --tail=100
+kubectl -n itmo-student-13 logs deploy/oleinikov-iris --tail=100
 ```
 
 После успешной проверки отметьте оставшиеся пункты в [STATUS.md](STATUS.md).
