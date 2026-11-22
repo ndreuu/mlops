@@ -2,14 +2,14 @@ import hashlib
 from pathlib import Path
 import urllib.request
 
-revision='7ae557604adf67be50417f59c2c2f167def9a775'
-url=f'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct/resolve/{revision}/tokenizer.json'
+revision='c1899de289a04d12100db370d81485cdf75e47ca'
+url=f'https://huggingface.co/Qwen/Qwen3-0.6B/resolve/{revision}/tokenizer.json'
 target=Path('assets/tokenizer.json')
 target.parent.mkdir(parents=True,exist_ok=True)
 if not target.exists():
     with urllib.request.urlopen(url,timeout=60) as response:
         target.write_bytes(response.read())
 checksum=hashlib.sha256(target.read_bytes()).hexdigest()
-if checksum!='c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539':
+if checksum!='aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4':
     raise ValueError('Tokenizer checksum mismatch')
 print('tokenizer_sha256='+checksum)

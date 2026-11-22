@@ -1,0 +1,149 @@
+{
+  "observed_at": "2026-11-22T19:20:31.289418+00:00",
+  "context": "itmo-student-13",
+  "namespace": "itmo-student-13",
+  "deployments": [
+    {
+      "name": "oleinikov-lab3-ollama",
+      "replicas": 1,
+      "ready": 1,
+      "containers": [
+        {
+          "name": "ollama",
+          "image": "docker.io/ndreuu/oleinikov-iris@sha256:2b7440bdd4adbdf78c51e302f89c172fcec0ffa2528cb57513ad3c0fafab0845",
+          "resources": {
+            "limits": {
+              "cpu": "850m",
+              "memory": "1728Mi"
+            },
+            "requests": {
+              "cpu": "500m",
+              "memory": "1152Mi"
+            }
+          }
+        }
+      ],
+      "automountServiceAccountToken": false
+    },
+    {
+      "name": "oleinikov-lab3-kb-mcp",
+      "replicas": 1,
+      "ready": 1,
+      "containers": [
+        {
+          "name": "mcp",
+          "image": "docker.io/ndreuu/oleinikov-iris@sha256:a08221f670de53bd0a04c17ceae42dc917c89cd3f2ed5fad6b6e685bf8334c1a",
+          "resources": {
+            "limits": {
+              "cpu": "100m",
+              "memory": "192Mi"
+            },
+            "requests": {
+              "cpu": "50m",
+              "memory": "96Mi"
+            }
+          }
+        }
+      ],
+      "automountServiceAccountToken": false
+    },
+    {
+      "name": "oleinikov-lab3-portal",
+      "replicas": 1,
+      "ready": 1,
+      "containers": [
+        {
+          "name": "portal",
+          "image": "docker.io/ndreuu/oleinikov-iris@sha256:a08221f670de53bd0a04c17ceae42dc917c89cd3f2ed5fad6b6e685bf8334c1a",
+          "resources": {
+            "limits": {
+              "cpu": "125m",
+              "memory": "256Mi"
+            },
+            "requests": {
+              "cpu": "50m",
+              "memory": "128Mi"
+            }
+          }
+        }
+      ],
+      "automountServiceAccountToken": false
+    },
+    {
+      "name": "oleinikov-lab3-cloud-mock",
+      "replicas": 1,
+      "ready": 1,
+      "containers": [
+        {
+          "name": "mock",
+          "image": "docker.io/ndreuu/oleinikov-iris@sha256:a08221f670de53bd0a04c17ceae42dc917c89cd3f2ed5fad6b6e685bf8334c1a",
+          "resources": {
+            "limits": {
+              "cpu": "25m",
+              "memory": "64Mi"
+            },
+            "requests": {
+              "cpu": "10m",
+              "memory": "32Mi"
+            }
+          }
+        }
+      ],
+      "automountServiceAccountToken": false
+    }
+  ],
+  "pods": [
+    {
+      "name": "oleinikov-lab3-cloud-mock-7ddb4b8cf5-lgjm5",
+      "uid": "f56ec565-68fc-4365-804d-7c5d268d5736",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "mock",
+          "imageID": "docker.io/ndreuu/oleinikov-iris@sha256:a08221f670de53bd0a04c17ceae42dc917c89cd3f2ed5fad6b6e685bf8334c1a",
+          "ready": true,
+          "restartCount": 0
+        }
+      ]
+    },
+    {
+      "name": "oleinikov-lab3-kb-mcp-5976b5bc6-h6x2v",
+      "uid": "45795efa-0d66-4e21-b20e-754ebdcab17e",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "mcp",
+          "imageID": "docker.io/ndreuu/oleinikov-iris@sha256:a08221f670de53bd0a04c17ceae42dc917c89cd3f2ed5fad6b6e685bf8334c1a",
+          "ready": true,
+          "restartCount": 0
+        }
+      ]
+    },
+    {
+      "name": "oleinikov-lab3-ollama-d5f789699-d7hcl",
+      "uid": "fe4bde4e-c528-462c-a295-0a804ee9d3cf",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "ollama",
+          "imageID": "docker.io/ndreuu/oleinikov-iris@sha256:2b7440bdd4adbdf78c51e302f89c172fcec0ffa2528cb57513ad3c0fafab0845",
+          "ready": true,
+          "restartCount": 0
+        }
+      ]
+    },
+    {
+      "name": "oleinikov-lab3-portal-677969f847-fcm9h",
+      "uid": "962151d3-8dec-44ed-938a-0881f7ff5ab8",
+      "phase": "Running",
+      "containers": [
+        {
+          "name": "portal",
+          "imageID": "docker.io/ndreuu/oleinikov-iris@sha256:a08221f670de53bd0a04c17ceae42dc917c89cd3f2ed5fad6b6e685bf8334c1a",
+          "ready": true,
+          "restartCount": 0
+        }
+      ]
+    }
+  ]
+}

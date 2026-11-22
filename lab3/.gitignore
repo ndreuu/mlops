@@ -4,7 +4,6 @@ tokenizer.json
 *.env
 data/
 assets/
-
-model/weights-qwen/
-
+model/weights-qwen3/
 model/packed/
+model/weights-qwen/

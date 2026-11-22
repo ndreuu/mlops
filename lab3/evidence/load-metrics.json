@@ -1,0 +1,26 @@
+[
+  {
+    "time": "2026-11-22T19:14:40.697375+00:00",
+    "kubectl_top": "NAME                                         CPU(cores)   MEMORY(bytes)   \noleinikov-lab3-cloud-mock-7ddb4b8cf5-lgjm5   2m           31Mi            \noleinikov-lab3-kb-mcp-5976b5bc6-h6x2v        5m           143Mi           \noleinikov-lab3-ollama-79df9dff8c-5dl95       1m           1097Mi          \noleinikov-lab3-portal-677969f847-fcm9h       7m           144Mi           \n"
+  },
+  {
+    "time": "2026-11-22T19:14:51.258552+00:00",
+    "kubectl_top": "NAME                                         CPU(cores)   MEMORY(bytes)   \noleinikov-lab3-cloud-mock-7ddb4b8cf5-lgjm5   2m           31Mi            \noleinikov-lab3-kb-mcp-5976b5bc6-h6x2v        5m           143Mi           \noleinikov-lab3-ollama-79df9dff8c-5dl95       674m         1490Mi          \noleinikov-lab3-portal-677969f847-fcm9h       6m           144Mi           \n"
+  },
+  {
+    "time": "2026-11-22T19:15:01.606811+00:00",
+    "kubectl_top": "NAME                                         CPU(cores)   MEMORY(bytes)   \noleinikov-lab3-cloud-mock-7ddb4b8cf5-lgjm5   2m           31Mi            \noleinikov-lab3-kb-mcp-5976b5bc6-h6x2v        5m           143Mi           \noleinikov-lab3-ollama-79df9dff8c-5dl95       810m         1574Mi          \noleinikov-lab3-portal-677969f847-fcm9h       8m           144Mi           \n"
+  },
+  {
+    "time": "2026-11-22T19:15:12.261662+00:00",
+    "kubectl_top": "NAME                                         CPU(cores)   MEMORY(bytes)   \noleinikov-lab3-cloud-mock-7ddb4b8cf5-lgjm5   2m           31Mi            \noleinikov-lab3-kb-mcp-5976b5bc6-h6x2v        3m           143Mi           \noleinikov-lab3-ollama-79df9dff8c-5dl95       832m         1261Mi          \noleinikov-lab3-portal-677969f847-fcm9h       7m           144Mi           \n"
+  },
+  {
+    "time": "2026-11-22T19:15:23.014513+00:00",
+    "kubectl_top": "NAME                                         CPU(cores)   MEMORY(bytes)   \noleinikov-lab3-cloud-mock-7ddb4b8cf5-lgjm5   2m           31Mi            \noleinikov-lab3-kb-mcp-5976b5bc6-h6x2v        3m           143Mi           \noleinikov-lab3-ollama-79df9dff8c-5dl95       832m         1261Mi          \noleinikov-lab3-portal-677969f847-fcm9h       7m           144Mi           \n"
+  },
+  {
+    "time": "2026-11-22T19:15:33.482872+00:00",
+    "kubectl_top": "NAME                                         CPU(cores)   MEMORY(bytes)   \noleinikov-lab3-cloud-mock-7ddb4b8cf5-lgjm5   2m           31Mi            \noleinikov-lab3-kb-mcp-5976b5bc6-h6x2v        4m           143Mi           \noleinikov-lab3-ollama-79df9dff8c-5dl95       820m         1251Mi          \noleinikov-lab3-portal-677969f847-fcm9h       6m           144Mi           \n"
+  }
+]

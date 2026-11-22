@@ -1,0 +1,5 @@
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+oleinikov-lab3-cloud-mock   1/1     1            1           3h16m
+oleinikov-lab3-kb-mcp       1/1     1            1           3h16m
+oleinikov-lab3-ollama       1/1     1            1           3h16m
+oleinikov-lab3-portal       1/1     1            1           3h16m

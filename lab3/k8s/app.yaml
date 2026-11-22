@@ -6,7 +6,7 @@ metadata:
 data:
   MCP_URL: http://oleinikov-lab3-kb-mcp:8000/mcp
   LOCAL_BASE_URL: http://oleinikov-lab3-ollama:11434
-  LOCAL_MODEL: qwen2.5:0.5b
+  LOCAL_MODEL: qwen3:0.6b
   CLOUD_BASE_URL: https://api.llm7.io/v1
   CLOUD_MODEL: default
   MOCK_BASE_URL: http://oleinikov-lab3-cloud-mock:8000/v1
@@ -43,7 +43,7 @@ spec:
           livenessProbe: {httpGet: {path: /livez, port: health}, periodSeconds: 15}
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           volumeMounts: [{name: temporary, mountPath: /tmp}]
-      volumes: [{name: temporary, emptyDir: {sizeLimit: 512Mi}}]
+      volumes: [{name: temporary, emptyDir: {sizeLimit: 640Mi}}]
 ---
 apiVersion: v1
 kind: Service

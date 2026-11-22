@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false TO
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && useradd --uid 10001 --no-create-home app
 COPY assets/tokenizer.json /opt/tokenizer.json
-RUN echo 'c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539  /opt/tokenizer.json' | sha256sum -c -
+RUN echo 'aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4  /opt/tokenizer.json' | sha256sum -c -
 COPY app app
 USER 10001
 EXPOSE 8000

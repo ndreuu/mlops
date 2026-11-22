@@ -14,7 +14,7 @@ import urllib.request
 catalog=Path('/tmp/ollama-models')
 catalog.mkdir(exist_ok=True)
 shutil.copytree('/models/blobs',catalog/'blobs',dirs_exist_ok=True)
-weight_hash='c5396e06af294bd101b30dce59131a76d2b773e76950acc870eda801d3ab0515'
+weight_hash='7f4030143c1c477224c5434f8272c662a8b042079a0a584f0a27a1684fe2e1fa'
 weight_path=catalog/'blobs'/('sha256-'+weight_hash)
 if not weight_path.exists() or hashlib.file_digest(weight_path.open('rb'),'sha256').hexdigest()!=weight_hash:
     weight_path.unlink(missing_ok=True)
@@ -36,7 +36,7 @@ ready=False
 
 def warmup():
     global ready
-    payload=json.dumps({'model':'qwen2.5:0.5b','prompt':'','stream':False,'keep_alive':-1,
+    payload=json.dumps({'model':'qwen3:0.6b','prompt':'','stream':False,'keep_alive':-1,
                        'options':{'num_gpu':0,'num_ctx':2048,'num_thread':1}}).encode()
     while process.poll() is None:
         try:
@@ -56,7 +56,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
             return
         healthy=process.poll() is None and (ready or self.path=='/livez')
-        body=json.dumps({'status':'ready' if healthy else 'loading','model':'qwen2.5:0.5b','compute':'cpu'}).encode()
+        body=json.dumps({'status':'ready' if healthy else 'loading','model':'qwen3:0.6b','compute':'cpu'}).encode()
         self.send_response(200 if healthy else 503)
         self.send_header('Content-Type','application/json')
         self.send_header('Content-Length',str(len(body)))

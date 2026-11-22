@@ -6,14 +6,14 @@ import urllib.request
 
 root=Path(os.getenv('MODEL_ROOT','/models'))
 root.mkdir(parents=True,exist_ok=True)
-base='https://registry.ollama.ai/v2/library/qwen2.5'
-with urllib.request.urlopen(base+'/manifests/0.5b',timeout=30) as response:
+base='https://registry.ollama.ai/v2/library/qwen3'
+with urllib.request.urlopen(base+'/manifests/0.6b',timeout=30) as response:
     raw=response.read()
 manifest=json.loads(raw)
-if hashlib.sha256(raw).hexdigest()!='a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67':
+if hashlib.sha256(raw).hexdigest()!='7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435':
     raise ValueError('Ollama manifest changed; review before updating the pinned model')
 weights=[x for x in manifest['layers'] if x['mediaType']=='application/vnd.ollama.image.model']
-assert len(weights)==1 and weights[0]['digest']=='sha256:c5396e06af294bd101b30dce59131a76d2b773e76950acc870eda801d3ab0515'
+assert len(weights)==1 and weights[0]['digest']=='sha256:7f4030143c1c477224c5434f8272c662a8b042079a0a584f0a27a1684fe2e1fa'
 for layer in [manifest['config']]+manifest['layers']:
     digest=layer['digest'].split(':')[1]
     destination=root/'blobs'/('sha256-'+digest)
@@ -27,9 +27,9 @@ for layer in [manifest['config']]+manifest['layers']:
     if checksum!=digest or destination.stat().st_size!=layer['size']:
         raise ValueError('Model blob checksum/size mismatch')
     destination.chmod(0o444)
-destination=root/'manifests/registry.ollama.ai/library/qwen2.5/0.5b'
+destination=root/'manifests/registry.ollama.ai/library/qwen3/0.6b'
 destination.parent.mkdir(parents=True,exist_ok=True)
 destination.write_bytes(raw)
 destination.chmod(0o444)
-print(json.dumps({'model':'qwen2.5:0.5b','weights_sha256':weights[0]['digest'],
+print(json.dumps({'model':'qwen3:0.6b','weights_sha256':weights[0]['digest'],
                   'weights_bytes':weights[0]['size'],'manifest_sha256':hashlib.sha256(raw).hexdigest()}),flush=True)

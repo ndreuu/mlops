@@ -23,6 +23,10 @@ COPY model/packed/parts/part08 /model-parts/part08
 COPY model/packed/parts/part09 /model-parts/part09
 COPY model/packed/parts/part10 /model-parts/part10
 COPY model/packed/parts/part11 /model-parts/part11
+COPY model/packed/parts/part12 /model-parts/part12
+COPY model/packed/parts/part13 /model-parts/part13
+COPY model/packed/parts/part14 /model-parts/part14
+COPY model/packed/parts/part15 /model-parts/part15
 RUN useradd --uid 10001 --no-create-home app
 COPY model/runner.py /opt/runner.py
 ENV OLLAMA_HOST=0.0.0.0:11434 OLLAMA_MODELS=/models OLLAMA_NUM_PARALLEL=1 OLLAMA_MAX_LOADED_MODELS=1 \

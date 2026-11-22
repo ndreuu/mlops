@@ -30,18 +30,22 @@ with httpx.Client(timeout=95) as client:
             row.update(route=value['route'],reason=value['reason'],answer=value['answer'],
                        fact_checks={fact:bool(re.search(fact,answer)) for fact in case['facts']},
                        sources=[{k:s[k] for k in ('number','doc_id','version','anchor','url','status')} for s in value['sources']],
-                       calls=value['calls'],prompt_tokens=value['prompt_tokens'],model_metrics=value['model_metrics'])
+                       answer_mode=value.get('answer_mode','text'),calls=value['calls'],prompt_tokens=value['prompt_tokens'],model_metrics=value['model_metrics'])
             row['answer_passed']=all(row['fact_checks'].values())
-            row['generated_answer_passed']=row['answer_passed'] and value['route'] in ('local','cloud')
+            row['generated_answer_passed']=row['answer_passed'] and value['route'] in ('local','cloud') and value.get('answer_mode')!='extractive'
+            row['model_selected_quotes_passed']=row['answer_passed'] and value['route']=='local' and value.get('answer_mode')=='extractive'
         report['cases'].append(row)
         args.output.parent.mkdir(parents=True,exist_ok=True)
         args.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
-        print(json.dumps({k:row[k] for k in ('id','retrieval_passed','route','answer_passed','generated_answer_passed','seconds') if k in row},ensure_ascii=False),flush=True)
+        print(json.dumps({k:row[k] for k in ('id','retrieval_passed','route','answer_passed','generated_answer_passed','model_selected_quotes_passed','seconds') if k in row},ensure_ascii=False),flush=True)
 report['retrieval_passed']=sum(r['retrieval_passed'] for r in report['cases'])
 if not args.search_only:
     report['answers_passed']=sum(r['answer_passed'] for r in report['cases'])
     report['generated_answers_passed']=sum(r['generated_answer_passed'] for r in report['cases'])
+    report['model_selected_quotes_passed']=sum(r['model_selected_quotes_passed'] for r in report['cases'])
 args.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
 print('Retrieval:',report['retrieval_passed'],'/',len(cases),flush=True)
 if not args.search_only:
-    print('Generated answers:',report['generated_answers_passed'],'/',len(cases),flush=True)
+    print('Fact checks:',report['answers_passed'],'/',len(cases),flush=True)
+    print('Model-selected quotes:',report['model_selected_quotes_passed'],'/',len(cases),flush=True)
+    print('Generated text outputs:',report['generated_answers_passed'],flush=True)

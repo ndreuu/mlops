@@ -35,6 +35,11 @@ async def main():
             return response.json()
         async def state():
             return (await client.get(args.base_url+'/api/state')).json()
+        async def recover():
+            retry=(await state())['circuits']['mock']['retry_in_seconds']
+            if retry>0:
+                await asyncio.sleep(retry+.1)
+            return await ask('ok')
         async def wait_count(count):
             for _ in range(100):
                 value=await state()
@@ -54,12 +59,12 @@ async def main():
         a,b=await asyncio.gather(first,second)
         save('429_to_cpu',a,a['route']=='local' and a['reason']=='cloud_429' and a['calls']=={'mcp':1,'cloud':1,'local':1})
         save('open_circuit_skips_cloud',b,b['route']=='local' and b['reason'].startswith('circuit_open:') and b['calls']['cloud']==0)
-        recovered=await ask('ok')
+        recovered=await recover()
         save('cloud_recovery',recovered,recovered['route']=='cloud' and recovered['circuit']['state']=='closed')
         for fault,reason in [('quota','cloud_quota'),('503','cloud_503'),('timeout','cloud_timeout'),('invalid_citations','cloud_invalid_answer')]:
             value=await ask(fault)
             save(fault+'_to_cpu',value,value['route']=='local' and value['reason']==reason and value['calls']=={'mcp':1,'cloud':1,'local':1})
-            value=await ask('ok')
+            value=await recover()
             save(fault+'_recovery',value,value['route']=='cloud' and value['circuit']['state']=='closed')
         value=await ask('both_down')
         save('both_unavailable',value,value['route']=='search_only' and bool(value['cards']) and value['calls']=={'mcp':1,'cloud':1,'local':1})
@@ -91,7 +96,7 @@ async def main():
         await wait_count(0)
         save('disconnect_releases_slot',{},True,release_seconds=round(time.monotonic()-started,3))
         value=await ask(private=True)
-        save('generation_after_cancel',value,value['route']=='local')
+        save('generation_after_cancel',value,value['route']=='local' and value['calls']['local']==1)
     report['passed']=all(c['passed'] for c in report['cases'])
     args.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
 

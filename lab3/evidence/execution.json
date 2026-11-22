@@ -1,0 +1,24 @@
+{
+  "observed_at_utc": "2026-11-22T19:22:33.797234+00:00",
+  "context": "itmo-student-13",
+  "namespace": "itmo-student-13",
+  "model": "qwen3:0.6b",
+  "cpu_answer_mode": "model-selected exact quotes (JSON Schema)",
+  "cloud_real_verified": false,
+  "cloud_test_provider": "synthetic-cloud-mock",
+  "images": {
+    "model": {
+      "repository": "docker.io/ndreuu/oleinikov-iris",
+      "tag": "lab3-ollama-26bf2dec3102",
+      "digest": "sha256:2b7440bdd4adbdf78c51e302f89c172fcec0ffa2528cb57513ad3c0fafab0845",
+      "local_image_id": "sha256:26bf2dec31023cbbb0e233dd671a26c2e7cc463784dd87cb7937b6cc128eac50"
+    },
+    "app": {
+      "repository": "docker.io/ndreuu/oleinikov-iris",
+      "tag": "lab3-rag-3347eb378d0e",
+      "digest": "sha256:a08221f670de53bd0a04c17ceae42dc917c89cd3f2ed5fad6b6e685bf8334c1a",
+      "local_image_id": "sha256:3347eb378d0e1b9534b90430618cf422facf235cd6af6a3435a46a839fbd81ed"
+    }
+  },
+  "commands_working_directory": "lab3; README commands reproduce the captured checks"
+}

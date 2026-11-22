@@ -1,0 +1,16 @@
+{
+  "generation": "b2f0d318b8cefa1fcdc582c860564dd9ed9a5c2433bce62e20f7cfea596d0a26",
+  "records": 36,
+  "unique_ids": 35,
+  "sections": 6,
+  "paths": 12,
+  "missing_visibility_rejected": true,
+  "maximum_chunk_tokens": 156,
+  "original_injection_quote_preserved": true,
+  "unsafe_excerpt_excluded": true,
+  "query_escaping_passed": true,
+  "grounded_quote_checks_passed": true,
+  "half_open_one_probe_passed": true,
+  "retry_after_seconds_and_date_passed": true,
+  "passed": true
+}

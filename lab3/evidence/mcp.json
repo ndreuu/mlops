@@ -1,0 +1,142 @@
+{
+  "protocol_version": "2025-11-25",
+  "tools": [
+    {
+      "name": "list_sections",
+      "inputSchema": {
+        "properties": {},
+        "title": "list_sectionsArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "list_sectionsDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_docs",
+      "inputSchema": {
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "limit": {
+            "default": 5,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Path"
+          },
+          "statuses": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Statuses"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Version"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "search_docsArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "search_docsDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_doc",
+      "inputSchema": {
+        "properties": {
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id",
+          "version"
+        ],
+        "title": "get_docArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_docDictOutput",
+        "type": "object"
+      }
+    }
+  ],
+  "records": 36,
+  "unique_ids": 35,
+  "sections": 6,
+  "paths": 12,
+  "generation": "b2f0d318b8cefa1fcdc582c860564dd9ed9a5c2433bce62e20f7cfea596d0a26",
+  "top5": [
+    "M-05@2.0",
+    "B-04@1.1",
+    "S-05@1.2",
+    "B-01@1.2",
+    "B-03@1.2"
+  ],
+  "versions": [
+    {
+      "id": "M-05",
+      "version": "1.1",
+      "status": "Архив",
+      "url": "/docs/M-05/1.1"
+    },
+    {
+      "id": "M-05",
+      "version": "2.0",
+      "status": "Действует",
+      "url": "/docs/M-05/2.0"
+    }
+  ],
+  "missing_version_is_error": true,
+  "without_token_status": 401,
+  "forbidden_origin_status": 403,
+  "passed": true
+}
