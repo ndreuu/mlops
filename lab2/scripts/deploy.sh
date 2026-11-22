@@ -37,7 +37,7 @@ helm upgrade --install "$release" helm/mlops-search -n "$namespace" \
   --set-string "rankingMode=$mode" | tee "$report_dir/upgrade.log"
 
 candidate_passed=true
-if ! helm test "$release" -n "$namespace" --logs --timeout 120s > "$report_dir/helm-test.log" 2>&1; then
+if ! helm test "$release" -n "$namespace" --timeout 120s > "$report_dir/helm-test.log" 2>&1; then
   candidate_passed=false
 fi
 cat "$report_dir/helm-test.log"
