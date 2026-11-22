@@ -1,0 +1,438 @@
+[
+  {
+    "id": "python-version",
+    "time": "2026-11-22T14:14:56.357087+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python --version",
+    "output": "Python 3.12.16\n",
+    "exit_code": 0
+  },
+  {
+    "id": "index",
+    "time": "2026-11-22T14:15:09.935224+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python scripts/build_index.py --output artifacts",
+    "output": "{\"artifact_schema\": \"runbook-search-index/v1\", \"model_name\": \"runbook-hybrid-tfidf\", \"model_type\": \"tfidf-word-char-cosine\", \"index_version\": \"58431e4d09c7\", \"corpus_sha256\": \"58431e4d09c73dff690feb751eea4d1d09f7d6a61d1461ad4b7f28e223686757\", \"documents\": 12, \"features\": 4068}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "pytest",
+    "time": "2026-11-22T14:15:13.390024+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python -m pytest -q",
+    "output": "..                                                                       [100%]\n=============================== warnings summary ===============================\n.venv/lib/python3.12/site-packages/starlette/testclient.py:51\n  /Users/andrew/Projects/mlops/lab2/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 1 warning in 2.91s\n",
+    "exit_code": 0
+  },
+  {
+    "id": "quality",
+    "time": "2026-11-22T14:15:13.849092+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python scripts/evaluate.py --artifact-dir artifacts",
+    "output": "{\n  \"ranking_mode\": \"normal\",\n  \"mrr\": 0.9375,\n  \"recall_at_3\": 1.0,\n  \"cases\": [\n    {\n      \"query\": \"как вернуть предыдущую модель после плохого релиза\",\n      \"top3\": [\n        \"doc-rollback\",\n        \"doc-probes\",\n        \"doc-canary\"\n      ],\n      \"relevant\": [\n        \"doc-rollback\"\n      ]\n    },\n    {\n      \"query\": \"pod запущен но трафик на него не идет readiness\",\n      \"top3\": [\n        \"doc-probes\",\n        \"doc-canary\",\n        \"doc-scaling\"\n      ],\n      \"relevant\": [\n        \"doc-probes\"\n      ]\n    },\n    {\n      \"query\": \"как хранить пароль registry и ограничить права\",\n      \"top3\": [\n        \"doc-registry\",\n        \"doc-security\",\n        \"doc-scaling\"\n      ],\n      \"relevant\": [\n        \"doc-security\"\n      ]\n    },\n    {\n      \"query\": \"почему HTTP 200 есть а поиск стал хуже\",\n      \"top3\": [\n        \"doc-observability\",\n        \"doc-probes\",\n        \"doc-registry\"\n      ],\n      \"relevant\": [\n        \"doc-drift\",\n        \"doc-observability\"\n      ]\n    },\n    {\n      \"query\": \"один и тот же образ перенести из staging в production\",\n      \"top3\": [\n        \"doc-ci\",\n        \"doc-container\",\n        \"doc-security\"\n      ],\n      \"relevant\": [\n        \"doc-ci\",\n        \"doc-container\"\n      ]\n    },\n    {\n      \"query\": \"реплики по загрузке процессора requests limits\",\n      \"top3\": [\n        \"doc-scaling\",\n        \"doc-probes\",\n        \"doc-ci\"\n      ],\n      \"relevant\": [\n        \"doc-scaling\"\n      ]\n    },\n    {\n      \"query\": \"связать модель данные commit и метрики\",\n      \"top3\": [\n        \"doc-registry\",\n        \"doc-scaling\",\n        \"doc-canary\"\n      ],\n      \"relevant\": [\n        \"doc-registry\",\n        \"doc-data\"\n      ]\n    },\n    {\n      \"query\": \"маленькая доля трафика новой версии модели\",\n      \"top3\": [\n        \"doc-canary\",\n        \"doc-registry\",\n        \"doc-probes\"\n      ],\n      \"relevant\": [\n        \"doc-canary\"\n      ]\n    }\n  ]\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "negative-quality",
+    "time": "2026-11-22T14:15:14.304078+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python scripts/evaluate.py --artifact-dir artifacts --ranking-mode reverse",
+    "output": "{\n  \"ranking_mode\": \"reverse\",\n  \"mrr\": 0.0,\n  \"recall_at_3\": 0.0,\n  \"cases\": [\n    {\n      \"query\": \"как вернуть предыдущую модель после плохого релиза\",\n      \"top3\": [\n        \"doc-security\",\n        \"doc-features\",\n        \"doc-data\"\n      ],\n      \"relevant\": [\n        \"doc-rollback\"\n      ]\n    },\n    {\n      \"query\": \"pod запущен но трафик на него не идет readiness\",\n      \"top3\": [\n        \"doc-rollback\",\n        \"doc-drift\",\n        \"doc-registry\"\n      ],\n      \"relevant\": [\n        \"doc-probes\"\n      ]\n    },\n    {\n      \"query\": \"как хранить пароль registry и ограничить права\",\n      \"top3\": [\n        \"doc-features\",\n        \"doc-data\",\n        \"doc-ci\"\n      ],\n      \"relevant\": [\n        \"doc-security\"\n      ]\n    },\n    {\n      \"query\": \"почему HTTP 200 есть а поиск стал хуже\",\n      \"top3\": [\n        \"doc-container\",\n        \"doc-data\",\n        \"doc-rollback\"\n      ],\n      \"relevant\": [\n        \"doc-drift\",\n        \"doc-observability\"\n      ]\n    },\n    {\n      \"query\": \"один и тот же образ перенести из staging в production\",\n      \"top3\": [\n        \"doc-canary\",\n        \"doc-drift\",\n        \"doc-rollback\"\n      ],\n      \"relevant\": [\n        \"doc-ci\",\n        \"doc-container\"\n      ]\n    },\n    {\n      \"query\": \"реплики по загрузке процессора requests limits\",\n      \"top3\": [\n        \"doc-observability\",\n        \"doc-security\",\n        \"doc-canary\"\n      ],\n      \"relevant\": [\n        \"doc-scaling\"\n      ]\n    },\n    {\n      \"query\": \"связать модель данные commit и метрики\",\n      \"top3\": [\n        \"doc-features\",\n        \"doc-security\",\n        \"doc-drift\"\n      ],\n      \"relevant\": [\n        \"doc-registry\",\n        \"doc-data\"\n      ]\n    },\n    {\n      \"query\": \"маленькая доля трафика новой версии модели\",\n      \"top3\": [\n        \"doc-security\",\n        \"doc-features\",\n        \"doc-drift\"\n      ],\n      \"relevant\": [\n        \"doc-canary\"\n      ]\n    }\n  ]\n}\nquality gate failed\n",
+    "exit_code": 1
+  },
+  {
+    "id": "helm-version",
+    "time": "2026-11-22T14:15:14.394517+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "helm version --short",
+    "output": "v3.19.0+g3d8990f\n",
+    "exit_code": 0
+  },
+  {
+    "id": "helm-empty-digest",
+    "time": "2026-11-22T14:15:14.417281+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "helm template invalid helm/mlops-search",
+    "output": "Error: execution error at (mlops-search/templates/deployment.yaml:24:28): image.digest is required\n\nUse --debug flag to render out invalid YAML\n",
+    "exit_code": 1
+  },
+  {
+    "id": "helm-invalid-digest",
+    "time": "2026-11-22T14:15:14.440217+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "helm template invalid helm/mlops-search --set image.digest=sha256:bad",
+    "output": "Error: execution error at (mlops-search/templates/deployment.yaml:24:28): image.digest must be sha256 followed by 64 lowercase hex characters\n\nUse --debug flag to render out invalid YAML\n",
+    "exit_code": 1
+  },
+  {
+    "id": "local-smoke",
+    "time": "2026-11-22T14:15:15.600238+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python scripts/smoke_local.py --base-url http://127.0.0.1:18082",
+    "output": "{\n  \"ready\": {\n    \"status\": \"ready\",\n    \"index_version\": \"58431e4d09c7\",\n    \"documents\": 12\n  },\n  \"search\": {\n    \"request_id\": \"1bc39410-237d-4307-94c9-95517499edc7\",\n    \"query\": \"как вернуть предыдущую модель после плохого релиза\",\n    \"took_ms\": 1.037,\n    \"index_version\": \"58431e4d09c7\",\n    \"results\": [\n      {\n        \"id\": \"doc-rollback\",\n        \"title\": \"Откат релиза\",\n        \"tags\": [\n          \"rollback\",\n          \"helm\",\n          \"release\",\n          \"incident\"\n        ],\n        \"score\": 0.338827,\n        \"summary\": \"Rollback возвращает последнюю согласованную версию кода модели tokenizer данных и индекса. Перед обновлением сохраните revision, после неуспешного smoke test выполните helm rollback.\"\n      },\n      {\n        \"id\": \"doc-probes\",\n        \"title\": \"Проверки Kubernetes\",\n        \"tags\": [\n          \"kubernetes\",\n          \"health\",\n          \"readiness\",\n          \"liveness\"\n        ],\n        \"score\": 0.144924,\n        \"summary\": \"Liveness определяет нужно ли перезапустить процесс. Readiness разрешает направлять трафик только после загрузки модели и индекса. Startup probe подходит для долгого старта.\"\n      },\n      {\n        \"id\": \"doc-canary\",\n        \"title\": \"Canary-релиз модели\",\n        \"tags\": [\n          \"canary\",\n          \"deployment\",\n          \"experiment\",\n          \"rollback\"\n        ],\n        \"score\": 0.130073,\n        \"summary\": \"Новая модель получает малую долю трафика. Сравните latency errors и качество, задайте критерии остановки, затем увеличьте трафик или выполните rollback.\"\n      }\n    ]\n  }\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "local-readyz",
+    "time": "2026-11-22T14:15:15.613607+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "curl -fsS http://127.0.0.1:18082/readyz",
+    "output": "{\"status\":\"ready\",\"index_version\":\"58431e4d09c7\",\"documents\":12}",
+    "exit_code": 0
+  },
+  {
+    "id": "local-meta",
+    "time": "2026-11-22T14:15:15.623315+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "curl -fsS http://127.0.0.1:18082/meta",
+    "output": "{\"service\":\"runbook-search-api\",\"service_version\":\"dev\",\"build_revision\":\"local\",\"image_digest\":\"local\",\"environment\":\"local\",\"ranking_mode\":\"normal\",\"index_version\":\"58431e4d09c7\",\"model_type\":\"tfidf-word-char-cosine\",\"documents\":12}",
+    "exit_code": 0
+  },
+  {
+    "id": "local-metrics",
+    "time": "2026-11-22T14:15:15.631779+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "curl -fsS http://127.0.0.1:18082/metrics",
+    "output": "# HELP http_requests_total Total HTTP requests processed.\n# TYPE http_requests_total counter\nhttp_requests_total 4\n# HELP search_requests_total Total retrieval requests processed.\n# TYPE search_requests_total counter\nsearch_requests_total 1\n# HELP search_request_duration_seconds_sum Cumulative retrieval latency.\n# TYPE search_request_duration_seconds_sum counter\nsearch_request_duration_seconds_sum 0.001037\n# HELP search_index_loaded Whether the search index is loaded.\n# TYPE search_index_loaded gauge\nsearch_index_loaded 1\n",
+    "exit_code": 0
+  },
+  {
+    "id": "local-v1-documents-doc-rollback-recommendations",
+    "time": "2026-11-22T14:15:15.641131+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "curl -fsS http://127.0.0.1:18082/v1/documents/doc-rollback/recommendations",
+    "output": "{\"document_id\":\"doc-rollback\",\"index_version\":\"58431e4d09c7\",\"results\":[{\"id\":\"doc-canary\",\"title\":\"Canary-релиз модели\",\"tags\":[\"canary\",\"deployment\",\"experiment\",\"rollback\"],\"score\":0.370734,\"summary\":\"Новая модель получает малую долю трафика. Сравните latency errors и качество, задайте критерии остановки, затем увеличьте трафик или выполните rollback.\"},{\"id\":\"doc-probes\",\"title\":\"Проверки Kubernetes\",\"tags\":[\"kubernetes\",\"health\",\"readiness\",\"liveness\"],\"score\":0.081229,\"summary\":\"Liveness определяет нужно ли перезапустить процесс. Readiness разрешает направлять трафик только после загрузки модели и индекса. Startup probe подходит для долгого старта.\"},{\"id\":\"doc-observability\",\"title\":\"Наблюдаемость ML-сервиса\",\"tags\":[\"monitoring\",\"metrics\",\"logs\",\"slo\"],\"score\":0.073088,\"summary\":\"Следите за latency traffic errors saturation, структурированными логами, версией модели и распределением входных данных. HTTP 200 не гарантирует качество ранжирования.\"}]}",
+    "exit_code": 0
+  },
+  {
+    "id": "local-uvicorn",
+    "time": "2026-11-22T14:15:15.879576+00:00",
+    "host": "MacBook (macOS)",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 18082",
+    "output": "INFO:     Started server process [58258]\nINFO:     Waiting for application startup.\n{\"event\": \"service_ready\", \"service\": \"runbook-search-api\", \"index_version\": \"58431e4d09c7\", \"documents\": 12}\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:18082 (Press CTRL+C to quit)\n{\"event\": \"http_request\", \"request_id\": \"30cb21cc-95f1-490c-b6ed-c4be88db8006\", \"method\": \"GET\", \"path\": \"/readyz\", \"status\": 200, \"duration_ms\": 0.58}\nINFO:     127.0.0.1:49333 - \"GET /readyz HTTP/1.1\" 200 OK\n{\"event\": \"http_request\", \"request_id\": \"1bc39410-237d-4307-94c9-95517499edc7\", \"method\": \"POST\", \"path\": \"/v1/search\", \"status\": 200, \"duration_ms\": 1.73}\nINFO:     127.0.0.1:49334 - \"POST /v1/search HTTP/1.1\" 200 OK\n{\"event\": \"http_request\", \"request_id\": \"8f3dc5f2-362d-46aa-8c9c-81874333f7ea\", \"method\": \"GET\", \"path\": \"/readyz\", \"status\": 200, \"duration_ms\": 0.5}\nINFO:     127.0.0.1:49335 - \"GET /readyz HTTP/1.1\" 200 OK\n{\"event\": \"http_request\", \"request_id\": \"bbfc56b0-205e-43b3-9968-bde062ca2d4b\", \"method\": \"GET\", \"path\": \"/meta\", \"status\": 200, \"duration_ms\": 0.38}\nINFO:     127.0.0.1:49336 - \"GET /meta HTTP/1.1\" 200 OK\n{\"event\": \"http_request\", \"request_id\": \"49cf5a9b-2491-4477-8c72-0f3722882495\", \"method\": \"GET\", \"path\": \"/metrics\", \"status\": 200, \"duration_ms\": 0.26}\nINFO:     127.0.0.1:49337 - \"GET /metrics HTTP/1.1\" 200 OK\n{\"event\": \"http_request\", \"request_id\": \"e0ad39cb-bbb8-4266-82ac-6db9af42f1a6\", \"method\": \"GET\", \"path\": \"/v1/documents/doc-rollback/recommendations\", \"status\": 200, \"duration_ms\": 0.73}\nINFO:     127.0.0.1:49338 - \"GET /v1/documents/doc-rollback/recommendations HTTP/1.1\" 200 OK\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [58258]\n",
+    "exit_code": 0,
+    "background": true
+  },
+  {
+    "id": "helm-lint-image",
+    "time": "2026-11-22T14:50:29.473683+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "helm lint helm/mlops-search --set-string image.digest=sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --set-string image.repository=docker.io/ndreuu/oleinikov-iris --set-string environment=staging --set-string buildRevision=bb5aab86a1479b3acac1034cbf2385655db6bc58",
+    "output": "==> Linting helm/mlops-search\n[INFO] Chart.yaml: icon is recommended\n\n1 chart(s) linted, 0 chart(s) failed\n",
+    "exit_code": 0
+  },
+  {
+    "id": "helm-render-image",
+    "time": "2026-11-22T14:50:29.496000+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "helm template oleinikov-search-staging helm/mlops-search -n itmo-student-13 --set-string image.digest=sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --set-string image.repository=docker.io/ndreuu/oleinikov-iris --set-string environment=staging --set-string buildRevision=bb5aab86a1479b3acac1034cbf2385655db6bc58",
+    "output": "---\n# Source: mlops-search/templates/configmap.yaml\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: oleinikov-search-staging-mlops-search\n  labels:\n    app.kubernetes.io/name: mlops-search\n    app.kubernetes.io/instance: oleinikov-search-staging\n    app.kubernetes.io/managed-by: Helm\ndata:\n  SERVICE_NAME: \"runbook-search-api\"\n  APP_VERSION: \"1.2.0\"\n  BUILD_REVISION: \"bb5aab86a1479b3acac1034cbf2385655db6bc58\"\n  ENVIRONMENT: \"staging\"\n  RANKING_MODE: \"normal\"\n  IMAGE_DIGEST: \"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\"\n---\n# Source: mlops-search/templates/service.yaml\napiVersion: v1\nkind: Service\nmetadata:\n  name: oleinikov-search-staging-mlops-search\n  labels:\n    app.kubernetes.io/name: mlops-search\n    app.kubernetes.io/instance: oleinikov-search-staging\n    app.kubernetes.io/managed-by: Helm\nspec:\n  type: ClusterIP\n  selector:\n    app.kubernetes.io/name: mlops-search\n    app.kubernetes.io/instance: oleinikov-search-staging\n  ports:\n    - name: http\n      port: 80\n      targetPort: http\n---\n# Source: mlops-search/templates/deployment.yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: oleinikov-search-staging-mlops-search\n  labels:\n    app.kubernetes.io/name: mlops-search\n    app.kubernetes.io/instance: oleinikov-search-staging\n    app.kubernetes.io/managed-by: Helm\nspec:\n  replicas: 1\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxUnavailable: 0\n      maxSurge: 1\n  selector:\n    matchLabels:\n      app.kubernetes.io/name: mlops-search\n      app.kubernetes.io/instance: oleinikov-search-staging\n  template:\n    metadata:\n      labels:\n        app.kubernetes.io/name: mlops-search\n        app.kubernetes.io/instance: oleinikov-search-staging\n      annotations:\n        checksum/config: eb912f5d3da808c8fa6b6eb890bc6afc8a4276dd739d5aab18a55ad0498b1519\n    spec:\n      securityContext:\n        runAsNonRoot: true\n        runAsUser: 10001\n        seccompProfile:\n          type: RuntimeDefault\n      containers:\n        - name: api\n          image: \"docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\"\n          imagePullPolicy: IfNotPresent\n          envFrom:\n            - configMapRef:\n                name: oleinikov-search-staging-mlops-search\n          ports:\n            - name: http\n              containerPort: 8000\n          readinessProbe:\n            httpGet:\n              path: /readyz\n              port: http\n            initialDelaySeconds: 3\n            periodSeconds: 5\n          livenessProbe:\n            httpGet:\n              path: /livez\n              port: http\n            initialDelaySeconds: 10\n            periodSeconds: 10\n          resources:\n            limits:\n              cpu: 500m\n              memory: 512Mi\n            requests:\n              cpu: 150m\n              memory: 256Mi\n          securityContext:\n            allowPrivilegeEscalation: false\n            readOnlyRootFilesystem: true\n            capabilities:\n              drop: [\"ALL\"]\n---\n# Source: mlops-search/templates/tests/test-connection.yaml\napiVersion: v1\nkind: Pod\nmetadata:\n  name: \"oleinikov-search-staging-mlops-search-test\"\n  labels:\n    app.kubernetes.io/name: mlops-search-test\n    app.kubernetes.io/instance: oleinikov-search-staging\n    app.kubernetes.io/managed-by: Helm\n  annotations:\n    \"helm.sh/hook\": test\n    \"helm.sh/hook-delete-policy\": before-hook-creation,hook-succeeded\nspec:\n  restartPolicy: Never\n  securityContext:\n    runAsNonRoot: true\n    runAsUser: 10001\n    seccompProfile:\n      type: RuntimeDefault\n  containers:\n    - name: curl\n      image: curlimages/curl:8.15.0\n      args: [\"--fail\", \"--silent\", \"http://oleinikov-search-staging-mlops-search:80/readyz\"]\n      securityContext:\n        allowPrivilegeEscalation: false\n        readOnlyRootFilesystem: true\n        capabilities:\n          drop: [\"ALL\"]\n      resources:\n        requests:\n          cpu: 10m\n          memory: 16Mi\n        limits:\n          cpu: 50m\n          memory: 32Mi\n",
+    "exit_code": 0
+  },
+  {
+    "id": "compose-up",
+    "time": "2026-11-22T14:16:59.144364+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops",
+    "cwd": "/home/oleinikov/projects/mlops/lab2",
+    "command": "docker compose -p oleinikov-lab2 up -d --build search",
+    "output": " Image oleinikov-search:local Building \n#1 [internal] load local bake definitions\n#1 reading from stdin 537B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile:\n#2 transferring dockerfile: 1.05kB done\n#2 DONE 0.2s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 ...\n\n#4 [auth] library/python:pull token for registry-1.docker.io\n#4 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 1.0s\n\n#5 [internal] load .dockerignore\n#5 transferring context: 120B done\n#5 DONE 0.2s\n\n#6 [builder 1/9] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b\n#6 DONE 0.0s\n\n#7 [internal] load build context\n#7 transferring context: 28.96kB 0.0s done\n#7 DONE 0.2s\n\n#8 [builder 2/9] WORKDIR /build\n#8 CACHED\n\n#9 [builder 3/9] COPY requirements.txt .\n#9 DONE 0.9s\n\n#10 [builder 4/9] RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt\n#10 3.844 Collecting fastapi==0.116.1 (from -r requirements.txt (line 1))\n#10 3.923   Downloading fastapi-0.116.1-py3-none-any.whl.metadata (28 kB)\n#10 3.994 Collecting httpx==0.28.1 (from -r requirements.txt (line 2))\n#10 4.010   Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)\n#10 4.060 Collecting joblib==1.5.1 (from -r requirements.txt (line 3))\n#10 4.077   Downloading joblib-1.5.1-py3-none-any.whl.metadata (5.6 kB)\n#10 4.531 Collecting numpy==2.3.2 (from -r requirements.txt (line 4))\n#10 4.549   Downloading numpy-2.3.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)\n#10 4.734 Collecting scikit-learn==1.7.1 (from -r requirements.txt (line 5))\n#10 4.750   Downloading scikit_learn-1.7.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (11 kB)\n#10 4.831 Collecting uvicorn==0.35.0 (from -r requirements.txt (line 6))\n#10 4.850   Downloading uvicorn-0.35.0-py3-none-any.whl.metadata (6.5 kB)\n#10 4.926 Collecting pytest==8.4.1 (from -r requirements.txt (line 7))\n#10 4.944   Downloading pytest-8.4.1-py3-none-any.whl.metadata (7.7 kB)\n#10 5.016 Collecting starlette<0.48.0,>=0.40.0 (from fastapi==0.116.1->-r requirements.txt (line 1))\n#10 5.036   Downloading starlette-0.47.3-py3-none-any.whl.metadata (6.2 kB)\n#10 5.320 Collecting pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4 (from fastapi==0.116.1->-r requirements.txt (line 1))\n#10 5.339   Downloading pydantic-2.14.4-py3-none-any.whl.metadata (143 kB)\n#10 5.399 Collecting typing-extensions>=4.8.0 (from fastapi==0.116.1->-r requirements.txt (line 1))\n#10 5.416   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)\n#10 5.462 Collecting anyio (from httpx==0.28.1->-r requirements.txt (line 2))\n#10 5.480   Downloading anyio-4.16.0-py3-none-any.whl.metadata (4.7 kB)\n#10 5.521 Collecting certifi (from httpx==0.28.1->-r requirements.txt (line 2))\n#10 5.537   Downloading certifi-2026.11.20-py3-none-any.whl.metadata (2.5 kB)\n#10 5.582 Collecting httpcore==1.* (from httpx==0.28.1->-r requirements.txt (line 2))\n#10 5.600   Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)\n#10 5.638 Collecting idna (from httpx==0.28.1->-r requirements.txt (line 2))\n#10 5.706   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)\n#10 5.970 Collecting scipy>=1.8.0 (from scikit-learn==1.7.1->-r requirements.txt (line 5))\n#10 5.987   Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)\n#10 6.053 Collecting threadpoolctl>=3.1.0 (from scikit-learn==1.7.1->-r requirements.txt (line 5))\n#10 6.070   Downloading threadpoolctl-3.8.0-py3-none-any.whl.metadata (29 kB)\n#10 6.117 Collecting click>=7.0 (from uvicorn==0.35.0->-r requirements.txt (line 6))\n#10 6.133   Downloading click-8.5.1-py3-none-any.whl.metadata (2.6 kB)\n#10 6.160 Collecting h11>=0.8 (from uvicorn==0.35.0->-r requirements.txt (line 6))\n#10 6.177   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)\n#10 6.204 Collecting iniconfig>=1 (from pytest==8.4.1->-r requirements.txt (line 7))\n#10 6.224   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)\n#10 6.260 Collecting packaging>=20 (from pytest==8.4.1->-r requirements.txt (line 7))\n#10 6.278   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\n#10 6.306 Collecting pluggy<2,>=1.5 (from pytest==8.4.1->-r requirements.txt (line 7))\n#10 6.323   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)\n#10 6.366 Collecting pygments>=2.7.2 (from pytest==8.4.1->-r requirements.txt (line 7))\n#10 6.388   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)\n#10 6.422 Collecting annotated-types>=0.6.0 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#10 6.439   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)\n#10 7.803 Collecting pydantic-core==2.50.5 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#10 7.821   Downloading pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.6 kB)\n#10 7.856 Collecting typing-inspection>=0.4.4 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#10 7.872   Downloading typing_inspection-0.4.5-py3-none-any.whl.metadata (2.6 kB)\n#10 7.989 Downloading fastapi-0.116.1-py3-none-any.whl (95 kB)\n#10 8.009 Downloading httpx-0.28.1-py3-none-any.whl (73 kB)\n#10 8.030 Downloading joblib-1.5.1-py3-none-any.whl (307 kB)\n#10 8.064 Downloading numpy-2.3.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)\n#10 8.456    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 43.4 MB/s eta 0:00:00\n#10 8.475 Downloading scikit_learn-1.7.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (9.5 MB)\n#10 8.912    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.5/9.5 MB 21.6 MB/s eta 0:00:00\n#10 8.930 Downloading uvicorn-0.35.0-py3-none-any.whl (66 kB)\n#10 8.947 Downloading pytest-8.4.1-py3-none-any.whl (365 kB)\n#10 8.985 Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)\n#10 9.014 Downloading click-8.5.1-py3-none-any.whl (126 kB)\n#10 9.037 Downloading h11-0.16.0-py3-none-any.whl (37 kB)\n#10 9.062 Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)\n#10 9.080 Downloading packaging-26.3-py3-none-any.whl (129 kB)\n#10 9.101 Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)\n#10 9.119 Downloading pydantic-2.14.4-py3-none-any.whl (494 kB)\n#10 9.171 Downloading pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.3 MB)\n#10 9.396    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 9.9 MB/s eta 0:00:00\n#10 9.415 Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)\n#10 9.559    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 8.8 MB/s eta 0:00:00\n#10 9.578 Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)\n#10 17.21    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 4.6 MB/s eta 0:00:00\n#10 17.23 Downloading starlette-0.47.3-py3-none-any.whl (72 kB)\n#10 17.25 Downloading anyio-4.16.0-py3-none-any.whl (134 kB)\n#10 17.29 Downloading idna-3.20-py3-none-any.whl (69 kB)\n#10 17.32 Downloading threadpoolctl-3.8.0-py3-none-any.whl (32 kB)\n#10 17.34 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)\n#10 17.36 Downloading certifi-2026.11.20-py3-none-any.whl (127 kB)\n#10 17.40 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)\n#10 17.42 Downloading typing_inspection-0.4.5-py3-none-any.whl (14 kB)\n#10 17.90 Saved /wheels/fastapi-0.116.1-py3-none-any.whl\n#10 17.91 Saved /wheels/httpx-0.28.1-py3-none-any.whl\n#10 17.91 Saved /wheels/joblib-1.5.1-py3-none-any.whl\n#10 17.93 Saved /wheels/numpy-2.3.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl\n#10 17.94 Saved /wheels/scikit_learn-1.7.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl\n#10 17.95 Saved /wheels/uvicorn-0.35.0-py3-none-any.whl\n#10 17.95 Saved /wheels/pytest-8.4.1-py3-none-any.whl\n#10 17.95 Saved /wheels/httpcore-1.0.9-py3-none-any.whl\n#10 17.96 Saved /wheels/click-8.5.1-py3-none-any.whl\n#10 17.96 Saved /wheels/h11-0.16.0-py3-none-any.whl\n#10 17.96 Saved /wheels/iniconfig-2.3.1-py3-none-any.whl\n#10 17.97 Saved /wheels/packaging-26.3-py3-none-any.whl\n#10 17.97 Saved /wheels/pluggy-1.7.0-py3-none-any.whl\n#10 17.97 Saved /wheels/pydantic-2.14.4-py3-none-any.whl\n#10 17.97 Saved /wheels/pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl\n#10 17.97 Saved /wheels/pygments-2.21.0-py3-none-any.whl\n#10 18.00 Saved /wheels/scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl\n#10 18.00 Saved /wheels/starlette-0.47.3-py3-none-any.whl\n#10 18.00 Saved /wheels/anyio-4.16.0-py3-none-any.whl\n#10 18.01 Saved /wheels/idna-3.20-py3-none-any.whl\n#10 18.01 Saved /wheels/threadpoolctl-3.8.0-py3-none-any.whl\n#10 18.01 Saved /wheels/typing_extensions-4.16.0-py3-none-any.whl\n#10 18.01 Saved /wheels/certifi-2026.11.20-py3-none-any.whl\n#10 18.01 Saved /wheels/annotated_types-0.8.0-py3-none-any.whl\n#10 18.01 Saved /wheels/typing_inspection-0.4.5-py3-none-any.whl\n#10 18.22 \n#10 18.22 [notice] A new release of pip is available: 25.0.1 -> 26.3\n#10 18.22 [notice] To update, run: pip install --upgrade pip\n#10 DONE 20.5s\n\n#11 [builder 5/9] COPY app app\n#11 DONE 0.9s\n\n#12 [builder 6/9] COPY data data\n#12 DONE 0.5s\n\n#13 [builder 7/9] COPY scripts scripts\n#13 DONE 0.5s\n\n#14 [builder 8/9] COPY tests tests\n#14 DONE 0.6s\n\n#15 [builder 9/9] RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt     && python scripts/build_index.py --output artifacts     && pytest -q     && python scripts/evaluate.py --artifact-dir artifacts\n#15 1.548 Looking in links: /wheels\n#15 1.569 Processing /wheels/fastapi-0.116.1-py3-none-any.whl (from -r requirements.txt (line 1))\n#15 1.589 Processing /wheels/httpx-0.28.1-py3-none-any.whl (from -r requirements.txt (line 2))\n#15 1.599 Processing /wheels/joblib-1.5.1-py3-none-any.whl (from -r requirements.txt (line 3))\n#15 1.608 Processing /wheels/numpy-2.3.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (from -r requirements.txt (line 4))\n#15 1.725 Processing /wheels/scikit_learn-1.7.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (from -r requirements.txt (line 5))\n#15 1.807 Processing /wheels/uvicorn-0.35.0-py3-none-any.whl (from -r requirements.txt (line 6))\n#15 1.816 Processing /wheels/pytest-8.4.1-py3-none-any.whl (from -r requirements.txt (line 7))\n#15 1.828 Processing /wheels/starlette-0.47.3-py3-none-any.whl (from fastapi==0.116.1->-r requirements.txt (line 1))\n#15 1.836 Processing /wheels/pydantic-2.14.4-py3-none-any.whl (from fastapi==0.116.1->-r requirements.txt (line 1))\n#15 1.855 Processing /wheels/typing_extensions-4.16.0-py3-none-any.whl (from fastapi==0.116.1->-r requirements.txt (line 1))\n#15 1.865 Processing /wheels/anyio-4.16.0-py3-none-any.whl (from httpx==0.28.1->-r requirements.txt (line 2))\n#15 1.869 Processing /wheels/certifi-2026.11.20-py3-none-any.whl (from httpx==0.28.1->-r requirements.txt (line 2))\n#15 1.875 Processing /wheels/httpcore-1.0.9-py3-none-any.whl (from httpx==0.28.1->-r requirements.txt (line 2))\n#15 1.884 Processing /wheels/idna-3.20-py3-none-any.whl (from httpx==0.28.1->-r requirements.txt (line 2))\n#15 1.896 Processing /wheels/scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (from scikit-learn==1.7.1->-r requirements.txt (line 5))\n#15 2.116 Processing /wheels/threadpoolctl-3.8.0-py3-none-any.whl (from scikit-learn==1.7.1->-r requirements.txt (line 5))\n#15 2.126 Processing /wheels/click-8.5.1-py3-none-any.whl (from uvicorn==0.35.0->-r requirements.txt (line 6))\n#15 2.131 Processing /wheels/h11-0.16.0-py3-none-any.whl (from uvicorn==0.35.0->-r requirements.txt (line 6))\n#15 2.139 Processing /wheels/iniconfig-2.3.1-py3-none-any.whl (from pytest==8.4.1->-r requirements.txt (line 7))\n#15 2.144 Processing /wheels/packaging-26.3-py3-none-any.whl (from pytest==8.4.1->-r requirements.txt (line 7))\n#15 2.150 Processing /wheels/pluggy-1.7.0-py3-none-any.whl (from pytest==8.4.1->-r requirements.txt (line 7))\n#15 2.156 Processing /wheels/pygments-2.21.0-py3-none-any.whl (from pytest==8.4.1->-r requirements.txt (line 7))\n#15 2.180 Processing /wheels/annotated_types-0.8.0-py3-none-any.whl (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#15 2.186 Processing /wheels/pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#15 2.206 Processing /wheels/typing_inspection-0.4.5-py3-none-any.whl (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#15 2.407 Installing collected packages: typing-extensions, threadpoolctl, pygments, pluggy, packaging, numpy, joblib, iniconfig, idna, h11, click, certifi, annotated-types, uvicorn, typing-inspection, scipy, pytest, pydantic-core, httpcore, anyio, starlette, scikit-learn, pydantic, httpx, fastapi\n#15 25.20 Successfully installed annotated-types-0.8.0 anyio-4.16.0 certifi-2026.11.20 click-8.5.1 fastapi-0.116.1 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.20 iniconfig-2.3.1 joblib-1.5.1 numpy-2.3.2 packaging-26.3 pluggy-1.7.0 pydantic-2.14.4 pydantic-core-2.50.5 pygments-2.21.0 pytest-8.4.1 scikit-learn-1.7.1 scipy-1.18.1 starlette-0.47.3 threadpoolctl-3.8.0 typing-extensions-4.16.0 typing-inspection-0.4.5 uvicorn-0.35.0\n#15 25.20 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\n#15 27.54 {\"artifact_schema\": \"runbook-search-index/v1\", \"model_name\": \"runbook-hybrid-tfidf\", \"model_type\": \"tfidf-word-char-cosine\", \"index_version\": \"58431e4d09c7\", \"corpus_sha256\": \"58431e4d09c73dff690feb751eea4d1d09f7d6a61d1461ad4b7f28e223686757\", \"documents\": 12, \"features\": 4068}\n#15 31.28 ..                                                                       [100%]\n#15 31.58 =============================== warnings summary ===============================\n#15 31.58 ../usr/local/lib/python3.12/site-packages/starlette/testclient.py:51\n#15 31.58   /usr/local/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n#15 31.58     _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n#15 31.58 \n#15 31.58 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n#15 31.58 2 passed, 1 warning in 2.68s\n#15 33.90 {\n#15 33.90   \"ranking_mode\": \"normal\",\n#15 33.90   \"mrr\": 0.9375,\n#15 33.90   \"recall_at_3\": 1.0,\n#15 33.90   \"cases\": [\n#15 33.90     {\n#15 33.90       \"query\": \"как вернуть предыдущую модель после плохого релиза\",\n#15 33.90       \"top3\": [\n#15 33.90         \"doc-rollback\",\n#15 33.90         \"doc-probes\",\n#15 33.90         \"doc-canary\"\n#15 33.90       ],\n#15 33.90       \"relevant\": [\n#15 33.90         \"doc-rollback\"\n#15 33.90       ]\n#15 33.90     },\n#15 33.90     {\n#15 33.90       \"query\": \"pod запущен но трафик на него не идет readiness\",\n#15 33.90       \"top3\": [\n#15 33.90         \"doc-probes\",\n#15 33.90         \"doc-canary\",\n#15 33.90         \"doc-scaling\"\n#15 33.90       ],\n#15 33.90       \"relevant\": [\n#15 33.90         \"doc-probes\"\n#15 33.90       ]\n#15 33.90     },\n#15 33.90     {\n#15 33.90       \"query\": \"как хранить пароль registry и ограничить права\",\n#15 33.90       \"top3\": [\n#15 33.90         \"doc-registry\",\n#15 33.90         \"doc-security\",\n#15 33.90         \"doc-scaling\"\n#15 33.90       ],\n#15 33.90       \"relevant\": [\n#15 33.90         \"doc-security\"\n#15 33.90       ]\n#15 33.90     },\n#15 33.90     {\n#15 33.90       \"query\": \"почему HTTP 200 есть а поиск стал хуже\",\n#15 33.90       \"top3\": [\n#15 33.90         \"doc-observability\",\n#15 33.90         \"doc-probes\",\n#15 33.90         \"doc-registry\"\n#15 33.90       ],\n#15 33.90       \"relevant\": [\n#15 33.90         \"doc-drift\",\n#15 33.90         \"doc-observability\"\n#15 33.90       ]\n#15 33.90     },\n#15 33.90     {\n#15 33.90       \"query\": \"один и тот же образ перенести из staging в production\",\n#15 33.90       \"top3\": [\n#15 33.90         \"doc-ci\",\n#15 33.90         \"doc-container\",\n#15 33.90         \"doc-security\"\n#15 33.90       ],\n#15 33.90       \"relevant\": [\n#15 33.90         \"doc-ci\",\n#15 33.90         \"doc-container\"\n#15 33.90       ]\n#15 33.90     },\n#15 33.90     {\n#15 33.90       \"query\": \"реплики по загрузке процессора requests limits\",\n#15 33.90       \"top3\": [\n#15 33.90         \"doc-scaling\",\n#15 33.90         \"doc-probes\",\n#15 33.90         \"doc-ci\"\n#15 33.90       ],\n#15 33.90       \"relevant\": [\n#15 33.90         \"doc-scaling\"\n#15 33.90       ]\n#15 33.90     },\n#15 33.90     {\n#15 33.90       \"query\": \"связать модель данные commit и метрики\",\n#15 33.90       \"top3\": [\n#15 33.90         \"doc-registry\",\n#15 33.90         \"doc-scaling\",\n#15 33.90         \"doc-canary\"\n#15 33.90       ],\n#15 33.90       \"relevant\": [\n#15 33.90         \"doc-registry\",\n#15 33.90         \"doc-data\"\n#15 33.90       ]\n#15 33.90     },\n#15 33.90     {\n#15 33.90       \"query\": \"маленькая доля трафика новой версии модели\",\n#15 33.90       \"top3\": [\n#15 33.90         \"doc-canary\",\n#15 33.90         \"doc-registry\",\n#15 33.90         \"doc-probes\"\n#15 33.90       ],\n#15 33.90       \"relevant\": [\n#15 33.90         \"doc-canary\"\n#15 33.90       ]\n#15 33.90     }\n#15 33.90   ]\n#15 33.90 }\n#15 DONE 41.1s\n\n#16 [stage-1 3/8] WORKDIR /app\n#16 CACHED\n\n#17 [stage-1 2/8] RUN addgroup --system app && adduser --system --ingroup app --uid 10001 app\n#17 CACHED\n\n#18 [stage-1 4/8] COPY --from=builder /wheels /wheels\n#18 CACHED\n\n#19 [stage-1 5/8] COPY requirements.txt .\n#19 DONE 1.1s\n\n#20 [stage-1 6/8] RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt     && rm -rf /wheels\n#20 3.516 Looking in links: /wheels\n#20 3.537 Processing /wheels/fastapi-0.116.1-py3-none-any.whl (from -r requirements.txt (line 1))\n#20 3.559 Processing /wheels/httpx-0.28.1-py3-none-any.whl (from -r requirements.txt (line 2))\n#20 3.568 Processing /wheels/joblib-1.5.1-py3-none-any.whl (from -r requirements.txt (line 3))\n#20 3.577 Processing /wheels/numpy-2.3.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (from -r requirements.txt (line 4))\n#20 3.694 Processing /wheels/scikit_learn-1.7.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (from -r requirements.txt (line 5))\n#20 3.778 Processing /wheels/uvicorn-0.35.0-py3-none-any.whl (from -r requirements.txt (line 6))\n#20 3.789 Processing /wheels/pytest-8.4.1-py3-none-any.whl (from -r requirements.txt (line 7))\n#20 3.801 Processing /wheels/starlette-0.47.3-py3-none-any.whl (from fastapi==0.116.1->-r requirements.txt (line 1))\n#20 3.810 Processing /wheels/pydantic-2.14.4-py3-none-any.whl (from fastapi==0.116.1->-r requirements.txt (line 1))\n#20 3.832 Processing /wheels/typing_extensions-4.16.0-py3-none-any.whl (from fastapi==0.116.1->-r requirements.txt (line 1))\n#20 3.835 Processing /wheels/anyio-4.16.0-py3-none-any.whl (from httpx==0.28.1->-r requirements.txt (line 2))\n#20 3.842 Processing /wheels/certifi-2026.11.20-py3-none-any.whl (from httpx==0.28.1->-r requirements.txt (line 2))\n#20 3.849 Processing /wheels/httpcore-1.0.9-py3-none-any.whl (from httpx==0.28.1->-r requirements.txt (line 2))\n#20 3.858 Processing /wheels/idna-3.20-py3-none-any.whl (from httpx==0.28.1->-r requirements.txt (line 2))\n#20 3.870 Processing /wheels/scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (from scikit-learn==1.7.1->-r requirements.txt (line 5))\n#20 4.092 Processing /wheels/threadpoolctl-3.8.0-py3-none-any.whl (from scikit-learn==1.7.1->-r requirements.txt (line 5))\n#20 4.102 Processing /wheels/click-8.5.1-py3-none-any.whl (from uvicorn==0.35.0->-r requirements.txt (line 6))\n#20 4.108 Processing /wheels/h11-0.16.0-py3-none-any.whl (from uvicorn==0.35.0->-r requirements.txt (line 6))\n#20 4.116 Processing /wheels/iniconfig-2.3.1-py3-none-any.whl (from pytest==8.4.1->-r requirements.txt (line 7))\n#20 4.121 Processing /wheels/packaging-26.3-py3-none-any.whl (from pytest==8.4.1->-r requirements.txt (line 7))\n#20 4.127 Processing /wheels/pluggy-1.7.0-py3-none-any.whl (from pytest==8.4.1->-r requirements.txt (line 7))\n#20 4.133 Processing /wheels/pygments-2.21.0-py3-none-any.whl (from pytest==8.4.1->-r requirements.txt (line 7))\n#20 4.159 Processing /wheels/annotated_types-0.8.0-py3-none-any.whl (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#20 4.165 Processing /wheels/pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#20 4.185 Processing /wheels/typing_inspection-0.4.5-py3-none-any.whl (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.116.1->-r requirements.txt (line 1))\n#20 4.400 Installing collected packages: typing-extensions, threadpoolctl, pygments, pluggy, packaging, numpy, joblib, iniconfig, idna, h11, click, certifi, annotated-types, uvicorn, typing-inspection, scipy, pytest, pydantic-core, httpcore, anyio, starlette, scikit-learn, pydantic, httpx, fastapi\n#20 32.30 Successfully installed annotated-types-0.8.0 anyio-4.16.0 certifi-2026.11.20 click-8.5.1 fastapi-0.116.1 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.20 iniconfig-2.3.1 joblib-1.5.1 numpy-2.3.2 packaging-26.3 pluggy-1.7.0 pydantic-2.14.4 pydantic-core-2.50.5 pygments-2.21.0 pytest-8.4.1 scikit-learn-1.7.1 scipy-1.18.1 starlette-0.47.3 threadpoolctl-3.8.0 typing-extensions-4.16.0 typing-inspection-0.4.5 uvicorn-0.35.0\n#20 32.30 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\n#20 DONE 36.5s\n\n#21 [stage-1 7/8] COPY --from=builder --chown=10001:app /build/app app\n#21 DONE 1.0s\n\n#22 [stage-1 8/8] COPY --from=builder --chown=10001:app /build/artifacts artifacts\n#22 DONE 0.5s\n\n#23 exporting to image\n#23 exporting layers\n#23 exporting layers 4.7s done\n#23 writing image sha256:147c191d2cfae3b17e7c1753ec687b33781699785ed8d5d3cd4fd9bd608c5597\n#23 writing image sha256:147c191d2cfae3b17e7c1753ec687b33781699785ed8d5d3cd4fd9bd608c5597 done\n#23 naming to docker.io/library/oleinikov-search:local 0.0s done\n#23 DONE 4.9s\n\n#24 resolving provenance for metadata file\n#24 DONE 0.0s\n Image oleinikov-search:local Built \n Network oleinikov-lab2_default Creating \n Network oleinikov-lab2_default Created \n Container oleinikov-lab2-search-1 Creating \n Container oleinikov-lab2-search-1 Created \n Container oleinikov-lab2-search-1 Starting \n Container oleinikov-lab2-search-1 Started \n",
+    "exit_code": 0
+  },
+  {
+    "id": "compose-smoke",
+    "time": "2026-11-22T14:17:04.901075+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops",
+    "cwd": "/home/oleinikov/projects/mlops/lab2",
+    "command": "python3 scripts/smoke_local.py",
+    "output": "{\n  \"ready\": {\n    \"status\": \"ready\",\n    \"index_version\": \"58431e4d09c7\",\n    \"documents\": 12\n  },\n  \"search\": {\n    \"request_id\": \"a43b1875-cb7d-45c3-9384-eeb7d4c860e6\",\n    \"query\": \"как вернуть предыдущую модель после плохого релиза\",\n    \"took_ms\": 4.432,\n    \"index_version\": \"58431e4d09c7\",\n    \"results\": [\n      {\n        \"id\": \"doc-rollback\",\n        \"title\": \"Откат релиза\",\n        \"tags\": [\n          \"rollback\",\n          \"helm\",\n          \"release\",\n          \"incident\"\n        ],\n        \"score\": 0.338827,\n        \"summary\": \"Rollback возвращает последнюю согласованную версию кода модели tokenizer данных и индекса. Перед обновлением сохраните revision, после неуспешного smoke test выполните helm rollback.\"\n      },\n      {\n        \"id\": \"doc-probes\",\n        \"title\": \"Проверки Kubernetes\",\n        \"tags\": [\n          \"kubernetes\",\n          \"health\",\n          \"readiness\",\n          \"liveness\"\n        ],\n        \"score\": 0.144924,\n        \"summary\": \"Liveness определяет нужно ли перезапустить процесс. Readiness разрешает направлять трафик только после загрузки модели и индекса. Startup probe подходит для долгого старта.\"\n      },\n      {\n        \"id\": \"doc-canary\",\n        \"title\": \"Canary-релиз модели\",\n        \"tags\": [\n          \"canary\",\n          \"deployment\",\n          \"experiment\",\n          \"rollback\"\n        ],\n        \"score\": 0.130073,\n        \"summary\": \"Новая модель получает малую долю трафика. Сравните latency errors и качество, задайте критерии остановки, затем увеличьте трафик или выполните rollback.\"\n      }\n    ]\n  }\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "compose-ps",
+    "time": "2026-11-22T14:17:05.402947+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops",
+    "cwd": "/home/oleinikov/projects/mlops/lab2",
+    "command": "docker compose -p oleinikov-lab2 ps",
+    "output": "NAME                      IMAGE                    COMMAND                  SERVICE   CREATED         STATUS                   PORTS\noleinikov-lab2-search-1   oleinikov-search:local   \"uvicorn app.main:ap…\"   search    8 seconds ago   Up 6 seconds (healthy)   127.0.0.1:18080->8000/tcp\n",
+    "exit_code": 0
+  },
+  {
+    "id": "compose-meta",
+    "time": "2026-11-22T14:17:05.777921+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops",
+    "cwd": "/home/oleinikov/projects/mlops/lab2",
+    "command": "curl -fsS http://127.0.0.1:18080/meta",
+    "output": "{\"service\":\"runbook-search-api\",\"service_version\":\"1.2.0-local\",\"build_revision\":\"working-tree\",\"image_digest\":\"local-build\",\"environment\":\"local\",\"ranking_mode\":\"normal\",\"index_version\":\"58431e4d09c7\",\"model_type\":\"tfidf-word-char-cosine\",\"documents\":12}",
+    "exit_code": 0
+  },
+  {
+    "id": "compose-metrics",
+    "time": "2026-11-22T14:17:06.163076+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops",
+    "cwd": "/home/oleinikov/projects/mlops/lab2",
+    "command": "curl -fsS http://127.0.0.1:18080/metrics",
+    "output": "# HELP http_requests_total Total HTTP requests processed.\n# TYPE http_requests_total counter\nhttp_requests_total 4\n# HELP search_requests_total Total retrieval requests processed.\n# TYPE search_requests_total counter\nsearch_requests_total 1\n# HELP search_request_duration_seconds_sum Cumulative retrieval latency.\n# TYPE search_request_duration_seconds_sum counter\nsearch_request_duration_seconds_sum 0.004432\n# HELP search_index_loaded Whether the search index is loaded.\n# TYPE search_index_loaded gauge\nsearch_index_loaded 1\n",
+    "exit_code": 0
+  },
+  {
+    "id": "container-security",
+    "time": "2026-11-22T14:17:06.544353+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops",
+    "cwd": "/home/oleinikov/projects/mlops/lab2",
+    "command": "docker inspect oleinikov-lab2-search-1 --format 'User={{.Config.User}} ReadonlyRootfs={{.HostConfig.ReadonlyRootfs}} SecurityOpt={{json .HostConfig.SecurityOpt}}'",
+    "output": "User=10001 ReadonlyRootfs=true SecurityOpt=[\"no-new-privileges:true\"]\n",
+    "exit_code": 0
+  },
+  {
+    "id": "compose-down",
+    "time": "2026-11-22T14:17:09.353866+00:00",
+    "host": "Учебная ВМ (Debian), ssh mlops",
+    "cwd": "/home/oleinikov/projects/mlops/lab2",
+    "command": "docker compose -p oleinikov-lab2 down",
+    "output": " Container oleinikov-lab2-search-1 Stopping \n Container oleinikov-lab2-search-1 Stopped \n Container oleinikov-lab2-search-1 Removing \n Container oleinikov-lab2-search-1 Removed \n Network oleinikov-lab2_default Removing \n Network oleinikov-lab2_default Removed \n",
+    "exit_code": 0
+  },
+  {
+    "id": "pipeline",
+    "time": "2026-11-22T14:47:22.060918+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "gh run view 45033904297 --repo ndreuu/mlops --json status,conclusion,headSha,jobs,url --jq '{status,conclusion,headSha,url,jobs:[.jobs[]|{name,conclusion}]}'",
+    "output": "{\"conclusion\":\"success\",\"headSha\":\"bb5aab86a1479b3acac1034cbf2385655db6bc58\",\"jobs\":[{\"conclusion\":\"success\",\"name\":\"test-quality\"},{\"conclusion\":\"success\",\"name\":\"build\"},{\"conclusion\":\"success\",\"name\":\"deploy-staging\"},{\"conclusion\":\"success\",\"name\":\"promote-production\"}],\"status\":\"completed\",\"url\":\"https://github.com/ndreuu/mlops/actions/runs/45033904297\"}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "production-reviewers",
+    "time": "2026-11-22T14:47:22.528872+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "gh api repos/ndreuu/mlops/environments/production --jq '{name,protection_rules:[.protection_rules[]|{type,reviewers:[.reviewers[]?.reviewer.login]}],deployment_branch_policy}'",
+    "output": "{\"deployment_branch_policy\":{\"custom_branch_policies\":true,\"protected_branches\":false},\"name\":\"production\",\"protection_rules\":[{\"reviewers\":[\"ndreuu\"],\"type\":\"required_reviewers\"},{\"reviewers\":[],\"type\":\"branch_policy\"}]}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "production-approval",
+    "time": "2026-11-22T14:47:22.967267+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "gh api repos/ndreuu/mlops/actions/runs/45033904297/approvals --jq '[.[]|{state,user:.user.login,environments:[.environments[].name]}]'",
+    "output": "[{\"environments\":[\"production\"],\"state\":\"approved\",\"user\":\"ndreuu\"}]\n",
+    "exit_code": 0
+  },
+  {
+    "id": "secret-names",
+    "time": "2026-11-22T14:47:23.330509+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "gh secret list --repo ndreuu/mlops --env registry",
+    "output": "DOCKERHUB_TOKEN\t2026-11-22T14:37:53Z\n",
+    "exit_code": 0
+  },
+  {
+    "id": "staging-secret-names",
+    "time": "2026-11-22T14:47:23.699592+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "gh secret list --repo ndreuu/mlops --env staging",
+    "output": "KUBE_CONFIG_B64\t2026-11-22T14:20:30Z\n",
+    "exit_code": 0
+  },
+  {
+    "id": "production-secret-names",
+    "time": "2026-11-22T14:47:24.092055+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "gh secret list --repo ndreuu/mlops --env production",
+    "output": "KUBE_CONFIG_B64\t2026-11-22T14:20:30Z\n",
+    "exit_code": 0
+  },
+  {
+    "id": "registry",
+    "time": "2026-11-22T14:47:24.827000+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python scripts/check_registry.py docker.io/ndreuu/oleinikov-iris sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0",
+    "output": "{\"repository\": \"docker.io/ndreuu/oleinikov-iris\", \"digest\": \"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\", \"anonymous_pull\": true}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "kube-context",
+    "time": "2026-11-22T14:47:24.929962+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "kubectl config current-context",
+    "output": "itmo-student-13\n",
+    "exit_code": 0
+  },
+  {
+    "id": "staging-resources",
+    "time": "2026-11-22T14:47:26.247727+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get cm,deploy,pods,svc -l app.kubernetes.io/instance=oleinikov-search-staging",
+    "output": "NAME                                              DATA   AGE\nconfigmap/oleinikov-search-staging-mlops-search   6      7m4s\n\nNAME                                                    READY   UP-TO-DATE   AVAILABLE   AGE\ndeployment.apps/oleinikov-search-staging-mlops-search   1/1     1            1           7m4s\n\nNAME                                                         READY   STATUS    RESTARTS   AGE\npod/oleinikov-search-staging-mlops-search-67995c65d7-44l8c   1/1     Running   0          7m4s\n\nNAME                                            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE\nservice/oleinikov-search-staging-mlops-search   ClusterIP   10.102.198.208   <none>        80/TCP    7m4s\n",
+    "exit_code": 0
+  },
+  {
+    "id": "staging-smoke",
+    "time": "2026-11-22T14:47:29.287943+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python scripts/verify_release.py --release oleinikov-search-staging --namespace itmo-student-13 --expected-digest sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --expected-revision bb5aab86a1479b3acac1034cbf2385655db6bc58 --expected-environment staging",
+    "output": "{\n  \"release\": \"oleinikov-search-staging\",\n  \"ready\": {\n    \"status\": \"ready\",\n    \"index_version\": \"58431e4d09c7\",\n    \"documents\": 12\n  },\n  \"meta\": {\n    \"service\": \"runbook-search-api\",\n    \"service_version\": \"1.2.0\",\n    \"build_revision\": \"bb5aab86a1479b3acac1034cbf2385655db6bc58\",\n    \"image_digest\": \"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\",\n    \"environment\": \"staging\",\n    \"ranking_mode\": \"normal\",\n    \"index_version\": \"58431e4d09c7\",\n    \"model_type\": \"tfidf-word-char-cosine\",\n    \"documents\": 12\n  },\n  \"expected_top\": \"doc-rollback\",\n  \"actual_top\": \"doc-rollback\",\n  \"checks\": {\n    \"ready\": true,\n    \"top_result\": true,\n    \"image_digest\": true,\n    \"build_revision\": true,\n    \"environment\": true,\n    \"ranking_mode\": true,\n    \"index_version\": true,\n    \"request_id\": true\n  },\n  \"passed\": true\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "production-resources",
+    "time": "2026-11-22T14:47:30.267104+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get cm,deploy,pods,svc -l app.kubernetes.io/instance=oleinikov-search-prod",
+    "output": "NAME                                           DATA   AGE\nconfigmap/oleinikov-search-prod-mlops-search   6      3m26s\n\nNAME                                                 READY   UP-TO-DATE   AVAILABLE   AGE\ndeployment.apps/oleinikov-search-prod-mlops-search   1/1     1            1           3m25s\n\nNAME                                                     READY   STATUS    RESTARTS   AGE\npod/oleinikov-search-prod-mlops-search-b5d97df76-bb4wg   1/1     Running   0          2m23s\n\nNAME                                         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE\nservice/oleinikov-search-prod-mlops-search   ClusterIP   10.106.28.139   <none>        80/TCP    3m26s\n",
+    "exit_code": 0
+  },
+  {
+    "id": "production-smoke",
+    "time": "2026-11-22T14:47:32.979192+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python scripts/verify_release.py --release oleinikov-search-prod --namespace itmo-student-13 --expected-digest sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --expected-revision bb5aab86a1479b3acac1034cbf2385655db6bc58 --expected-environment production",
+    "output": "{\n  \"release\": \"oleinikov-search-prod\",\n  \"ready\": {\n    \"status\": \"ready\",\n    \"index_version\": \"58431e4d09c7\",\n    \"documents\": 12\n  },\n  \"meta\": {\n    \"service\": \"runbook-search-api\",\n    \"service_version\": \"1.2.0\",\n    \"build_revision\": \"bb5aab86a1479b3acac1034cbf2385655db6bc58\",\n    \"image_digest\": \"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\",\n    \"environment\": \"production\",\n    \"ranking_mode\": \"normal\",\n    \"index_version\": \"58431e4d09c7\",\n    \"model_type\": \"tfidf-word-char-cosine\",\n    \"documents\": 12\n  },\n  \"expected_top\": \"doc-rollback\",\n  \"actual_top\": \"doc-rollback\",\n  \"checks\": {\n    \"ready\": true,\n    \"top_result\": true,\n    \"image_digest\": true,\n    \"build_revision\": true,\n    \"environment\": true,\n    \"ranking_mode\": true,\n    \"index_version\": true,\n    \"request_id\": true\n  },\n  \"passed\": true\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "same-digest",
+    "time": "2026-11-22T14:47:33.320519+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get deploy oleinikov-search-staging-mlops-search oleinikov-search-prod-mlops-search -o 'jsonpath={range .items[*]}{.metadata.name}{\"\\n\"}{.spec.template.spec.containers[0].image}{\"\\n\"}{end}'",
+    "output": "oleinikov-search-staging-mlops-search\ndocker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\noleinikov-search-prod-mlops-search\ndocker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\n",
+    "exit_code": 0
+  },
+  {
+    "id": "running-digests",
+    "time": "2026-11-22T14:47:33.798803+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get pods -l 'app.kubernetes.io/name=mlops-search,app.kubernetes.io/instance in (oleinikov-search-staging,oleinikov-search-prod)' -o 'jsonpath={range .items[*]}{.metadata.name}{\"\\n\"}{.status.containerStatuses[0].imageID}{\"\\n\"}{end}'",
+    "output": "oleinikov-search-prod-mlops-search-b5d97df76-bb4wg\ndocker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\noleinikov-search-staging-mlops-search-67995c65d7-44l8c\ndocker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\n",
+    "exit_code": 0
+  },
+  {
+    "id": "history-before",
+    "time": "2026-11-22T14:47:33.806534+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297",
+    "command": "cat production-delivery/production-reverse/history-before.json",
+    "output": "[{\"revision\":1,\"updated\":\"2026-11-22T14:44:01.849399948Z\",\"status\":\"deployed\",\"chart\":\"mlops-search-0.1.0\",\"app_version\":\"1.2.0\",\"description\":\"Install complete\"}]\n",
+    "exit_code": 0
+  },
+  {
+    "id": "bad-smoke",
+    "time": "2026-11-22T14:47:33.812576+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297",
+    "command": "cat production-delivery/production-reverse/smoke.json",
+    "output": "{\n  \"release\": \"oleinikov-search-prod\",\n  \"ready\": {\n    \"status\": \"ready\",\n    \"index_version\": \"58431e4d09c7\",\n    \"documents\": 12\n  },\n  \"meta\": {\n    \"service\": \"runbook-search-api\",\n    \"service_version\": \"1.2.0\",\n    \"build_revision\": \"bb5aab86a1479b3acac1034cbf2385655db6bc58\",\n    \"image_digest\": \"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\",\n    \"environment\": \"production\",\n    \"ranking_mode\": \"reverse\",\n    \"index_version\": \"58431e4d09c7\",\n    \"model_type\": \"tfidf-word-char-cosine\",\n    \"documents\": 12\n  },\n  \"expected_top\": \"doc-rollback\",\n  \"actual_top\": \"doc-security\",\n  \"checks\": {\n    \"ready\": true,\n    \"top_result\": false,\n    \"image_digest\": true,\n    \"build_revision\": true,\n    \"environment\": true,\n    \"ranking_mode\": true,\n    \"index_version\": true,\n    \"request_id\": true\n  },\n  \"passed\": false\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "rollback-log",
+    "time": "2026-11-22T14:47:33.817571+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297",
+    "command": "cat production-delivery/production-reverse/rollback.log",
+    "output": "Rollback was a success! Happy Helming!\n",
+    "exit_code": 0
+  },
+  {
+    "id": "restored-smoke",
+    "time": "2026-11-22T14:47:33.822146+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297",
+    "command": "cat production-delivery/production-reverse/smoke-restored.json",
+    "output": "{\n  \"release\": \"oleinikov-search-prod\",\n  \"ready\": {\n    \"status\": \"ready\",\n    \"index_version\": \"58431e4d09c7\",\n    \"documents\": 12\n  },\n  \"meta\": {\n    \"service\": \"runbook-search-api\",\n    \"service_version\": \"1.2.0\",\n    \"build_revision\": \"bb5aab86a1479b3acac1034cbf2385655db6bc58\",\n    \"image_digest\": \"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\",\n    \"environment\": \"production\",\n    \"ranking_mode\": \"normal\",\n    \"index_version\": \"58431e4d09c7\",\n    \"model_type\": \"tfidf-word-char-cosine\",\n    \"documents\": 12\n  },\n  \"expected_top\": \"doc-rollback\",\n  \"actual_top\": \"doc-rollback\",\n  \"checks\": {\n    \"ready\": true,\n    \"top_result\": true,\n    \"image_digest\": true,\n    \"build_revision\": true,\n    \"environment\": true,\n    \"ranking_mode\": true,\n    \"index_version\": true,\n    \"request_id\": true\n  },\n  \"passed\": true\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "staging-helm-test",
+    "time": "2026-11-22T14:47:33.826278+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297",
+    "command": "cat staging-delivery/staging-normal/helm-test.log",
+    "output": "NAME: oleinikov-search-staging\nLAST DEPLOYED: Sun Nov 22 14:40:16 2026\nNAMESPACE: itmo-student-13\nSTATUS: deployed\nREVISION: 1\nTEST SUITE:     oleinikov-search-staging-mlops-search-test\nLast Started:   Sun Nov 22 14:40:58 2026\nLast Completed: Sun Nov 22 14:41:08 2026\nPhase:          Succeeded\nNOTES:\nUse port-forward to inspect the release:\n  kubectl -n itmo-student-13 port-forward service/oleinikov-search-staging-mlops-search 8080:80\n",
+    "exit_code": 0
+  },
+  {
+    "id": "production-helm-test",
+    "time": "2026-11-22T14:47:33.829794+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297",
+    "command": "cat production-delivery/production-normal/helm-test.log",
+    "output": "NAME: oleinikov-search-prod\nLAST DEPLOYED: Sun Nov 22 14:44:01 2026\nNAMESPACE: itmo-student-13\nSTATUS: deployed\nREVISION: 1\nTEST SUITE:     oleinikov-search-prod-mlops-search-test\nLast Started:   Sun Nov 22 14:44:16 2026\nLast Completed: Sun Nov 22 14:44:24 2026\nPhase:          Succeeded\nNOTES:\nUse port-forward to inspect the release:\n  kubectl -n itmo-student-13 port-forward service/oleinikov-search-prod-mlops-search 8080:80\n",
+    "exit_code": 0
+  },
+  {
+    "id": "history-after",
+    "time": "2026-11-22T14:47:34.293029+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "env HELM_DRIVER=configmap helm history oleinikov-search-prod --kube-context itmo-student-13 -n itmo-student-13",
+    "output": "REVISION\tUPDATED                 \tSTATUS    \tCHART             \tAPP VERSION\tDESCRIPTION     \n1       \tSun Nov 22 14:44:01 2026\tsuperseded\tmlops-search-0.1.0\t1.2.0      \tInstall complete\n2       \tSun Nov 22 14:44:40 2026\tsuperseded\tmlops-search-0.1.0\t1.2.0      \tUpgrade complete\n3       \tSun Nov 22 14:45:04 2026\tdeployed  \tmlops-search-0.1.0\t1.2.0      \tRollback to 1   \n",
+    "exit_code": 0
+  },
+  {
+    "id": "restored-ranking",
+    "time": "2026-11-22T14:47:34.868300+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "env HELM_DRIVER=configmap helm get values oleinikov-search-prod --kube-context itmo-student-13 -n itmo-student-13 -o json",
+    "output": "{\"buildRevision\":\"bb5aab86a1479b3acac1034cbf2385655db6bc58\",\"environment\":\"production\",\"image\":{\"digest\":\"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\",\"repository\":\"docker.io/ndreuu/oleinikov-iris\"},\"rankingMode\":\"normal\"}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "pipeline-log-download",
+    "time": "2026-11-22T14:47:37.965196+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": "gh run view 45033904297 --repo ndreuu/mlops --log > pipeline.log",
+    "output": "",
+    "exit_code": 0,
+    "artifact_bytes": 301857
+  },
+  {
+    "id": "image-tag",
+    "time": "2026-11-22T14:49:28.677658+00:00",
+    "host": "Mac",
+    "cwd": "/Users/andrew/Projects/mlops/lab2",
+    "command": ".venv/bin/python -c 'import json,urllib.request; d=json.load(urllib.request.urlopen(\"https://hub.docker.com/v2/repositories/ndreuu/oleinikov-iris/tags/search-bb5aab86a1479b3acac1034cbf2385655db6bc58/\",timeout=20)); print(json.dumps({k:d[k] for k in (\"name\",\"digest\")},indent=2))'",
+    "output": "{\n  \"name\": \"search-bb5aab86a1479b3acac1034cbf2385655db6bc58\",\n  \"digest\": \"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0\"\n}\n",
+    "exit_code": 0
+  },
+  {
+    "id": "reverse-delivery",
+    "time": "2026-11-22T14:49:28.739474+00:00",
+    "host": "GitHub Actions / promote-production",
+    "cwd": "lab2",
+    "command": "bash scripts/deploy.sh oleinikov-search-prod production \"$IMAGE_REPOSITORY\" \"$IMAGE_DIGEST\" \"$GITHUB_SHA\" reverse",
+    "output": "semantic smoke failed\nRolling back oleinikov-search-prod to good revision 1\nRollback was a success! Happy Helming!\nReverse candidate failed semantic smoke; rollback restored rankingMode=normal\n",
+    "exit_code": 0,
+    "source": "/Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297/pipeline.log",
+    "output_kind": "verbatim excerpt from successful CI step"
+  }
+]

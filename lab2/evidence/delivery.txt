@@ -1,0 +1,379 @@
+[2026-11-22T14:47:22.060918+00:00] pipeline
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ gh run view 45033904297 --repo ndreuu/mlops --json status,conclusion,headSha,jobs,url --jq '{status,conclusion,headSha,url,jobs:[.jobs[]|{name,conclusion}]}'
+{"conclusion":"success","headSha":"bb5aab86a1479b3acac1034cbf2385655db6bc58","jobs":[{"conclusion":"success","name":"test-quality"},{"conclusion":"success","name":"build"},{"conclusion":"success","name":"deploy-staging"},{"conclusion":"success","name":"promote-production"}],"status":"completed","url":"https://github.com/ndreuu/mlops/actions/runs/45033904297"}
+
+exit_code=0
+
+[2026-11-22T14:47:22.528872+00:00] production-reviewers
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ gh api repos/ndreuu/mlops/environments/production --jq '{name,protection_rules:[.protection_rules[]|{type,reviewers:[.reviewers[]?.reviewer.login]}],deployment_branch_policy}'
+{"deployment_branch_policy":{"custom_branch_policies":true,"protected_branches":false},"name":"production","protection_rules":[{"reviewers":["ndreuu"],"type":"required_reviewers"},{"reviewers":[],"type":"branch_policy"}]}
+
+exit_code=0
+
+[2026-11-22T14:47:22.967267+00:00] production-approval
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ gh api repos/ndreuu/mlops/actions/runs/45033904297/approvals --jq '[.[]|{state,user:.user.login,environments:[.environments[].name]}]'
+[{"environments":["production"],"state":"approved","user":"ndreuu"}]
+
+exit_code=0
+
+[2026-11-22T14:47:23.330509+00:00] secret-names
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ gh secret list --repo ndreuu/mlops --env registry
+DOCKERHUB_TOKEN	2026-11-22T14:37:53Z
+
+exit_code=0
+
+[2026-11-22T14:47:23.699592+00:00] staging-secret-names
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ gh secret list --repo ndreuu/mlops --env staging
+KUBE_CONFIG_B64	2026-11-22T14:20:30Z
+
+exit_code=0
+
+[2026-11-22T14:47:24.092055+00:00] production-secret-names
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ gh secret list --repo ndreuu/mlops --env production
+KUBE_CONFIG_B64	2026-11-22T14:20:30Z
+
+exit_code=0
+
+[2026-11-22T14:47:24.827000+00:00] registry
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python scripts/check_registry.py docker.io/ndreuu/oleinikov-iris sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
+{"repository": "docker.io/ndreuu/oleinikov-iris", "digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0", "anonymous_pull": true}
+
+exit_code=0
+
+[2026-11-22T14:47:24.929962+00:00] kube-context
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ kubectl config current-context
+itmo-student-13
+
+exit_code=0
+
+[2026-11-22T14:47:26.247727+00:00] staging-resources
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get cm,deploy,pods,svc -l app.kubernetes.io/instance=oleinikov-search-staging
+NAME                                              DATA   AGE
+configmap/oleinikov-search-staging-mlops-search   6      7m4s
+
+NAME                                                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/oleinikov-search-staging-mlops-search   1/1     1            1           7m4s
+
+NAME                                                         READY   STATUS    RESTARTS   AGE
+pod/oleinikov-search-staging-mlops-search-67995c65d7-44l8c   1/1     Running   0          7m4s
+
+NAME                                            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/oleinikov-search-staging-mlops-search   ClusterIP   10.102.198.208   <none>        80/TCP    7m4s
+
+exit_code=0
+
+[2026-11-22T14:47:29.287943+00:00] staging-smoke
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python scripts/verify_release.py --release oleinikov-search-staging --namespace itmo-student-13 --expected-digest sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --expected-revision bb5aab86a1479b3acac1034cbf2385655db6bc58 --expected-environment staging
+{
+  "release": "oleinikov-search-staging",
+  "ready": {
+    "status": "ready",
+    "index_version": "58431e4d09c7",
+    "documents": 12
+  },
+  "meta": {
+    "service": "runbook-search-api",
+    "service_version": "1.2.0",
+    "build_revision": "bb5aab86a1479b3acac1034cbf2385655db6bc58",
+    "image_digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0",
+    "environment": "staging",
+    "ranking_mode": "normal",
+    "index_version": "58431e4d09c7",
+    "model_type": "tfidf-word-char-cosine",
+    "documents": 12
+  },
+  "expected_top": "doc-rollback",
+  "actual_top": "doc-rollback",
+  "checks": {
+    "ready": true,
+    "top_result": true,
+    "image_digest": true,
+    "build_revision": true,
+    "environment": true,
+    "ranking_mode": true,
+    "index_version": true,
+    "request_id": true
+  },
+  "passed": true
+}
+
+exit_code=0
+
+[2026-11-22T14:47:30.267104+00:00] production-resources
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get cm,deploy,pods,svc -l app.kubernetes.io/instance=oleinikov-search-prod
+NAME                                           DATA   AGE
+configmap/oleinikov-search-prod-mlops-search   6      3m26s
+
+NAME                                                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/oleinikov-search-prod-mlops-search   1/1     1            1           3m25s
+
+NAME                                                     READY   STATUS    RESTARTS   AGE
+pod/oleinikov-search-prod-mlops-search-b5d97df76-bb4wg   1/1     Running   0          2m23s
+
+NAME                                         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+service/oleinikov-search-prod-mlops-search   ClusterIP   10.106.28.139   <none>        80/TCP    3m26s
+
+exit_code=0
+
+[2026-11-22T14:47:32.979192+00:00] production-smoke
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python scripts/verify_release.py --release oleinikov-search-prod --namespace itmo-student-13 --expected-digest sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --expected-revision bb5aab86a1479b3acac1034cbf2385655db6bc58 --expected-environment production
+{
+  "release": "oleinikov-search-prod",
+  "ready": {
+    "status": "ready",
+    "index_version": "58431e4d09c7",
+    "documents": 12
+  },
+  "meta": {
+    "service": "runbook-search-api",
+    "service_version": "1.2.0",
+    "build_revision": "bb5aab86a1479b3acac1034cbf2385655db6bc58",
+    "image_digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0",
+    "environment": "production",
+    "ranking_mode": "normal",
+    "index_version": "58431e4d09c7",
+    "model_type": "tfidf-word-char-cosine",
+    "documents": 12
+  },
+  "expected_top": "doc-rollback",
+  "actual_top": "doc-rollback",
+  "checks": {
+    "ready": true,
+    "top_result": true,
+    "image_digest": true,
+    "build_revision": true,
+    "environment": true,
+    "ranking_mode": true,
+    "index_version": true,
+    "request_id": true
+  },
+  "passed": true
+}
+
+exit_code=0
+
+[2026-11-22T14:47:33.320519+00:00] same-digest
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get deploy oleinikov-search-staging-mlops-search oleinikov-search-prod-mlops-search -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{.spec.template.spec.containers[0].image}{"\n"}{end}'
+oleinikov-search-staging-mlops-search
+docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
+oleinikov-search-prod-mlops-search
+docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
+
+exit_code=0
+
+[2026-11-22T14:47:33.798803+00:00] running-digests
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get pods -l 'app.kubernetes.io/name=mlops-search,app.kubernetes.io/instance in (oleinikov-search-staging,oleinikov-search-prod)' -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{.status.containerStatuses[0].imageID}{"\n"}{end}'
+oleinikov-search-prod-mlops-search-b5d97df76-bb4wg
+docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
+oleinikov-search-staging-mlops-search-67995c65d7-44l8c
+docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
+
+exit_code=0
+
+[2026-11-22T14:47:33.806534+00:00] history-before
+Host: Mac
+CWD: /Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297
+$ cat production-delivery/production-reverse/history-before.json
+[{"revision":1,"updated":"2026-11-22T14:44:01.849399948Z","status":"deployed","chart":"mlops-search-0.1.0","app_version":"1.2.0","description":"Install complete"}]
+
+exit_code=0
+
+[2026-11-22T14:47:33.812576+00:00] bad-smoke
+Host: Mac
+CWD: /Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297
+$ cat production-delivery/production-reverse/smoke.json
+{
+  "release": "oleinikov-search-prod",
+  "ready": {
+    "status": "ready",
+    "index_version": "58431e4d09c7",
+    "documents": 12
+  },
+  "meta": {
+    "service": "runbook-search-api",
+    "service_version": "1.2.0",
+    "build_revision": "bb5aab86a1479b3acac1034cbf2385655db6bc58",
+    "image_digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0",
+    "environment": "production",
+    "ranking_mode": "reverse",
+    "index_version": "58431e4d09c7",
+    "model_type": "tfidf-word-char-cosine",
+    "documents": 12
+  },
+  "expected_top": "doc-rollback",
+  "actual_top": "doc-security",
+  "checks": {
+    "ready": true,
+    "top_result": false,
+    "image_digest": true,
+    "build_revision": true,
+    "environment": true,
+    "ranking_mode": true,
+    "index_version": true,
+    "request_id": true
+  },
+  "passed": false
+}
+
+exit_code=0
+
+[2026-11-22T14:47:33.817571+00:00] rollback-log
+Host: Mac
+CWD: /Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297
+$ cat production-delivery/production-reverse/rollback.log
+Rollback was a success! Happy Helming!
+
+exit_code=0
+
+[2026-11-22T14:47:33.822146+00:00] restored-smoke
+Host: Mac
+CWD: /Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297
+$ cat production-delivery/production-reverse/smoke-restored.json
+{
+  "release": "oleinikov-search-prod",
+  "ready": {
+    "status": "ready",
+    "index_version": "58431e4d09c7",
+    "documents": 12
+  },
+  "meta": {
+    "service": "runbook-search-api",
+    "service_version": "1.2.0",
+    "build_revision": "bb5aab86a1479b3acac1034cbf2385655db6bc58",
+    "image_digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0",
+    "environment": "production",
+    "ranking_mode": "normal",
+    "index_version": "58431e4d09c7",
+    "model_type": "tfidf-word-char-cosine",
+    "documents": 12
+  },
+  "expected_top": "doc-rollback",
+  "actual_top": "doc-rollback",
+  "checks": {
+    "ready": true,
+    "top_result": true,
+    "image_digest": true,
+    "build_revision": true,
+    "environment": true,
+    "ranking_mode": true,
+    "index_version": true,
+    "request_id": true
+  },
+  "passed": true
+}
+
+exit_code=0
+
+[2026-11-22T14:47:33.826278+00:00] staging-helm-test
+Host: Mac
+CWD: /Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297
+$ cat staging-delivery/staging-normal/helm-test.log
+NAME: oleinikov-search-staging
+LAST DEPLOYED: Sun Nov 22 14:40:16 2026
+NAMESPACE: itmo-student-13
+STATUS: deployed
+REVISION: 1
+TEST SUITE:     oleinikov-search-staging-mlops-search-test
+Last Started:   Sun Nov 22 14:40:58 2026
+Last Completed: Sun Nov 22 14:41:08 2026
+Phase:          Succeeded
+NOTES:
+Use port-forward to inspect the release:
+  kubectl -n itmo-student-13 port-forward service/oleinikov-search-staging-mlops-search 8080:80
+
+exit_code=0
+
+[2026-11-22T14:47:33.829794+00:00] production-helm-test
+Host: Mac
+CWD: /Users/andrew/Documents/Codex/2026-11-21/ssh-mlops-x20/work/lab2-ci/45033904297
+$ cat production-delivery/production-normal/helm-test.log
+NAME: oleinikov-search-prod
+LAST DEPLOYED: Sun Nov 22 14:44:01 2026
+NAMESPACE: itmo-student-13
+STATUS: deployed
+REVISION: 1
+TEST SUITE:     oleinikov-search-prod-mlops-search-test
+Last Started:   Sun Nov 22 14:44:16 2026
+Last Completed: Sun Nov 22 14:44:24 2026
+Phase:          Succeeded
+NOTES:
+Use port-forward to inspect the release:
+  kubectl -n itmo-student-13 port-forward service/oleinikov-search-prod-mlops-search 8080:80
+
+exit_code=0
+
+[2026-11-22T14:47:34.293029+00:00] history-after
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ env HELM_DRIVER=configmap helm history oleinikov-search-prod --kube-context itmo-student-13 -n itmo-student-13
+REVISION	UPDATED                 	STATUS    	CHART             	APP VERSION	DESCRIPTION     
+1       	Sun Nov 22 14:44:01 2026	superseded	mlops-search-0.1.0	1.2.0      	Install complete
+2       	Sun Nov 22 14:44:40 2026	superseded	mlops-search-0.1.0	1.2.0      	Upgrade complete
+3       	Sun Nov 22 14:45:04 2026	deployed  	mlops-search-0.1.0	1.2.0      	Rollback to 1   
+
+exit_code=0
+
+[2026-11-22T14:47:34.868300+00:00] restored-ranking
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ env HELM_DRIVER=configmap helm get values oleinikov-search-prod --kube-context itmo-student-13 -n itmo-student-13 -o json
+{"buildRevision":"bb5aab86a1479b3acac1034cbf2385655db6bc58","environment":"production","image":{"digest":"sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0","repository":"docker.io/ndreuu/oleinikov-iris"},"rankingMode":"normal"}
+
+exit_code=0
+
+[2026-11-22T14:47:37.965196+00:00] pipeline-log-download
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ gh run view 45033904297 --repo ndreuu/mlops --log > pipeline.log
+
+exit_code=0
+
+[2026-11-22T14:49:28.677658+00:00] image-tag
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python -c 'import json,urllib.request; d=json.load(urllib.request.urlopen("https://hub.docker.com/v2/repositories/ndreuu/oleinikov-iris/tags/search-bb5aab86a1479b3acac1034cbf2385655db6bc58/",timeout=20)); print(json.dumps({k:d[k] for k in ("name","digest")},indent=2))'
+{
+  "name": "search-bb5aab86a1479b3acac1034cbf2385655db6bc58",
+  "digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0"
+}
+
+exit_code=0
+
+[2026-11-22T14:49:28.739474+00:00] reverse-delivery
+Host: GitHub Actions / promote-production
+CWD: lab2
+$ bash scripts/deploy.sh oleinikov-search-prod production "$IMAGE_REPOSITORY" "$IMAGE_DIGEST" "$GITHUB_SHA" reverse
+semantic smoke failed
+Rolling back oleinikov-search-prod to good revision 1
+Rollback was a success! Happy Helming!
+Reverse candidate failed semantic smoke; rollback restored rankingMode=normal
+
+exit_code=0

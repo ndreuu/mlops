@@ -1,0 +1,9 @@
+Release "oleinikov-search-staging" does not exist. Installing it now.
+NAME: oleinikov-search-staging
+LAST DEPLOYED: Sun Nov 22 14:40:16 2026
+NAMESPACE: itmo-student-13
+STATUS: deployed
+REVISION: 1
+NOTES:
+Use port-forward to inspect the release:
+  kubectl -n itmo-student-13 port-forward service/oleinikov-search-staging-mlops-search 8080:80

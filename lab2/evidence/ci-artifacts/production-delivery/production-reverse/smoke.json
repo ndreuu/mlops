@@ -1,0 +1,32 @@
+{
+  "release": "oleinikov-search-prod",
+  "ready": {
+    "status": "ready",
+    "index_version": "58431e4d09c7",
+    "documents": 12
+  },
+  "meta": {
+    "service": "runbook-search-api",
+    "service_version": "1.2.0",
+    "build_revision": "bb5aab86a1479b3acac1034cbf2385655db6bc58",
+    "image_digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0",
+    "environment": "production",
+    "ranking_mode": "reverse",
+    "index_version": "58431e4d09c7",
+    "model_type": "tfidf-word-char-cosine",
+    "documents": 12
+  },
+  "expected_top": "doc-rollback",
+  "actual_top": "doc-security",
+  "checks": {
+    "ready": true,
+    "top_result": false,
+    "image_digest": true,
+    "build_revision": true,
+    "environment": true,
+    "ranking_mode": true,
+    "index_version": true,
+    "request_id": true
+  },
+  "passed": false
+}

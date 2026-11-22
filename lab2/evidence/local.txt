@@ -1,0 +1,553 @@
+[2026-11-22T14:14:56.357087+00:00] python-version
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python --version
+Python 3.12.16
+
+exit_code=0
+
+[2026-11-22T14:15:09.935224+00:00] index
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python scripts/build_index.py --output artifacts
+{"artifact_schema": "runbook-search-index/v1", "model_name": "runbook-hybrid-tfidf", "model_type": "tfidf-word-char-cosine", "index_version": "58431e4d09c7", "corpus_sha256": "58431e4d09c73dff690feb751eea4d1d09f7d6a61d1461ad4b7f28e223686757", "documents": 12, "features": 4068}
+
+exit_code=0
+
+[2026-11-22T14:15:13.390024+00:00] pytest
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python -m pytest -q
+..                                                                       [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /Users/andrew/Projects/mlops/lab2/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 passed, 1 warning in 2.91s
+
+exit_code=0
+
+[2026-11-22T14:15:13.849092+00:00] quality
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python scripts/evaluate.py --artifact-dir artifacts
+{
+  "ranking_mode": "normal",
+  "mrr": 0.9375,
+  "recall_at_3": 1.0,
+  "cases": [
+    {
+      "query": "как вернуть предыдущую модель после плохого релиза",
+      "top3": [
+        "doc-rollback",
+        "doc-probes",
+        "doc-canary"
+      ],
+      "relevant": [
+        "doc-rollback"
+      ]
+    },
+    {
+      "query": "pod запущен но трафик на него не идет readiness",
+      "top3": [
+        "doc-probes",
+        "doc-canary",
+        "doc-scaling"
+      ],
+      "relevant": [
+        "doc-probes"
+      ]
+    },
+    {
+      "query": "как хранить пароль registry и ограничить права",
+      "top3": [
+        "doc-registry",
+        "doc-security",
+        "doc-scaling"
+      ],
+      "relevant": [
+        "doc-security"
+      ]
+    },
+    {
+      "query": "почему HTTP 200 есть а поиск стал хуже",
+      "top3": [
+        "doc-observability",
+        "doc-probes",
+        "doc-registry"
+      ],
+      "relevant": [
+        "doc-drift",
+        "doc-observability"
+      ]
+    },
+    {
+      "query": "один и тот же образ перенести из staging в production",
+      "top3": [
+        "doc-ci",
+        "doc-container",
+        "doc-security"
+      ],
+      "relevant": [
+        "doc-ci",
+        "doc-container"
+      ]
+    },
+    {
+      "query": "реплики по загрузке процессора requests limits",
+      "top3": [
+        "doc-scaling",
+        "doc-probes",
+        "doc-ci"
+      ],
+      "relevant": [
+        "doc-scaling"
+      ]
+    },
+    {
+      "query": "связать модель данные commit и метрики",
+      "top3": [
+        "doc-registry",
+        "doc-scaling",
+        "doc-canary"
+      ],
+      "relevant": [
+        "doc-registry",
+        "doc-data"
+      ]
+    },
+    {
+      "query": "маленькая доля трафика новой версии модели",
+      "top3": [
+        "doc-canary",
+        "doc-registry",
+        "doc-probes"
+      ],
+      "relevant": [
+        "doc-canary"
+      ]
+    }
+  ]
+}
+
+exit_code=0
+
+[2026-11-22T14:15:14.304078+00:00] negative-quality
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python scripts/evaluate.py --artifact-dir artifacts --ranking-mode reverse
+{
+  "ranking_mode": "reverse",
+  "mrr": 0.0,
+  "recall_at_3": 0.0,
+  "cases": [
+    {
+      "query": "как вернуть предыдущую модель после плохого релиза",
+      "top3": [
+        "doc-security",
+        "doc-features",
+        "doc-data"
+      ],
+      "relevant": [
+        "doc-rollback"
+      ]
+    },
+    {
+      "query": "pod запущен но трафик на него не идет readiness",
+      "top3": [
+        "doc-rollback",
+        "doc-drift",
+        "doc-registry"
+      ],
+      "relevant": [
+        "doc-probes"
+      ]
+    },
+    {
+      "query": "как хранить пароль registry и ограничить права",
+      "top3": [
+        "doc-features",
+        "doc-data",
+        "doc-ci"
+      ],
+      "relevant": [
+        "doc-security"
+      ]
+    },
+    {
+      "query": "почему HTTP 200 есть а поиск стал хуже",
+      "top3": [
+        "doc-container",
+        "doc-data",
+        "doc-rollback"
+      ],
+      "relevant": [
+        "doc-drift",
+        "doc-observability"
+      ]
+    },
+    {
+      "query": "один и тот же образ перенести из staging в production",
+      "top3": [
+        "doc-canary",
+        "doc-drift",
+        "doc-rollback"
+      ],
+      "relevant": [
+        "doc-ci",
+        "doc-container"
+      ]
+    },
+    {
+      "query": "реплики по загрузке процессора requests limits",
+      "top3": [
+        "doc-observability",
+        "doc-security",
+        "doc-canary"
+      ],
+      "relevant": [
+        "doc-scaling"
+      ]
+    },
+    {
+      "query": "связать модель данные commit и метрики",
+      "top3": [
+        "doc-features",
+        "doc-security",
+        "doc-drift"
+      ],
+      "relevant": [
+        "doc-registry",
+        "doc-data"
+      ]
+    },
+    {
+      "query": "маленькая доля трафика новой версии модели",
+      "top3": [
+        "doc-security",
+        "doc-features",
+        "doc-drift"
+      ],
+      "relevant": [
+        "doc-canary"
+      ]
+    }
+  ]
+}
+quality gate failed
+
+exit_code=1
+
+[2026-11-22T14:15:14.394517+00:00] helm-version
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ helm version --short
+v3.19.0+g3d8990f
+
+exit_code=0
+
+[2026-11-22T14:15:14.417281+00:00] helm-empty-digest
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ helm template invalid helm/mlops-search
+Error: execution error at (mlops-search/templates/deployment.yaml:24:28): image.digest is required
+
+Use --debug flag to render out invalid YAML
+
+exit_code=1
+
+[2026-11-22T14:15:14.440217+00:00] helm-invalid-digest
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ helm template invalid helm/mlops-search --set image.digest=sha256:bad
+Error: execution error at (mlops-search/templates/deployment.yaml:24:28): image.digest must be sha256 followed by 64 lowercase hex characters
+
+Use --debug flag to render out invalid YAML
+
+exit_code=1
+
+[2026-11-22T14:15:15.600238+00:00] local-smoke
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/python scripts/smoke_local.py --base-url http://127.0.0.1:18082
+{
+  "ready": {
+    "status": "ready",
+    "index_version": "58431e4d09c7",
+    "documents": 12
+  },
+  "search": {
+    "request_id": "1bc39410-237d-4307-94c9-95517499edc7",
+    "query": "как вернуть предыдущую модель после плохого релиза",
+    "took_ms": 1.037,
+    "index_version": "58431e4d09c7",
+    "results": [
+      {
+        "id": "doc-rollback",
+        "title": "Откат релиза",
+        "tags": [
+          "rollback",
+          "helm",
+          "release",
+          "incident"
+        ],
+        "score": 0.338827,
+        "summary": "Rollback возвращает последнюю согласованную версию кода модели tokenizer данных и индекса. Перед обновлением сохраните revision, после неуспешного smoke test выполните helm rollback."
+      },
+      {
+        "id": "doc-probes",
+        "title": "Проверки Kubernetes",
+        "tags": [
+          "kubernetes",
+          "health",
+          "readiness",
+          "liveness"
+        ],
+        "score": 0.144924,
+        "summary": "Liveness определяет нужно ли перезапустить процесс. Readiness разрешает направлять трафик только после загрузки модели и индекса. Startup probe подходит для долгого старта."
+      },
+      {
+        "id": "doc-canary",
+        "title": "Canary-релиз модели",
+        "tags": [
+          "canary",
+          "deployment",
+          "experiment",
+          "rollback"
+        ],
+        "score": 0.130073,
+        "summary": "Новая модель получает малую долю трафика. Сравните latency errors и качество, задайте критерии остановки, затем увеличьте трафик или выполните rollback."
+      }
+    ]
+  }
+}
+
+exit_code=0
+
+[2026-11-22T14:15:15.613607+00:00] local-readyz
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ curl -fsS http://127.0.0.1:18082/readyz
+{"status":"ready","index_version":"58431e4d09c7","documents":12}
+exit_code=0
+
+[2026-11-22T14:15:15.623315+00:00] local-meta
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ curl -fsS http://127.0.0.1:18082/meta
+{"service":"runbook-search-api","service_version":"dev","build_revision":"local","image_digest":"local","environment":"local","ranking_mode":"normal","index_version":"58431e4d09c7","model_type":"tfidf-word-char-cosine","documents":12}
+exit_code=0
+
+[2026-11-22T14:15:15.631779+00:00] local-metrics
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ curl -fsS http://127.0.0.1:18082/metrics
+# HELP http_requests_total Total HTTP requests processed.
+# TYPE http_requests_total counter
+http_requests_total 4
+# HELP search_requests_total Total retrieval requests processed.
+# TYPE search_requests_total counter
+search_requests_total 1
+# HELP search_request_duration_seconds_sum Cumulative retrieval latency.
+# TYPE search_request_duration_seconds_sum counter
+search_request_duration_seconds_sum 0.001037
+# HELP search_index_loaded Whether the search index is loaded.
+# TYPE search_index_loaded gauge
+search_index_loaded 1
+
+exit_code=0
+
+[2026-11-22T14:15:15.641131+00:00] local-v1-documents-doc-rollback-recommendations
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ curl -fsS http://127.0.0.1:18082/v1/documents/doc-rollback/recommendations
+{"document_id":"doc-rollback","index_version":"58431e4d09c7","results":[{"id":"doc-canary","title":"Canary-релиз модели","tags":["canary","deployment","experiment","rollback"],"score":0.370734,"summary":"Новая модель получает малую долю трафика. Сравните latency errors и качество, задайте критерии остановки, затем увеличьте трафик или выполните rollback."},{"id":"doc-probes","title":"Проверки Kubernetes","tags":["kubernetes","health","readiness","liveness"],"score":0.081229,"summary":"Liveness определяет нужно ли перезапустить процесс. Readiness разрешает направлять трафик только после загрузки модели и индекса. Startup probe подходит для долгого старта."},{"id":"doc-observability","title":"Наблюдаемость ML-сервиса","tags":["monitoring","metrics","logs","slo"],"score":0.073088,"summary":"Следите за latency traffic errors saturation, структурированными логами, версией модели и распределением входных данных. HTTP 200 не гарантирует качество ранжирования."}]}
+exit_code=0
+
+[2026-11-22T14:15:15.879576+00:00] local-uvicorn
+Host: MacBook (macOS)
+CWD: /Users/andrew/Projects/mlops/lab2
+$ .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 18082
+INFO:     Started server process [58258]
+INFO:     Waiting for application startup.
+{"event": "service_ready", "service": "runbook-search-api", "index_version": "58431e4d09c7", "documents": 12}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:18082 (Press CTRL+C to quit)
+{"event": "http_request", "request_id": "30cb21cc-95f1-490c-b6ed-c4be88db8006", "method": "GET", "path": "/readyz", "status": 200, "duration_ms": 0.58}
+INFO:     127.0.0.1:49333 - "GET /readyz HTTP/1.1" 200 OK
+{"event": "http_request", "request_id": "1bc39410-237d-4307-94c9-95517499edc7", "method": "POST", "path": "/v1/search", "status": 200, "duration_ms": 1.73}
+INFO:     127.0.0.1:49334 - "POST /v1/search HTTP/1.1" 200 OK
+{"event": "http_request", "request_id": "8f3dc5f2-362d-46aa-8c9c-81874333f7ea", "method": "GET", "path": "/readyz", "status": 200, "duration_ms": 0.5}
+INFO:     127.0.0.1:49335 - "GET /readyz HTTP/1.1" 200 OK
+{"event": "http_request", "request_id": "bbfc56b0-205e-43b3-9968-bde062ca2d4b", "method": "GET", "path": "/meta", "status": 200, "duration_ms": 0.38}
+INFO:     127.0.0.1:49336 - "GET /meta HTTP/1.1" 200 OK
+{"event": "http_request", "request_id": "49cf5a9b-2491-4477-8c72-0f3722882495", "method": "GET", "path": "/metrics", "status": 200, "duration_ms": 0.26}
+INFO:     127.0.0.1:49337 - "GET /metrics HTTP/1.1" 200 OK
+{"event": "http_request", "request_id": "e0ad39cb-bbb8-4266-82ac-6db9af42f1a6", "method": "GET", "path": "/v1/documents/doc-rollback/recommendations", "status": 200, "duration_ms": 0.73}
+INFO:     127.0.0.1:49338 - "GET /v1/documents/doc-rollback/recommendations HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [58258]
+
+exit_code=0
+
+[2026-11-22T14:50:29.473683+00:00] helm-lint-image
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ helm lint helm/mlops-search --set-string image.digest=sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --set-string image.repository=docker.io/ndreuu/oleinikov-iris --set-string environment=staging --set-string buildRevision=bb5aab86a1479b3acac1034cbf2385655db6bc58
+==> Linting helm/mlops-search
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+
+exit_code=0
+
+[2026-11-22T14:50:29.496000+00:00] helm-render-image
+Host: Mac
+CWD: /Users/andrew/Projects/mlops/lab2
+$ helm template oleinikov-search-staging helm/mlops-search -n itmo-student-13 --set-string image.digest=sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --set-string image.repository=docker.io/ndreuu/oleinikov-iris --set-string environment=staging --set-string buildRevision=bb5aab86a1479b3acac1034cbf2385655db6bc58
+---
+# Source: mlops-search/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oleinikov-search-staging-mlops-search
+  labels:
+    app.kubernetes.io/name: mlops-search
+    app.kubernetes.io/instance: oleinikov-search-staging
+    app.kubernetes.io/managed-by: Helm
+data:
+  SERVICE_NAME: "runbook-search-api"
+  APP_VERSION: "1.2.0"
+  BUILD_REVISION: "bb5aab86a1479b3acac1034cbf2385655db6bc58"
+  ENVIRONMENT: "staging"
+  RANKING_MODE: "normal"
+  IMAGE_DIGEST: "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0"
+---
+# Source: mlops-search/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: oleinikov-search-staging-mlops-search
+  labels:
+    app.kubernetes.io/name: mlops-search
+    app.kubernetes.io/instance: oleinikov-search-staging
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: mlops-search
+    app.kubernetes.io/instance: oleinikov-search-staging
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+# Source: mlops-search/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oleinikov-search-staging-mlops-search
+  labels:
+    app.kubernetes.io/name: mlops-search
+    app.kubernetes.io/instance: oleinikov-search-staging
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mlops-search
+      app.kubernetes.io/instance: oleinikov-search-staging
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mlops-search
+        app.kubernetes.io/instance: oleinikov-search-staging
+      annotations:
+        checksum/config: eb912f5d3da808c8fa6b6eb890bc6afc8a4276dd739d5aab18a55ad0498b1519
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: "docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0"
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: oleinikov-search-staging-mlops-search
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 150m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+# Source: mlops-search/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "oleinikov-search-staging-mlops-search-test"
+  labels:
+    app.kubernetes.io/name: mlops-search-test
+    app.kubernetes.io/instance: oleinikov-search-staging
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: curl
+      image: curlimages/curl:8.15.0
+      args: ["--fail", "--silent", "http://oleinikov-search-staging-mlops-search:80/readyz"]
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop: ["ALL"]
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 50m
+          memory: 32Mi
+
+exit_code=0

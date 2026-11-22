@@ -1,0 +1,140 @@
+---
+# Source: mlops-search/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oleinikov-search-staging-mlops-search
+  labels:
+    app.kubernetes.io/name: mlops-search
+    app.kubernetes.io/instance: oleinikov-search-staging
+    app.kubernetes.io/managed-by: Helm
+data:
+  SERVICE_NAME: "runbook-search-api"
+  APP_VERSION: "1.2.0"
+  BUILD_REVISION: "unknown"
+  ENVIRONMENT: "staging"
+  RANKING_MODE: "normal"
+  IMAGE_DIGEST: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+---
+# Source: mlops-search/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: oleinikov-search-staging-mlops-search
+  labels:
+    app.kubernetes.io/name: mlops-search
+    app.kubernetes.io/instance: oleinikov-search-staging
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: mlops-search
+    app.kubernetes.io/instance: oleinikov-search-staging
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+# Source: mlops-search/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oleinikov-search-staging-mlops-search
+  labels:
+    app.kubernetes.io/name: mlops-search
+    app.kubernetes.io/instance: oleinikov-search-staging
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mlops-search
+      app.kubernetes.io/instance: oleinikov-search-staging
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mlops-search
+        app.kubernetes.io/instance: oleinikov-search-staging
+      annotations:
+        checksum/config: 2b5f663d0b6658b68b5e2e10e3ebe0c4e440d16e274146f7619a4e2a72e79d01
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: "docker.io/ndreuu/oleinikov-iris@sha256:0000000000000000000000000000000000000000000000000000000000000000"
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: oleinikov-search-staging-mlops-search
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 150m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+# Source: mlops-search/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "oleinikov-search-staging-mlops-search-test"
+  labels:
+    app.kubernetes.io/name: mlops-search-test
+    app.kubernetes.io/instance: oleinikov-search-staging
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: curl
+      image: curlimages/curl:8.15.0
+      args: ["--fail", "--silent", "http://oleinikov-search-staging-mlops-search:80/readyz"]
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop: ["ALL"]
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 50m
+          memory: 32Mi

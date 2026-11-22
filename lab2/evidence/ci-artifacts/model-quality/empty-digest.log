@@ -1,0 +1,3 @@
+Error: execution error at (mlops-search/templates/deployment.yaml:24:28): image.digest is required
+
+Use --debug flag to render out invalid YAML
