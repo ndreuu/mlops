@@ -10,3 +10,5 @@
 **/.kube/
 **/.docker/
 **/.password-store/
+**/artifacts/
+**/reports/

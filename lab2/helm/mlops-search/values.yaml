@@ -1,0 +1,20 @@
+replicaCount: 1
+environment: staging
+rankingMode: normal
+buildRevision: unknown
+
+image:
+  repository: ghcr.io/ndreuu/oleinikov-search
+  digest: ""
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  port: 80
