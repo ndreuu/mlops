@@ -17,7 +17,7 @@ while True:
             token = json.load(response)['token']
         request = urllib.request.Request(f'https://ghcr.io/v2/{name}/manifests/{args.digest}', method='HEAD',
             headers={'Authorization': f'Bearer {token}',
-                     'Accept': 'application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.v2+json'})
+                     'Accept': 'application/vnd.oci.image.manifest.v1+json, application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.v2+json, application/vnd.docker.distribution.manifest.list.v2+json'})
         with urllib.request.urlopen(request, timeout=15) as response:
             actual = response.headers['Docker-Content-Digest']
         if actual != args.digest:
