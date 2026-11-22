@@ -1,0 +1,6 @@
+**
+!model/
+!model/Dockerfile
+!model/*.py
+!model/weights/
+!model/weights/**

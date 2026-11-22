@@ -1,0 +1,168 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oleinikov-lab3-config
+data:
+  MCP_URL: http://oleinikov-lab3-kb-mcp:8000/mcp
+  LOCAL_BASE_URL: http://oleinikov-lab3-ollama:11434
+  LOCAL_MODEL: deepseek-r1:1.5b
+  CLOUD_BASE_URL: https://api.llm7.io/v1
+  CLOUD_MODEL: default
+  MOCK_BASE_URL: http://oleinikov-lab3-cloud-mock:8000/v1
+  ENABLE_TEST_SCENARIOS: "true"
+  MCP_TIMEOUT: "2"
+  CLOUD_TIMEOUT: "8"
+  LOCAL_TIMEOUT: "75"
+  TOKENIZER_PATH: /opt/tokenizer.json
+  TOKENIZERS_PARALLELISM: "false"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oleinikov-lab3-ollama
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: oleinikov-lab3-ollama}}
+  template:
+    metadata: {labels: {app: oleinikov-lab3-ollama, lab: oleinikov-lab3}}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: ollama
+          image: ${MODEL_IMAGE}
+          ports: [{name: api, containerPort: 11434}, {name: health, containerPort: 11435}]
+          resources:
+            requests: {cpu: 500m, memory: 1152Mi}
+            limits: {cpu: 850m, memory: 1728Mi}
+          startupProbe: {httpGet: {path: /health, port: health}, periodSeconds: 5, failureThreshold: 180}
+          readinessProbe: {httpGet: {path: /health, port: health}, periodSeconds: 5}
+          livenessProbe: {httpGet: {path: /livez, port: health}, periodSeconds: 15}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts: [{name: temporary, mountPath: /tmp}]
+      volumes: [{name: temporary, emptyDir: {sizeLimit: 64Mi}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: oleinikov-lab3-ollama}
+spec:
+  type: ClusterIP
+  selector: {app: oleinikov-lab3-ollama}
+  ports: [{name: api, port: 11434, targetPort: api}, {name: health, port: 11435, targetPort: health}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: oleinikov-lab3-kb-mcp}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: oleinikov-lab3-kb-mcp}}
+  template:
+    metadata: {labels: {app: oleinikov-lab3-kb-mcp, lab: oleinikov-lab3}}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: mcp
+          image: ${APP_IMAGE}
+          command: [python, -m, app.mcp_server]
+          envFrom: [{configMapRef: {name: oleinikov-lab3-config}}]
+          env:
+            - name: MCP_TOKEN
+              valueFrom: {secretKeyRef: {name: oleinikov-lab3-mcp, key: MCP_TOKEN}}
+          ports: [{name: http, containerPort: 8000}]
+          resources:
+            requests: {cpu: 50m, memory: 96Mi}
+            limits: {cpu: 100m, memory: 192Mi}
+          startupProbe: {httpGet: {path: /health, port: http}, periodSeconds: 5, failureThreshold: 90}
+          readinessProbe: {httpGet: {path: /health, port: http}, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /health, port: http}, periodSeconds: 20}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts: [{name: corpus, mountPath: /corpus, readOnly: true}, {name: index, mountPath: /data}, {name: temporary, mountPath: /tmp}]
+      volumes:
+        - name: corpus
+          configMap: {name: oleinikov-lab3-corpus}
+        - name: index
+          emptyDir: {sizeLimit: 32Mi}
+        - name: temporary
+          emptyDir: {sizeLimit: 16Mi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: oleinikov-lab3-kb-mcp}
+spec:
+  type: ClusterIP
+  selector: {app: oleinikov-lab3-kb-mcp}
+  ports: [{name: http, port: 8000, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: oleinikov-lab3-portal}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: oleinikov-lab3-portal}}
+  template:
+    metadata: {labels: {app: oleinikov-lab3-portal, lab: oleinikov-lab3}}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: portal
+          image: ${APP_IMAGE}
+          envFrom: [{configMapRef: {name: oleinikov-lab3-config}}]
+          env:
+            - name: MCP_TOKEN
+              valueFrom: {secretKeyRef: {name: oleinikov-lab3-mcp, key: MCP_TOKEN}}
+            - name: LLM7_API_KEY
+              valueFrom: {secretKeyRef: {name: oleinikov-lab3-llm7, key: LLM7_API_KEY, optional: true}}
+          ports: [{name: http, containerPort: 8000}]
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {cpu: 125m, memory: 256Mi}
+          startupProbe: {httpGet: {path: /health, port: http}, periodSeconds: 5, failureThreshold: 30}
+          readinessProbe: {httpGet: {path: /health, port: http}, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /health, port: http}, periodSeconds: 20}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts: [{name: temporary, mountPath: /tmp}]
+      volumes: [{name: temporary, emptyDir: {sizeLimit: 16Mi}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: oleinikov-lab3-portal}
+spec:
+  type: ClusterIP
+  selector: {app: oleinikov-lab3-portal}
+  ports: [{name: http, port: 8000, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: oleinikov-lab3-cloud-mock}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: oleinikov-lab3-cloud-mock}}
+  template:
+    metadata: {labels: {app: oleinikov-lab3-cloud-mock, lab: oleinikov-lab3}}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: mock
+          image: ${APP_IMAGE}
+          command: [uvicorn, app.cloud_mock:app, --host, "0.0.0.0", --port, "8000", --no-access-log, --log-level, warning]
+          ports: [{name: http, containerPort: 8000}]
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {cpu: 25m, memory: 64Mi}
+          readinessProbe: {httpGet: {path: /health, port: http}, periodSeconds: 10}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: oleinikov-lab3-cloud-mock}
+spec:
+  type: ClusterIP
+  selector: {app: oleinikov-lab3-cloud-mock}
+  ports: [{name: http, port: 8000, targetPort: http}]

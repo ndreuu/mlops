@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: oleinikov-lab3-internal}
+spec:
+  podSelector:
+    matchExpressions:
+      - {key: app, operator: In, values: [oleinikov-lab3-kb-mcp, oleinikov-lab3-ollama, oleinikov-lab3-cloud-mock]}
+  policyTypes: [Ingress]
+  ingress:
+    - from: [{podSelector: {matchLabels: {app: oleinikov-lab3-portal}}}]
+      ports: [{protocol: TCP, port: 8000}, {protocol: TCP, port: 11434}]

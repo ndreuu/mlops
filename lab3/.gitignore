@@ -1,0 +1,6 @@
+model/weights/
+tokenizer.json
+*.sqlite*
+*.env
+data/
+assets/
