@@ -4,7 +4,7 @@ rankingMode: normal
 buildRevision: unknown
 
 image:
-  repository: ghcr.io/ndreuu/oleinikov-search
+  repository: docker.io/ndreuu/oleinikov-iris
   digest: ""
   pullPolicy: IfNotPresent
 
