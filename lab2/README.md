@@ -5,21 +5,15 @@
 - [Публичный репозиторий](https://github.com/ndreuu/mlops).
 - [Успешный pipeline](https://github.com/ndreuu/mlops/actions/runs/45608006169/attempts/2) — `success`.
 
-25.11.2026: staging и production — `1/1`; Lab 3 остановлена (`replicas=0`). [Состояние и квота](evidence/ci-2026-11-25/live/cluster.txt) · [Проверки API с Mac](evidence/ci-2026-11-25/live/commands.txt) · [Staging](evidence/ci-2026-11-25/live/staging-smoke.json) · [Production](evidence/ci-2026-11-25/live/production-smoke.json).
-
-Первый запуск упал на таймауте прокси Docker Hub; повторный прошёл полностью. [Лог первой ошибки](evidence/recheck-2026-11-25/rerun-failure.txt) · [Итоговые статусы CI](evidence/ci-2026-11-25/pipeline.json).
-
 ## 2. Image
 
 - Repository: `docker.io/ndreuu/oleinikov-iris`.
 - Tag: `search-2e56ca6914514e5c4a3648a7f20c2a39e970b1ea`.
 - Digest: `sha256:d1da5b43a93bc61501770856f4dba24f619046d0bf4cdf8a9e608b8634807095`.
 
-## 3. Quality report и отрицательный контроль
+## 3. Quality report и лог заблокированного reverse-кандидата
 
 [Quality report](evidence/ci-2026-11-25/model-quality/quality.json) · [Reverse report](evidence/ci-2026-11-25/model-quality/quality-reverse.json) · [Лог отказа](evidence/ci-2026-11-25/model-quality/quality-reverse.log).
-
-Фрагменты вывода команд из `lab2/`:
 
 ```bash
 .venv/bin/python scripts/evaluate.py --artifact-dir artifacts
@@ -78,7 +72,7 @@ Production после rollback — [полный smoke report](evidence/ci-2026-
 }
 ```
 
-## 5. Deployment image: один digest
+## 5. Deployment image двух окружений с одним digest
 
 ```bash
 kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get deploy oleinikov-search-staging-mlops-search oleinikov-search-prod-mlops-search -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{.spec.template.spec.containers[0].image}{"\n"}{end}'
@@ -92,8 +86,6 @@ docker.io/ndreuu/oleinikov-iris@sha256:d1da5b43a93bc61501770856f4dba24f619046d0b
 ```
 
 ## 6. `helm history` до и после плохого release
-
-Команда CI:
 
 ```bash
 HELM_DRIVER=configmap helm history oleinikov-search-prod -n itmo-student-13 -o json
@@ -115,8 +107,6 @@ HELM_DRIVER=configmap helm history oleinikov-search-prod -n itmo-student-13 -o j
 ## 7. Failed semantic smoke → rollback → повторная проверка
 
 [Failed smoke](evidence/ci-2026-11-25/production-delivery/production-reverse/smoke.json) · [Rollback](evidence/ci-2026-11-25/production-delivery/production-reverse/rollback.log) · [Успешный smoke](evidence/ci-2026-11-25/production-delivery/production-reverse/smoke-restored.json).
-
-Команда CI и фрагмент вывода:
 
 ```bash
 bash scripts/deploy.sh oleinikov-search-prod production "$IMAGE_REPOSITORY" "$IMAGE_DIGEST" "$GITHUB_SHA" reverse
