@@ -1,5 +1,25 @@
 # Лабораторная работа №2. Runbook Search CI/CD
 
+## Проверка запуска — 25.11.2026
+
+Lab 3 остановлена (`replicas=0`); staging и production Lab 2 оставлены запущенными.
+
+```bash
+kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l app.kubernetes.io/name=mlops-search
+```
+
+```text
+NAME                                      READY   UP-TO-DATE   AVAILABLE
+oleinikov-search-prod-mlops-search         1/1     1            1
+oleinikov-search-staging-mlops-search      1/1     1            1
+```
+
+[Команды проверки](evidence/recheck-2026-11-25/commands.txt) · [Staging smoke](evidence/recheck-2026-11-25/staging-smoke.json) · [Production smoke](evidence/recheck-2026-11-25/production-smoke.json) · [Состояние и квота](evidence/recheck-2026-11-25/cluster.txt).
+
+В обоих окружениях: `/readyz` → `ready`, `actual_top=doc-rollback`, `ranking_mode=normal`, `passed=true`.
+
+Повторный [pipeline 25.11](https://github.com/ndreuu/mlops/actions/runs/45608006169): quality и build — `success`; staging — `failure` из-за `ImagePullBackOff` (таймаут прокси registry). Helm `--atomic` восстановил прежний образ. [Статусы jobs](evidence/recheck-2026-11-25/rerun.json) · [Лог ошибки](evidence/recheck-2026-11-25/rerun-failure.txt). Ниже — артефакты полного успешного pipeline 22.11.
+
 ## 1. Репозиторий и pipeline
 
 - [Публичный репозиторий](https://github.com/ndreuu/mlops).

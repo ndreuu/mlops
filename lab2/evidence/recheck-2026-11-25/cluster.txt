@@ -1,0 +1,26 @@
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l app.kubernetes.io/name=mlops-search
+NAME                                    READY   UP-TO-DATE   AVAILABLE   AGE
+oleinikov-search-prod-mlops-search      1/1     1            1           2d21h
+oleinikov-search-staging-mlops-search   1/1     1            1           2d21h
+
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get pods -l app.kubernetes.io/name=mlops-search
+NAME                                                     READY   STATUS    RESTARTS   AGE
+oleinikov-search-prod-mlops-search-b5d97df76-bb4wg       1/1     Running   0          2d21h
+oleinikov-search-staging-mlops-search-67995c65d7-44l8c   1/1     Running   0          2d21h
+
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l lab=oleinikov-lab3
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+oleinikov-lab3-cloud-mock   0/0     0            0           2d19h
+oleinikov-lab3-kb-mcp       0/0     0            0           2d19h
+oleinikov-lab3-ollama       0/0     0            0           2d19h
+oleinikov-lab3-portal       0/0     0            0           2d19h
+
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get resourcequota
+NAME             REQUEST                                                                                                     LIMIT                                               AGE
+student-budget   requests.cpu: 400m/2600m, requests.memory: 640Mi/4G, services.loadbalancers: 0/0, services.nodeports: 0/0   limits.cpu: 1500m/2600m, limits.memory: 1536Mi/4G   14d
+
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l app.kubernetes.io/name=mlops-search -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{.spec.template.spec.containers[0].image}{"\n"}{end}'
+oleinikov-search-prod-mlops-search
+docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
+oleinikov-search-staging-mlops-search
+docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
