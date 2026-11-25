@@ -1,0 +1,9 @@
+CPU: cpu, VRAM=0, generation=1.1s
+MCP: list_sections, search_docs, get_doc
+Corpus: 36 records / 35 IDs / 6 sections / 12 paths
+MCP auth: no token=401, bad Origin=403
+Questions: retrieval=9/9, facts=9/9, model-selected quotes=9/9, free-form outputs=0
+Routes: 21/21 passed (cloud mock + real CPU)
+Privacy: 3 checks, cloud requests=0
+Restart: new Pod=True, same image=True, same weights=True
+Real llm7.io: NOT VERIFIED (no API key)

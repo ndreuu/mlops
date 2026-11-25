@@ -1,0 +1,351 @@
+{
+  "cloud_real_verified": false,
+  "cloud_provider": "synthetic-cloud-mock",
+  "local_provider": "real Ollama CPU",
+  "cases": [
+    {
+      "case": "synthetic_cloud_success",
+      "route": "cloud",
+      "reason": "cloud_mock",
+      "provider": "cloud-mock",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 0
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 4.48,
+        "total": 262.52
+      },
+      "passed": true
+    },
+    {
+      "case": "429_to_cpu",
+      "route": "local",
+      "reason": "cloud_429",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 1.95,
+        "local": 5976.42,
+        "total": 6193.64
+      },
+      "passed": true
+    },
+    {
+      "case": "open_circuit_skips_cloud",
+      "route": "local",
+      "reason": "circuit_open:cloud_429",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 0,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 0.01,
+        "local": 8738.06,
+        "total": 8968.67
+      },
+      "passed": true
+    },
+    {
+      "case": "cloud_recovery",
+      "route": "cloud",
+      "reason": "cloud_mock",
+      "provider": "cloud-mock",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 0
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 3.74,
+        "total": 174.17
+      },
+      "passed": true
+    },
+    {
+      "case": "quota_to_cpu",
+      "route": "local",
+      "reason": "cloud_quota",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 2.24,
+        "local": 3127.99,
+        "total": 3340.39
+      },
+      "passed": true
+    },
+    {
+      "case": "quota_recovery",
+      "route": "cloud",
+      "reason": "cloud_mock",
+      "provider": "cloud-mock",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 0
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 1.96,
+        "total": 227.12
+      },
+      "passed": true
+    },
+    {
+      "case": "503_to_cpu",
+      "route": "local",
+      "reason": "cloud_503",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 1.93,
+        "local": 3102.9,
+        "total": 3352.4
+      },
+      "passed": true
+    },
+    {
+      "case": "503_recovery",
+      "route": "cloud",
+      "reason": "cloud_mock",
+      "provider": "cloud-mock",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 0
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 2.31,
+        "total": 216.81
+      },
+      "passed": true
+    },
+    {
+      "case": "timeout_to_cpu",
+      "route": "local",
+      "reason": "cloud_timeout",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 1001.9,
+        "local": 2964.97,
+        "total": 4217.08
+      },
+      "passed": true
+    },
+    {
+      "case": "timeout_recovery",
+      "route": "cloud",
+      "reason": "cloud_mock",
+      "provider": "cloud-mock",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 0
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 4.27,
+        "total": 224.26
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_citations_to_cpu",
+      "route": "local",
+      "reason": "cloud_invalid_answer",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 2.13,
+        "local": 3033.76,
+        "total": 3329.62
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_citations_recovery",
+      "route": "cloud",
+      "reason": "cloud_mock",
+      "provider": "cloud-mock",
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 0
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 2.35,
+        "total": 222.91
+      },
+      "passed": true
+    },
+    {
+      "case": "both_unavailable",
+      "route": "search_only",
+      "reason": "cloud_503;local_unavailable_or_timeout",
+      "provider": null,
+      "calls": {
+        "mcp": 1,
+        "cloud": 1,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "cloud": 2.19,
+        "local": 1.0,
+        "total": 198.2
+      },
+      "passed": true
+    },
+    {
+      "case": "private_mode",
+      "route": "local",
+      "reason": "private_mode",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 0,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "local": 3066.83,
+        "total": 3281.93
+      },
+      "passed": true,
+      "cloud_requests_delta": 0
+    },
+    {
+      "case": "local_only",
+      "route": "local",
+      "reason": "local_only",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 0,
+        "local": 1
+      },
+      "context_id": "7da766ef5064873492e55190af7c161b25edadd15fcdbe183880fa97b7f245ba",
+      "timings_ms": {
+        "local": 7437.2,
+        "total": 7516.65
+      },
+      "passed": true,
+      "cloud_requests_delta": 0
+    },
+    {
+      "case": "copied_private_query",
+      "route": "local",
+      "reason": "local_only",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 0,
+        "local": 1
+      },
+      "context_id": "04c42eaf126114e75e3ebc429a9f687831c04567677a2d70174af4cdad305587",
+      "timings_ms": {
+        "local": 10694.83,
+        "total": 10993.74
+      },
+      "passed": true,
+      "cloud_requests_delta": 0
+    },
+    {
+      "case": "no_private_markers_in_mock",
+      "passed": true,
+      "private_marker_seen": false
+    },
+    {
+      "case": "queue_full",
+      "route": "search_only",
+      "reason": "private_mode;local_queue_full",
+      "provider": null,
+      "calls": {
+        "mcp": 1,
+        "cloud": 0,
+        "local": 0
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "local": 0.04,
+        "total": 230.23
+      },
+      "passed": true
+    },
+    {
+      "case": "one_active_one_waiting",
+      "route": "local",
+      "reason": "private_mode",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 0,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "local": 5537.98,
+        "total": 5814.89
+      },
+      "passed": true
+    },
+    {
+      "case": "disconnect_releases_slot",
+      "passed": true,
+      "release_seconds": 1.456
+    },
+    {
+      "case": "generation_after_cancel",
+      "route": "local",
+      "reason": "private_mode",
+      "provider": "ollama",
+      "calls": {
+        "mcp": 1,
+        "cloud": 0,
+        "local": 1
+      },
+      "context_id": "1933f72df459d2cfca0d747dad0abc3d68105dc604343558127baecef5adf2e5",
+      "timings_ms": {
+        "local": 3201.58,
+        "total": 3404.21
+      },
+      "passed": true
+    }
+  ],
+  "passed": true
+}

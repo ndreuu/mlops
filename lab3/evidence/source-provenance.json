@@ -1,0 +1,14 @@
+{
+  "app_files_match": true,
+  "runner_matches": true,
+  "app_sha256": {
+    "app/gateway.py": "753da399170f03a2c4005e42339b2a8ee55a84f363865a67e71cf7225c832dca",
+    "app/portal.py": "e1e614477068df0602c421c6ad3a060196e9b18b81820b9c0c9e18db854659da",
+    "app/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "app/cloud_mock.py": "77f313c04ef6b8e4b02176a5f76109c6c8ea11a480e2aaa7da21454e8317b018",
+    "app/kb.py": "14a2de9d738b86be5413d1d3fa6ec32aa86c9a4db819cbef352ca50d12a46f84",
+    "app/mcp_server.py": "c80501697e6617c672ee033e7427f10685b17c9cacb67ed1d6eff9b8e0b7b9c9",
+    "app/static/index.html": "5bfada8781ef057472cde2a13153a19d5f8cc2ee99ea3738aa6a88e1bc93f678"
+  },
+  "runner_sha256": "c132fe360573d7d0d7dd25cd57a975d741ff1b70d77facee3fd4dd4d08ab12f0"
+}

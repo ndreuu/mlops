@@ -1,0 +1,9 @@
+model/weights/
+tokenizer.json
+*.sqlite*
+*.env
+data/
+assets/
+model/weights-qwen3/
+model/packed/
+model/weights-qwen/

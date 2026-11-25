@@ -1,0 +1,23 @@
+{
+  "before": {
+    "name": "oleinikov-lab3-ollama-79df9dff8c-5dl95",
+    "uid": "865b43d9-665c-4538-b62e-f5185afe4ffa",
+    "image": "docker.io/ndreuu/oleinikov-iris@sha256:2b7440bdd4adbdf78c51e302f89c172fcec0ffa2528cb57513ad3c0fafab0845",
+    "imageID": "docker.io/ndreuu/oleinikov-iris@sha256:2b7440bdd4adbdf78c51e302f89c172fcec0ffa2528cb57513ad3c0fafab0845",
+    "restartCount": 0
+  },
+  "after": {
+    "name": "oleinikov-lab3-ollama-d5f789699-d7hcl",
+    "uid": "fe4bde4e-c528-462c-a295-0a804ee9d3cf",
+    "image": "docker.io/ndreuu/oleinikov-iris@sha256:2b7440bdd4adbdf78c51e302f89c172fcec0ffa2528cb57513ad3c0fafab0845",
+    "imageID": "docker.io/ndreuu/oleinikov-iris@sha256:2b7440bdd4adbdf78c51e302f89c172fcec0ffa2528cb57513ad3c0fafab0845",
+    "restartCount": 0
+  },
+  "seconds": 42.15,
+  "pod_changed": true,
+  "same_image": true,
+  "before_weights_sha256": "7f4030143c1c477224c5434f8272c662a8b042079a0a584f0a27a1684fe2e1fa",
+  "after_weights_sha256": "7f4030143c1c477224c5434f8272c662a8b042079a0a584f0a27a1684fe2e1fa",
+  "same_weights": true,
+  "generation_after_restart_passed": true
+}

@@ -1,0 +1,17 @@
+.venv
+__pycache__
+**/__pycache__
+**/*.pyc
+*.pyc
+data
+evidence
+reports
+*.env
+tokenizer.json
+*.sqlite*
+*.gguf
+*.tar*
+model/weights
+model/weights-qwen3/
+model/packed/
+model/weights-qwen/

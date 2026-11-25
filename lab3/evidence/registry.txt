@@ -1,0 +1,5 @@
+$ docker push docker.io/ndreuu/oleinikov-iris:lab3-ollama-26bf2dec3102
+lab3-ollama-26bf2dec3102: digest: sha256:2b7440bdd4adbdf78c51e302f89c172fcec0ffa2528cb57513ad3c0fafab0845 size: 5388
+
+$ docker push docker.io/ndreuu/oleinikov-iris:lab3-rag-3347eb378d0e
+lab3-rag-3347eb378d0e: digest: sha256:a08221f670de53bd0a04c17ceae42dc917c89cd3f2ed5fad6b6e685bf8334c1a size: 2410

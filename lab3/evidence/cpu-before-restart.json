@@ -1,0 +1,58 @@
+{
+  "health": {
+    "status": "ready",
+    "model": "qwen3:0.6b",
+    "compute": "cpu"
+  },
+  "idle_metrics": "NAME                                     CPU(cores)   MEMORY(bytes)   \noleinikov-lab3-ollama-79df9dff8c-5dl95   1m           1392Mi          \n",
+  "request": {
+    "model": "qwen3:0.6b",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Ответь одним словом: готово"
+      }
+    ],
+    "stream": false,
+    "think": false,
+    "keep_alive": -1,
+    "options": {
+      "num_gpu": 0,
+      "num_thread": 1,
+      "num_ctx": 2048,
+      "num_predict": 48,
+      "temperature": 0
+    }
+  },
+  "answer": "готово",
+  "seconds": 0.95,
+  "model_metrics": {
+    "prompt_eval_count": 25,
+    "eval_count": 3,
+    "total_duration": 600558161,
+    "load_duration": 4167285
+  },
+  "loaded_models": [
+    {
+      "name": "qwen3:0.6b",
+      "size": 783663757,
+      "size_vram": 0,
+      "context_length": 2048,
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen3",
+        "families": [
+          "qwen3"
+        ],
+        "parameter_size": "751.63M",
+        "quantization_level": "Q4_K_M"
+      }
+    }
+  ],
+  "weights_sha256": "7f4030143c1c477224c5434f8272c662a8b042079a0a584f0a27a1684fe2e1fa",
+  "weights_bytes": 522640096,
+  "memory_peak_bytes": 1811939328,
+  "memory_current_bytes": 1811410944,
+  "passed": true
+}

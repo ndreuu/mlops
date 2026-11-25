@@ -1,0 +1,18 @@
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get deploy,pods,svc -l lab=oleinikov-lab3
+NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/oleinikov-lab3-cloud-mock   1/1     1            1           3h16m
+deployment.apps/oleinikov-lab3-kb-mcp       1/1     1            1           3h16m
+deployment.apps/oleinikov-lab3-ollama       1/1     1            1           3h16m
+deployment.apps/oleinikov-lab3-portal       1/1     1            1           3h16m
+
+NAME                                             READY   STATUS    RESTARTS   AGE
+pod/oleinikov-lab3-cloud-mock-7ddb4b8cf5-lgjm5   1/1     Running   0          7m34s
+pod/oleinikov-lab3-kb-mcp-5976b5bc6-h6x2v        1/1     Running   0          7m35s
+pod/oleinikov-lab3-ollama-d5f789699-d7hcl        1/1     Running   0          77s
+pod/oleinikov-lab3-portal-677969f847-fcm9h       1/1     Running   0          7m36s
+
+NAME                                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)               AGE
+service/oleinikov-lab3-cloud-mock   ClusterIP   10.97.222.80     <none>        8000/TCP              3h16m
+service/oleinikov-lab3-kb-mcp       ClusterIP   10.100.160.140   <none>        8000/TCP              3h16m
+service/oleinikov-lab3-ollama       ClusterIP   10.111.218.250   <none>        11434/TCP,11435/TCP   3h16m
+service/oleinikov-lab3-portal       ClusterIP   10.109.16.90     <none>        8000/TCP              3h16m
