@@ -1,0 +1,9 @@
+Release "oleinikov-search-prod" has been upgraded. Happy Helming!
+NAME: oleinikov-search-prod
+LAST DEPLOYED: Wed Nov 25 12:26:31 2026
+NAMESPACE: itmo-student-13
+STATUS: deployed
+REVISION: 4
+NOTES:
+Use port-forward to inspect the release:
+  kubectl -n itmo-student-13 port-forward service/oleinikov-search-prod-mlops-search 8080:80

@@ -1,0 +1,5 @@
+test-quality	UNKNOWN STEP	2026-11-25T11:49:58.3940020Z reverse exit_code=1
+promote-production	Bad release and semantic rollback	2026-11-25T12:27:40.1652908Z semantic smoke failed
+promote-production	Bad release and semantic rollback	2026-11-25T12:27:40.1745012Z Rolling back oleinikov-search-prod to good revision 4
+promote-production	Bad release and semantic rollback	2026-11-25T12:27:58.1200230Z Rollback was a success! Happy Helming!
+promote-production	Bad release and semantic rollback	2026-11-25T12:28:03.9718349Z Reverse candidate failed semantic smoke; rollback restored rankingMode=normal

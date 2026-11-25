@@ -1,0 +1,8 @@
+# Из корня репозитория; текущий kubectl context: itmo-student-13.
+kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l app.kubernetes.io/name=mlops-search
+kubectl --context=itmo-student-13 -n itmo-student-13 get pods -l app.kubernetes.io/name=mlops-search
+kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l lab=oleinikov-lab3
+kubectl --context=itmo-student-13 -n itmo-student-13 get resourcequota
+
+python3 lab2/scripts/verify_release.py --release oleinikov-search-staging --expected-digest sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --expected-revision bb5aab86a1479b3acac1034cbf2385655db6bc58 --expected-environment staging --port 18091
+python3 lab2/scripts/verify_release.py --release oleinikov-search-prod --expected-digest sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0 --expected-revision bb5aab86a1479b3acac1034cbf2385655db6bc58 --expected-environment production --port 18092
