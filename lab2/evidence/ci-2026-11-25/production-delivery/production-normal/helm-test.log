@@ -1,0 +1,12 @@
+NAME: oleinikov-search-prod
+LAST DEPLOYED: Wed Nov 25 12:26:31 2026
+NAMESPACE: itmo-student-13
+STATUS: deployed
+REVISION: 4
+TEST SUITE:     oleinikov-search-prod-mlops-search-test
+Last Started:   Wed Nov 25 12:26:44 2026
+Last Completed: Wed Nov 25 12:26:48 2026
+Phase:          Succeeded
+NOTES:
+Use port-forward to inspect the release:
+  kubectl -n itmo-student-13 port-forward service/oleinikov-search-prod-mlops-search 8080:80

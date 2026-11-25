@@ -1,0 +1,33 @@
+{
+  "attempt": 2,
+  "conclusion": "success",
+  "headSha": "2e56ca6914514e5c4a3648a7f20c2a39e970b1ea",
+  "jobs": [
+    {
+      "name": "deploy-staging",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/ndreuu/mlops/actions/runs/45608006169/job/139202490162"
+    },
+    {
+      "name": "test-quality",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/ndreuu/mlops/actions/runs/45608006169/job/139202490948"
+    },
+    {
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/ndreuu/mlops/actions/runs/45608006169/job/139202491070"
+    },
+    {
+      "name": "promote-production",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/ndreuu/mlops/actions/runs/45608006169/job/139202994610"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/ndreuu/mlops/actions/runs/45608006169"
+}

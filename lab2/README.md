@@ -1,39 +1,23 @@
 # Лабораторная работа №2. Runbook Search CI/CD
 
-## Проверка запуска — 25.11.2026
-
-Lab 3 остановлена (`replicas=0`); staging и production Lab 2 оставлены запущенными.
-
-```bash
-kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l app.kubernetes.io/name=mlops-search
-```
-
-```text
-NAME                                      READY   UP-TO-DATE   AVAILABLE
-oleinikov-search-prod-mlops-search         1/1     1            1
-oleinikov-search-staging-mlops-search      1/1     1            1
-```
-
-[Команды проверки](evidence/recheck-2026-11-25/commands.txt) · [Staging smoke](evidence/recheck-2026-11-25/staging-smoke.json) · [Production smoke](evidence/recheck-2026-11-25/production-smoke.json) · [Состояние и квота](evidence/recheck-2026-11-25/cluster.txt).
-
-В обоих окружениях: `/readyz` → `ready`, `actual_top=doc-rollback`, `ranking_mode=normal`, `passed=true`.
-
-Повторный [pipeline 25.11](https://github.com/ndreuu/mlops/actions/runs/45608006169): quality и build — `success`; staging — `failure` из-за `ImagePullBackOff` (таймаут прокси registry). Helm `--atomic` восстановил прежний образ. [Статусы jobs](evidence/recheck-2026-11-25/rerun.json) · [Лог ошибки](evidence/recheck-2026-11-25/rerun-failure.txt). Ниже — артефакты полного успешного pipeline 22.11.
-
 ## 1. Репозиторий и pipeline
 
 - [Публичный репозиторий](https://github.com/ndreuu/mlops).
-- [Успешный pipeline](https://github.com/ndreuu/mlops/actions/runs/45033904297) — `success`.
+- [Успешный pipeline](https://github.com/ndreuu/mlops/actions/runs/45608006169/attempts/2) — `success`.
+
+25.11.2026: staging и production — `1/1`; Lab 3 остановлена (`replicas=0`). [Состояние и квота](evidence/ci-2026-11-25/live/cluster.txt) · [Проверки API с Mac](evidence/ci-2026-11-25/live/commands.txt) · [Staging](evidence/ci-2026-11-25/live/staging-smoke.json) · [Production](evidence/ci-2026-11-25/live/production-smoke.json).
+
+Первый запуск упал на таймауте прокси Docker Hub; повторный прошёл полностью. [Лог первой ошибки](evidence/recheck-2026-11-25/rerun-failure.txt) · [Итоговые статусы CI](evidence/ci-2026-11-25/pipeline.json).
 
 ## 2. Image
 
 - Repository: `docker.io/ndreuu/oleinikov-iris`.
-- Tag: `search-bb5aab86a1479b3acac1034cbf2385655db6bc58`.
-- Digest: `sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0`.
+- Tag: `search-2e56ca6914514e5c4a3648a7f20c2a39e970b1ea`.
+- Digest: `sha256:d1da5b43a93bc61501770856f4dba24f619046d0bf4cdf8a9e608b8634807095`.
 
 ## 3. Quality report и отрицательный контроль
 
-[Quality report](evidence/ci-artifacts/model-quality/quality.json) · [Reverse report](evidence/ci-artifacts/model-quality/quality-reverse.json) · [Лог отказа](evidence/ci-artifacts/model-quality/quality-reverse.log).
+[Quality report](evidence/ci-2026-11-25/model-quality/quality.json) · [Reverse report](evidence/ci-2026-11-25/model-quality/quality-reverse.json) · [Лог отказа](evidence/ci-2026-11-25/model-quality/quality-reverse.log).
 
 Фрагменты вывода команд из `lab2/`:
 
@@ -62,14 +46,14 @@ quality gate failed
 
 ## 4. `/meta` из staging и production
 
-Staging — [полный smoke report](evidence/ci-artifacts/staging-delivery/staging-normal/smoke.json):
+Staging — [полный smoke report](evidence/ci-2026-11-25/staging-delivery/staging-normal/smoke.json):
 
 ```json
 {
   "service": "runbook-search-api",
   "service_version": "1.2.0",
-  "build_revision": "bb5aab86a1479b3acac1034cbf2385655db6bc58",
-  "image_digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0",
+  "build_revision": "2e56ca6914514e5c4a3648a7f20c2a39e970b1ea",
+  "image_digest": "sha256:d1da5b43a93bc61501770856f4dba24f619046d0bf4cdf8a9e608b8634807095",
   "environment": "staging",
   "ranking_mode": "normal",
   "index_version": "58431e4d09c7",
@@ -78,14 +62,14 @@ Staging — [полный smoke report](evidence/ci-artifacts/staging-delivery/s
 }
 ```
 
-Production после rollback — [полный smoke report](evidence/ci-artifacts/production-delivery/production-reverse/smoke-restored.json):
+Production после rollback — [полный smoke report](evidence/ci-2026-11-25/production-delivery/production-reverse/smoke-restored.json):
 
 ```json
 {
   "service": "runbook-search-api",
   "service_version": "1.2.0",
-  "build_revision": "bb5aab86a1479b3acac1034cbf2385655db6bc58",
-  "image_digest": "sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0",
+  "build_revision": "2e56ca6914514e5c4a3648a7f20c2a39e970b1ea",
+  "image_digest": "sha256:d1da5b43a93bc61501770856f4dba24f619046d0bf4cdf8a9e608b8634807095",
   "environment": "production",
   "ranking_mode": "normal",
   "index_version": "58431e4d09c7",
@@ -102,35 +86,35 @@ kubectl --context=itmo-student-13 -n itmo-student-13 --request-timeout=20s get d
 
 ```text
 oleinikov-search-staging-mlops-search
-docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
+docker.io/ndreuu/oleinikov-iris@sha256:d1da5b43a93bc61501770856f4dba24f619046d0bf4cdf8a9e608b8634807095
 oleinikov-search-prod-mlops-search
-docker.io/ndreuu/oleinikov-iris@sha256:f1f7db764524e5419376dd23e3c7b696ae838711040675a54d55fb8b355063c0
+docker.io/ndreuu/oleinikov-iris@sha256:d1da5b43a93bc61501770856f4dba24f619046d0bf4cdf8a9e608b8634807095
 ```
 
 ## 6. `helm history` до и после плохого release
 
-До — [вывод `helm history -o json` из CI](evidence/ci-artifacts/production-delivery/production-reverse/history-before.json):
-
-```json
-[{"revision":1,"updated":"2026-11-22T14:44:01.849399948Z","status":"deployed","chart":"mlops-search-0.1.0","app_version":"1.2.0","description":"Install complete"}]
-```
-
-После:
+Команда CI:
 
 ```bash
-env HELM_DRIVER=configmap helm history oleinikov-search-prod --kube-context itmo-student-13 -n itmo-student-13
+HELM_DRIVER=configmap helm history oleinikov-search-prod -n itmo-student-13 -o json
 ```
 
+[До плохого release](evidence/ci-2026-11-25/production-delivery/production-reverse/history-before.json) → [после rollback](evidence/ci-2026-11-25/production-delivery/production-reverse/history-after.json).
+
+Последние ревизии из вывода (revision, status, description):
+
 ```text
-REVISION	UPDATED                 	STATUS    	CHART             	APP VERSION	DESCRIPTION
-1       	Sun Nov 22 14:44:01 2026	superseded	mlops-search-0.1.0	1.2.0      	Install complete
-2       	Sun Nov 22 14:44:40 2026	superseded	mlops-search-0.1.0	1.2.0      	Upgrade complete
-3       	Sun Nov 22 14:45:04 2026	deployed  	mlops-search-0.1.0	1.2.0      	Rollback to 1
+До:
+4  deployed    Upgrade complete
+После:
+4  superseded  Upgrade complete
+5  superseded  Upgrade complete
+6  deployed    Rollback to 4
 ```
 
 ## 7. Failed semantic smoke → rollback → повторная проверка
 
-[Failed smoke](evidence/ci-artifacts/production-delivery/production-reverse/smoke.json) · [Rollback](evidence/ci-artifacts/production-delivery/production-reverse/rollback.log) · [Успешный smoke](evidence/ci-artifacts/production-delivery/production-reverse/smoke-restored.json).
+[Failed smoke](evidence/ci-2026-11-25/production-delivery/production-reverse/smoke.json) · [Rollback](evidence/ci-2026-11-25/production-delivery/production-reverse/rollback.log) · [Успешный smoke](evidence/ci-2026-11-25/production-delivery/production-reverse/smoke-restored.json).
 
 Команда CI и фрагмент вывода:
 
@@ -140,12 +124,14 @@ bash scripts/deploy.sh oleinikov-search-prod production "$IMAGE_REPOSITORY" "$IM
 
 ```text
 semantic smoke failed
-Rolling back oleinikov-search-prod to good revision 1
+Rolling back oleinikov-search-prod to good revision 4
 Rollback was a success! Happy Helming!
 Reverse candidate failed semantic smoke; rollback restored rankingMode=normal
 ```
 
-Повторный smoke: `actual_top=doc-rollback`, `ranking_mode=normal`, `passed=true`.
+Reverse: `/readyz=ready`, `actual_top=doc-security`, `passed=false`.
+
+После rollback: `actual_top=doc-rollback`, `ranking_mode=normal`, `passed=true`. [Лог CI](evidence/ci-2026-11-25/acceptance.log).
 
 ## 8. Почему readiness недостаточно
 

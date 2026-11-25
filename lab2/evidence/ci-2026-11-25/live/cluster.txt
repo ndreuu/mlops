@@ -1,0 +1,26 @@
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l app.kubernetes.io/name=mlops-search
+NAME                                    READY   UP-TO-DATE   AVAILABLE   AGE
+oleinikov-search-prod-mlops-search      1/1     1            1           2d21h
+oleinikov-search-staging-mlops-search   1/1     1            1           2d21h
+
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get pods -l app.kubernetes.io/name=mlops-search
+NAME                                                     READY   STATUS    RESTARTS   AGE
+oleinikov-search-prod-mlops-search-5c74996fd-r27mq       1/1     Running   0          72s
+oleinikov-search-staging-mlops-search-6fb8699cfd-ksr28   1/1     Running   0          4m22s
+
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get deploy -l lab=oleinikov-lab3
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+oleinikov-lab3-cloud-mock   0/0     0            0           2d20h
+oleinikov-lab3-kb-mcp       0/0     0            0           2d20h
+oleinikov-lab3-ollama       0/0     0            0           2d20h
+oleinikov-lab3-portal       0/0     0            0           2d20h
+
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get resourcequota
+NAME             REQUEST                                                                                                     LIMIT                                               AGE
+student-budget   requests.cpu: 400m/2600m, requests.memory: 640Mi/4G, services.loadbalancers: 0/0, services.nodeports: 0/0   limits.cpu: 1500m/2600m, limits.memory: 1536Mi/4G   14d
+
+$ kubectl --context=itmo-student-13 -n itmo-student-13 get deploy oleinikov-search-staging-mlops-search oleinikov-search-prod-mlops-search -o 'jsonpath={range .items[*]}{.metadata.name}{"\n"}{.spec.template.spec.containers[0].image}{"\n"}{end}'
+oleinikov-search-staging-mlops-search
+docker.io/ndreuu/oleinikov-iris@sha256:d1da5b43a93bc61501770856f4dba24f619046d0bf4cdf8a9e608b8634807095
+oleinikov-search-prod-mlops-search
+docker.io/ndreuu/oleinikov-iris@sha256:d1da5b43a93bc61501770856f4dba24f619046d0bf4cdf8a9e608b8634807095
